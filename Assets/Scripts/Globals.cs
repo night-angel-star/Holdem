@@ -7,6 +7,7 @@ using System;
 using System.Net.Sockets;
 using SocketIOClient.Transport;
 using Newtonsoft.Json;
+using UnityEngine.SceneManagement;
 
 public class SocketIoEventHandler
 {
@@ -22,11 +23,12 @@ public class SocketIoEventHandler
 public class Globals
 {
     public static SocketIOUnity socketIoUnity;
-    public string strUri = "http://192.168.145.195:3000";
+    public static object profile;
+    public static object token;
+    public string strUri = "http://192.168.148.182:3000";
 
     public Globals()
     {
-        Debug.Log("Globals");
         var uri = new Uri(strUri);
         socketIoUnity = new SocketIOUnity(
             uri,
@@ -38,38 +40,13 @@ public class Globals
         );
         socketIoUnity.JsonSerializer = new NewtonsoftJsonSerializer();
         socketIoUnity.On("hello", (data) => {
-            Debug.Log("Hello" + data);
+            Debug.Log("Hello");
+            Debug.Log(data);
             socketIoUnity.Emit("hello");
-
-            System.Random rnd = new System.Random();
-            int seq = rnd.Next();
-            var req = new
-            {
-                seq = seq,
-                
-                f = "login",
-                args = new
-                {
-                    uid = "asd",
-                    passwd = "123"
-                }                
-                /*
-                f = "signup",
-                args = new
-                {
-                    uid = "ccc",
-                    passwd = "ccc",
-                    email = "ccc@ccc.ccc"
-                }
-                */
-            };
-            
-            string jsonData = JsonConvert.SerializeObject(req);
-            socketIoUnity.Emit("rpc", req);
         });
 
         socketIoUnity.On("notify", SocketIoUnity_OnNotify);
-        socketIoUnity.On("rpc_ret", SocketIoUnity_OnRpcRet);
+        // socketIoUnity.On("rpc_ret", SocketIoUnity_OnRpc);
         socketIoUnity.OnConnected += SocketIoUnity_OnConnected;
         ///// reserved socketio events
         socketIoUnity.Connect();
@@ -81,13 +58,15 @@ public class Globals
         throw new NotImplementedException();
     }
 
-    private void SocketIoUnity_OnRpcRet(SocketIOResponse data)
+    private void SocketIoUnity_OnRpc(SocketIOResponse data)
     {
+        Debug.Log("rpc_ret");
         Debug.Log(data);
     }
 
     private void SocketIoUnity_OnNotify(SocketIOResponse data)
     {
-
+        // Debug.Log("notify");
+        // Debug.Log(data);
     }
 }
