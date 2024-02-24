@@ -11,7 +11,6 @@ public class TexasHoldem : MonoBehaviour
     public TMP_Text UsernameText;
     public TMP_Text CoinText;
 
-    private int seats = 9;
     // Start is called before the first frame update
     void Start()
     {

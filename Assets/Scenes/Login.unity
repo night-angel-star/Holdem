@@ -2406,9 +2406,8 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1650247777}
-  - component: {fileID: 1650247778}
   - component: {fileID: 1650247781}
-  - component: {fileID: 1650247780}
+  - component: {fileID: 1650247782}
   - component: {fileID: 1650247779}
   m_Layer: 0
   m_Name: Login
@@ -2432,18 +2431,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1650247778
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1650247775}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 46e712f474a128f4a9824272b3a922bb, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1650247779
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2461,18 +2448,6 @@ MonoBehaviour:
   EmailError: {fileID: 356178713}
   PasswordError: {fileID: 2014652913}
   LoginButton: {fileID: 1286292695}
---- !u!114 &1650247780
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1650247775}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ac914f980aa8adb4fa48fff9620d563e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!114 &1650247781
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2483,6 +2458,18 @@ MonoBehaviour:
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a5e13b9f4b1ab6f4ebfb4e459c3c42c8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+--- !u!114 &1650247782
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1650247775}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5e82a7dd5f636794d8bf5a032447c5af, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
 --- !u!1001 &1826937422

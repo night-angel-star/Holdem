@@ -29,6 +29,7 @@ public class Globals
 
     public Globals()
     {
+        Debug.Log("global initializing");
         var uri = new Uri(strUri);
         socketIoUnity = new SocketIOUnity(
             uri,
@@ -38,6 +39,7 @@ public class Globals
                 Transport = SocketIOClient.Transport.TransportProtocol.Polling
             }
         );
+        
         socketIoUnity.JsonSerializer = new NewtonsoftJsonSerializer();
         socketIoUnity.On("hello", (data) => {
             Debug.Log("Hello");

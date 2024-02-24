@@ -4,9 +4,7 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using System.Collections;
-using Newtonsoft.Json;
 using System.Linq;
-using Newtonsoft.Json.Linq;
 using UnityEngine.SceneManagement;
 
 public class RoomCreateScript : MonoBehaviour
