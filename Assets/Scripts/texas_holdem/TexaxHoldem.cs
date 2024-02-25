@@ -85,19 +85,13 @@ public class TexasHoldem : MonoBehaviour
         newRow.preferredHeight = 23;
         for (int i = 0; i < rowElements.Length; i++)
         {
-            GameObject text = new GameObject("Text");
-            TextMeshProUGUI textMeshPro = text.AddComponent<TextMeshProUGUI>();
-            textMeshPro.transform.SetParent(newRow.Cells[i].transform);
-            textMeshPro.fontSize = 10;
-            textMeshPro.alignment = TextAlignmentOptions.MidlineLeft;
-            textMeshPro.transform.localScale = Vector3.one;
-            textMeshPro.SetText(rowElements[i]);
+            TableScript.AddStringToCell(newRow.Cells[i], convertToTitleCase(rowElements[i].ToString()));
         }
         GameObject cellObject = new GameObject("GameObject", typeof(RectTransform));
         cellObject.transform.SetParent(newRow.Cells[5].transform);
         cellObject.transform.localScale = Vector3.one;
 
-        GameObject instantiatedButton = Instantiate(joinButtonPrefab, cellObject.transform);
+        GameObject instantiatedButton = Instantiate(joinButtonPrefab, newRow.Cells[5].transform);
         instantiatedButton.transform.localScale = Vector3.one;
 
         Button button = instantiatedButton.GetComponent<Button>();
