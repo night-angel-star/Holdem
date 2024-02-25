@@ -48,7 +48,7 @@ GameObject:
   - component: {fileID: 6444353815546364770}
   - component: {fileID: 6150537340016751019}
   m_Layer: 0
-  m_Name: ace_of_diamond
+  m_Name: card2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -132,7 +132,7 @@ GameObject:
   - component: {fileID: 8193403055458058514}
   - component: {fileID: 7545061814373134520}
   m_Layer: 0
-  m_Name: ace_of_hearts
+  m_Name: card1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
