@@ -51,6 +51,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: UserCards
       objectReference: {fileID: 0}
+    - target: {fileID: 1765466994386924621, guid: 3d09a5454177a454a9bc0dba79787a90, type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 7101191488508291717, guid: 3d09a5454177a454a9bc0dba79787a90, type: 3}
       propertyPath: m_Pivot.x
       value: 0.5
@@ -305,11 +309,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 6049069186983354095, guid: f96c65db10b8b414bbe4fa5d9558a695, type: 3}
       propertyPath: m_PresetInfoIsWorld
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7937355142518961220, guid: f96c65db10b8b414bbe4fa5d9558a695, type: 3}
       propertyPath: m_Name
       value: UserMoneyPad
+      objectReference: {fileID: 0}
+    - target: {fileID: 7937355142518961220, guid: f96c65db10b8b414bbe4fa5d9558a695, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
@@ -332,6 +340,10 @@ PrefabInstance:
     - target: {fileID: 2043114915303167582, guid: f8c78956319759947b83dcc831f02ca4, type: 3}
       propertyPath: m_Name
       value: Avatar
+      objectReference: {fileID: 0}
+    - target: {fileID: 2043114915303167582, guid: f8c78956319759947b83dcc831f02ca4, type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 5309900361122207918, guid: f8c78956319759947b83dcc831f02ca4, type: 3}
       propertyPath: m_Pivot.x

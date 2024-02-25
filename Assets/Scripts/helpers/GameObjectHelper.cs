@@ -27,4 +27,17 @@ public class GameObjectHelper : MonoBehaviour
 
         return activeChildrenArray;
     }
+
+    public static GameObject[] GetChildren(GameObject parent)
+    {
+        GameObject[] allChildren = new GameObject[parent.transform.childCount];
+        for (int i = 0; i < parent.transform.childCount; i++)
+        {
+            allChildren[i] = parent.transform.GetChild(i).gameObject;
+        }
+
+
+
+        return allChildren;
+    }
 }

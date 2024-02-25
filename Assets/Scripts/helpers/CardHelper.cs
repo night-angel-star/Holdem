@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class CardHelper:MonoBehaviour
 {
-    public static Sprite GetCard(int nCardNumber, Sprite originalSprite)
+    public static Sprite GetCard(int nCardNumber)
     {
         int cardColor = (int)Math.Floor((decimal)(nCardNumber / 16));
         int cardNumber = nCardNumber % 16;
