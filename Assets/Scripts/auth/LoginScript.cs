@@ -1,45 +1,91 @@
-using System.Collections;
-using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.SceneManagement;
 using System.Text.RegularExpressions;
-using System;
-using Newtonsoft.Json;
-using System.Linq;
 using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
+using Unity.VisualScripting;
 
 public class LoginScript : MonoBehaviour
 {
     public TMP_InputField EmailInput;
     public TMP_InputField PasswordInput;
-    public TMP_Text EmailError;
-    public TMP_Text PasswordError;
+    public TMP_Text ErrorText;
     public Button LoginButton;
 
     void Start()
     {
+        Globals.socketIoConnection.serverUri = Globals.strUri;
+        Globals.socketIoConnection.Connect();
+
         // Attach a listener to the login button
         LoginButton.onClick.AddListener(Login);
-
-        EmailInput.onValueChanged.AddListener((v) => Restore(v, EmailInput, EmailError));
-        PasswordInput.onValueChanged.AddListener((v) => Restore(v, PasswordInput, PasswordError));
     }
-     private void Login()
+    private void OnResponse(JToken jsonResponse)
+    {
+        string errorString = "";
+        Dictionary<string, object> res = JsonResponse.ToDictionary(jsonResponse);
+
+        do
+        {
+            if (res == null)
+            {
+                errorString = "Invalid response";
+                break;
+            }
+            int err = res["err"].ConvertTo<int>();
+            if (err != 0)
+            {
+                if (!res.ContainsKey("ret"))
+                {
+                    errorString = "Invalid response";
+                    break;
+                }
+                errorString = res["ret"].ToString();
+                break;
+            }
+            if (!res.ContainsKey("ret"))
+            {
+                errorString = "Invalid response";
+                break;
+            }
+            Dictionary<string, object> ret = JsonResponse.ToDictionary(res["ret"]);
+            if (ret == null)
+            {
+                errorString = "Invalid response";
+                break;
+            }
+            var profile = ret["profile"];
+            var token = ret["token"];
+            Globals.profile = JsonResponse.ToDictionary(profile);
+            Globals.token = JsonResponse.ToDictionary(token);
+
+            UnityMainThreadDispatcher.Instance().Enqueue(() =>
+            {
+                SceneManager.LoadScene("Home");
+            });
+            return;
+        } while (false);
+
+        // Display errorString
+        if (errorString != "")
+        {
+            UnityMainThreadDispatcher.Instance().Enqueue(() =>
+            {
+                ErrorText.text = errorString;
+            });
+        }
+    }
+    private void Login()
     {
         if (Validate())
         {
-            var socket = Globals.socketIoUnity;
             string enteredEmail = EmailInput.text;
             string enteredPassword = PasswordInput.text;
 
-            System.Random rnd = new System.Random();
-            int seq = rnd.Next();
-
             var data = new
             {
-                seq = seq,
                 args = new
                 {
                     uid = enteredEmail,
@@ -47,88 +93,36 @@ public class LoginScript : MonoBehaviour
                 },
                 f = "login"
             };
-
-            //string jsonData = JsonConvert.SerializeObject(data);
-
-            socket.On("rpc_ret", (response) =>
-            {
-                object data = JsonConvert.DeserializeObject(response.ToString());
-                
-                IEnumerable e = data as IEnumerable;
-                object[] arr = e.Cast<object>().ToArray();
-               
-                if (arr != null)
-                {
-                    var res = arr.GetValue(0);
-                    JContainer jContainer = res as JContainer;
-                    if (jContainer != null)
-                    {
-                        JToken token = jContainer.SelectToken("err");
-                        if (token.Value<int>() == 0)
-                        {
-                            UnityMainThreadDispatcher.Instance().Enqueue(() =>
-                            {
-                                JContainer retJContainer = jContainer.SelectToken("ret").Value<object>() as JContainer;
-                                Globals.profile = retJContainer.SelectToken("profile").Value<object>();
-                                Globals.token = retJContainer.SelectToken("token").Value<object>();
-                                SceneManager.LoadScene("Home");
-                            });
-                        } else if(token.Value<int>() > 300)
-                        {
-                            JToken token1 = jContainer.SelectToken("ret");
-                            if(token1.Value<string>().IndexOf("user") != -1)
-                            {
-                                UnityMainThreadDispatcher.Instance().Enqueue(() =>
-                                {
-                                    EmailInput.GetComponent<Image>().color = Color.red;
-                                    EmailError.text = token1.Value<string>();
-                                });
-                            } else if(token1.Value<string>().IndexOf("password") != -1)
-                            {
-                                UnityMainThreadDispatcher.Instance().Enqueue(() =>
-                                {
-                                    PasswordInput.GetComponent<Image>().color = Color.red;
-                                    PasswordError.text = token1.Value<string>();
-                                });
-                            }
-                        }
-                    }
-                }
-            });
-
-            socket.Emit("rpc", data);
+            Globals.socketIoConnection.SendRpc(data, OnResponse);
         }
     }
 
-    public bool ValidateEmail(string email)
+    private bool ValidateEmail(string email)
     {
         string pattern = @"^[a-zA-Z0-9_.+-]+@[a-zA-Z0-9-]+\.[a-zA-Z0-9-.]+$";
         bool isValid = Regex.IsMatch(email, pattern);
         return isValid;
     }
-    public bool Validate()
+    private bool Validate()
     {
-        EmailInput.GetComponent<Image>().color = string.IsNullOrEmpty(EmailInput.text) ? Color.red : Color.white;
-        EmailError.text = string.IsNullOrEmpty(EmailInput.text) ? "Please enter your email" : "";
-        PasswordInput.GetComponent<Image>().color = string.IsNullOrEmpty(PasswordInput.text) ? Color.red : Color.white;
-        PasswordError.text = string.IsNullOrEmpty(PasswordInput.text) ? "Please enter your password" : "";
-        if (!ValidateEmail(EmailInput.text))
+        string errorString = null;
+        
+        errorString = string.IsNullOrEmpty(errorString) && string.IsNullOrEmpty(EmailInput.text) ? "Please enter your email" : null;
+        errorString = string.IsNullOrEmpty(errorString) && string.IsNullOrEmpty(PasswordInput.text) ? "Please enter your password" : null;
+        if (string.IsNullOrEmpty(errorString) && !ValidateEmail(EmailInput.text))
         {
-            EmailInput.GetComponent<Image>().color = Color.red;
-            EmailError.text = "Please enter the valid email";
+            ErrorText.text = "Please enter the valid email";
             return false;
         }
-        if (!string.IsNullOrEmpty(EmailInput.text) && !string.IsNullOrEmpty(PasswordInput.text))
+        
+        if (string.IsNullOrEmpty(errorString))
         {
             return true;
-        } else {
+        }
+        else
+        {
+            ErrorText.text = errorString;
             return false;
         }
-    }
-
-    public void Restore(string value, TMP_InputField InputField, TMP_Text ErrorText)
-    {
-        InputField.GetComponent<Image>().color = Color.white;
-        ErrorText.text = "";
     }
 }

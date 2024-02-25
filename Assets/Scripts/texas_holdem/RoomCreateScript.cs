@@ -16,7 +16,7 @@ public class RoomCreateScript : MonoBehaviour
     public GameObject seatSelectManager;
 
     // Start is called before the first frame update
-    void Start()
+    /* void Start()
     {
         RoomNameInput.onValueChanged.AddListener((v) => Restore(v, RoomNameInput, RoomNameError));
         CreateButton.onClick.AddListener(CreateRoom);
@@ -104,5 +104,5 @@ public class RoomCreateScript : MonoBehaviour
     void Update()
     {
         
-    }
+    } */
 }

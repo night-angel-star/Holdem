@@ -7,6 +7,9 @@ using System.Text.RegularExpressions;
 using Newtonsoft.Json;
 using System.Linq;
 using Newtonsoft.Json.Linq;
+using System.Collections.Generic;
+using Unity.VisualScripting;
+using System;
 
 public class RegisterScript : MonoBehaviour
 {
@@ -14,38 +17,77 @@ public class RegisterScript : MonoBehaviour
     public TMP_InputField EmailInput;
     public TMP_InputField PasswordInput;
     public TMP_InputField Password2Input;
-    public TMP_Text NameError;
-    public TMP_Text EmailError;
-    public TMP_Text PasswordError;
-    public TMP_Text Password2Error;
+    public TMP_Text ErrorText;
     public Button RegisterButton;
 
     void Start()
     {
         // Attach a listener to the login button
         RegisterButton.onClick.AddListener(Register);
+    }
 
-        NameInput.onValueChanged.AddListener((v) => Restore(v, NameInput, NameError));
-        EmailInput.onValueChanged.AddListener((v) => Restore(v, EmailInput, EmailError));
-        PasswordInput.onValueChanged.AddListener((v) => Restore(v, PasswordInput, PasswordError));
-        Password2Input.onValueChanged.AddListener((v) => Restore(v, Password2Input, Password2Error));
+    private void OnResponse(JToken jsonResponse)
+    {
+        string errorString = "";
+        Dictionary<string, object> res = JsonResponse.ToDictionary(jsonResponse);
+
+        do
+        {
+            if (res == null)
+            {
+                errorString = "Invalid response";
+                break;
+            }
+            int err = res["err"].ConvertTo<int>();
+            if (err != 0)
+            {
+                if (!res.ContainsKey("ret"))
+                {
+                    errorString = "Invalid response";
+                    break;
+                }
+                errorString = res["ret"].ToString();
+                break;
+            }
+            if (!res.ContainsKey("ret"))
+            {
+                errorString = "Invalid response";
+                break;
+            }
+            Dictionary<string, object> ret = JsonResponse.ToDictionary(res["ret"]);
+            if (ret == null)
+            {
+                errorString = "Invalid response";
+                break;
+            }
+            UnityMainThreadDispatcher.Instance().Enqueue(() =>
+            {
+                Debug.Log("here");
+                SceneManager.LoadScene("Login");
+            });
+            return;
+        } while (false);
+
+        // Display errorString
+        if (errorString != "")
+        {
+            UnityMainThreadDispatcher.Instance().Enqueue(() =>
+            {
+                ErrorText.text = errorString;
+            });
+        }
     }
     private void Register()
     {
         if (Validate())
         {
-            var socket = Globals.socketIoUnity;
             string enteredName = NameInput.text;
             string enteredEmail = EmailInput.text;
             string enteredPassword = PasswordInput.text;
             string enteredPassword2 = Password2Input.text;
 
-            System.Random rnd = new System.Random();
-            int seq = rnd.Next();
-
             var data = new
             {
-                seq = seq,
                 args = new
                 {
                     name = enteredName,
@@ -56,77 +98,7 @@ public class RegisterScript : MonoBehaviour
                 f = "signup"
             };
 
-            //string jsonData = JsonConvert.SerializeObject(data);
-
-            socket.On("rpc_ret", (response) =>
-            {
-                object data = JsonConvert.DeserializeObject(response.ToString());
-
-                IEnumerable e = data as IEnumerable;
-                object[] arr = e.Cast<object>().ToArray();
-
-                if (arr != null)
-                {
-                    var res = arr.GetValue(0);
-                    JContainer jContainer = res as JContainer;
-                    if (jContainer != null)
-                    {
-                        JToken token = jContainer.SelectToken("err");
-                        if (token.Value<int>() == 0)
-                        {
-                            UnityMainThreadDispatcher.Instance().Enqueue(() =>
-                        {
-                          if (seq != jContainer.SelectToken("seq").Value<int>())
-                          {
-                              JContainer retJContainer = jContainer.SelectToken("ret").Value<object>() as JContainer;
-                              Globals.profile = retJContainer.SelectToken("profile").Value<object>();
-                              SceneManager.LoadScene("Home");
-                          }
-                          else
-                          {
-                              System.Random rnd = new System.Random();
-                              int seq = rnd.Next();
-
-                              var data = new
-                              {
-                                  seq = seq,
-                                  args = new
-                                  {
-                                      uid = enteredEmail,
-                                      passwd = enteredPassword
-                                  },
-                                  f = "login"
-                              };
-                              socket.Emit("rpc", data);
-                          }
-
-                      });
-                        }
-                        else if (token.Value<int>() > 300)
-                        {
-                            JToken token1 = jContainer.SelectToken("ret");
-                            if (token1.Value<string>().IndexOf("user") != -1)
-                            {
-                                UnityMainThreadDispatcher.Instance().Enqueue(() =>
-                            {
-                            EmailInput.GetComponent<Image>().color = Color.red;
-                            EmailError.text = token1.Value<string>();
-                        });
-                            }
-                            else if (token1.Value<string>().IndexOf("password") != -1)
-                            {
-                                UnityMainThreadDispatcher.Instance().Enqueue(() =>
-                            {
-                            PasswordInput.GetComponent<Image>().color = Color.red;
-                            PasswordError.text = token1.Value<string>();
-                        });
-                            }
-                        }
-                    }
-                }
-            });
-
-            socket.Emit("rpc", data);
+            Globals.socketIoConnection.SendRpc(data, OnResponse);
         }
     }
 
@@ -138,42 +110,36 @@ public class RegisterScript : MonoBehaviour
     }
     public bool Validate()
     {
-        int num = 0;
-        NameInput.GetComponent<Image>().color = string.IsNullOrEmpty(NameInput.text) ? Color.red : Color.white;
-        NameError.text = string.IsNullOrEmpty(NameInput.text) ? "Please enter your name" : "";
-        EmailInput.GetComponent<Image>().color = string.IsNullOrEmpty(EmailInput.text) ? Color.red : Color.white;
-        EmailError.text = string.IsNullOrEmpty(EmailInput.text) ? "Please enter your email" : "";
-        PasswordInput.GetComponent<Image>().color = string.IsNullOrEmpty(PasswordInput.text) ? Color.red : Color.white;
-        PasswordError.text = string.IsNullOrEmpty(PasswordInput.text) ? "Please enter your password" : "";
-        if (PasswordInput.text != Password2Input.text)
+        string errorString = null;
+        if (string.IsNullOrEmpty(errorString) && string.IsNullOrEmpty(EmailInput.text))
         {
-            Password2Input.GetComponent<Image>().color = Color.red;
-            Password2Error.text = "Password is not match";
-            num++;
+            errorString = string.IsNullOrEmpty(NameInput.text) ? "Please enter your name" : null;
         }
-        if (!ValidateEmail(EmailInput.text))
+        if (string.IsNullOrEmpty(errorString) && string.IsNullOrEmpty(EmailInput.text))
         {
-            EmailInput.GetComponent<Image>().color = Color.red;
-            EmailError.text = "Please enter the valid email";
-            num++;
+            errorString =  string.IsNullOrEmpty(EmailInput.text) ? "Please enter your email" : null;
         }
-        if (string.IsNullOrEmpty(EmailInput.text) || string.IsNullOrEmpty(PasswordInput.text) || string.IsNullOrEmpty(NameInput.text))
+        if (string.IsNullOrEmpty(errorString) && string.IsNullOrEmpty(PasswordInput.text))
         {
-            num++;
+            errorString = string.IsNullOrEmpty(PasswordInput.text) ? "Please enter your password" : null;
         }
-        if (num == 0)
+        if (string.IsNullOrEmpty(errorString) && !ValidateEmail(EmailInput.text))
+        {
+            errorString = "Please enter the valid email";
+        }
+        if (string.IsNullOrEmpty(errorString) && PasswordInput.text != Password2Input.text)
+        {
+            errorString = "Password is not match";
+        }
+        
+        if (string.IsNullOrEmpty(errorString))
         {
             return true;
         }
         else
         {
+            ErrorText.text = errorString;
             return false;
         }
-    }
-
-    public void Restore(string value, TMP_InputField InputField, TMP_Text ErrorText)
-    {
-        InputField.GetComponent<Image>().color = Color.white;
-        ErrorText.text = "";
     }
 }

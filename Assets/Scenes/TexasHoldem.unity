@@ -1928,6 +1928,7 @@ GameObject:
   m_Component:
   - component: {fileID: 211481325}
   - component: {fileID: 211481326}
+  - component: {fileID: 211481327}
   m_Layer: 0
   m_Name: TexasHoldem
   m_TagString: Untagged
@@ -1959,11 +1960,24 @@ MonoBehaviour:
   m_GameObject: {fileID: 211481323}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2f9401afa5d03c54e9f5fcf46d36951e, type: 3}
+  m_Script: {fileID: 11500000, guid: 65778e4b5aa939745b602df2167a6b59, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   UsernameText: {fileID: 434336126}
   CoinText: {fileID: 1207556161}
+--- !u!114 &211481327
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 211481323}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2f9401afa5d03c54e9f5fcf46d36951e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  roomListTable: {fileID: 1808746212}
 --- !u!1 &217530827
 GameObject:
   m_ObjectHideFlags: 0
