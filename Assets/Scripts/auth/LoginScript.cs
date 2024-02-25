@@ -16,9 +16,6 @@ public class LoginScript : MonoBehaviour
 
     void Start()
     {
-        Globals.socketIoConnection.serverUri = Globals.strUri;
-        Globals.socketIoConnection.Connect();
-
         // Attach a listener to the login button
         LoginButton.onClick.AddListener(Login);
     }

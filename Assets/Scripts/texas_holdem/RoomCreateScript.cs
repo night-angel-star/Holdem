@@ -6,6 +6,9 @@ using UnityEngine.UI;
 using System.Collections;
 using System.Linq;
 using UnityEngine.SceneManagement;
+using System.Collections.Generic;
+using System;
+using Unity.VisualScripting;
 
 public class RoomCreateScript : MonoBehaviour
 {
@@ -16,26 +19,73 @@ public class RoomCreateScript : MonoBehaviour
     public GameObject seatSelectManager;
 
     // Start is called before the first frame update
-    /* void Start()
+    void Start()
     {
         RoomNameInput.onValueChanged.AddListener((v) => Restore(v, RoomNameInput, RoomNameError));
         CreateButton.onClick.AddListener(CreateRoom);
+    }
+
+    private void OnResponse(JToken jsonResponse)
+    {
+        string errorString = "";
+        Dictionary<string, object> res = JsonResponse.ToDictionary(jsonResponse);
+
+        do
+        {
+            if (res == null)
+            {
+                errorString = "Invalid response";
+                break;
+            }
+            int err = res["err"].ConvertTo<int>();
+            if (err != 0)
+            {
+                if (!res.ContainsKey("ret"))
+                {
+                    errorString = "Invalid response";
+                    break;
+                }
+                errorString = res["ret"].ToString();
+                break;
+            }
+            if (!res.ContainsKey("ret"))
+            {
+                errorString = "Invalid response";
+                break;
+            }
+            Dictionary<string, object> ret = JsonResponse.ToDictionary(res["ret"]);
+            if (ret == null)
+            {
+                errorString = "Invalid response";
+                break;
+            }
+
+            UnityMainThreadDispatcher.Instance().Enqueue(() =>
+            {
+                SceneManager.LoadScene("Room");
+            });
+            return;
+        } while (false);
+
+        // Display errorString
+        if (errorString != "")
+        {
+            UnityMainThreadDispatcher.Instance().Enqueue(() =>
+            {
+                RoomNameError.text = errorString;
+            });
+        }
     }
 
     private void CreateRoom()
     {
         if (Validate())
         {
-            var socket = Globals.socketIoUnity;
-            System.Random rnd = new System.Random();
-            int seq = rnd.Next();
-            JContainer profileJContainer = Globals.profile as JContainer;
-            JContainer tokenJContainer = Globals.token as JContainer;
-            string uid = profileJContainer.SelectToken("uid").Value<string>();
-            int pin = tokenJContainer.SelectToken("pin").Value<int>();
+            Dictionary<string, object> token = (Dictionary<string, object>)Globals.token;
+            string uid = token["uid"].ToString();
+            int pin = Int32.Parse(token["pin"].ToString());
             var data = new
             {
-                seq = seq,
                 uid = uid,
                 pin = pin,
                 args = new
@@ -45,34 +95,10 @@ public class RoomCreateScript : MonoBehaviour
                     seat = seatSelectManager.GetComponent<SelectManager>().currentActive,
                     room_type = roomTypeSelectManager.GetComponent<SelectManager>().currentActive
                 },
-                f = "mkroom"
+                f = "entergame"
             };
 
-            socket.On("rpc_ret", (response) =>
-            {
-                object data = JsonConvert.DeserializeObject(response.ToString());
-
-                IEnumerable e = data as IEnumerable;
-                object[] arr = e.Cast<object>().ToArray();
-                if (arr != null)
-                {
-                    var res = arr.GetValue(0);
-                    JContainer jContainer = res as JContainer;
-                    if (jContainer != null)
-                    {
-                        JToken token = jContainer.SelectToken("err");
-                        if (token.Value<int>() == 0)
-                        {
-                            UnityMainThreadDispatcher.Instance().Enqueue(() =>
-                            {
-                                SceneManager.LoadScene("Room");
-                            });
-                        }
-                    }
-                }
-            });
-
-            socket.Emit("rpc", data);
+            Globals.socketIoConnection.SendRpc(data, OnResponse);
         }
     }
 
@@ -104,5 +130,5 @@ public class RoomCreateScript : MonoBehaviour
     void Update()
     {
         
-    } */
+    }
 }
