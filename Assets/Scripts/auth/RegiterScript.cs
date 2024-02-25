@@ -62,7 +62,6 @@ public class RegisterScript : MonoBehaviour
             }
             UnityMainThreadDispatcher.Instance().Enqueue(() =>
             {
-                Debug.Log("here");
                 SceneManager.LoadScene("Login");
             });
             return;
