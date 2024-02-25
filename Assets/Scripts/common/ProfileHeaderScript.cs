@@ -14,7 +14,6 @@ public class ProfileHearderScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Debug.Log(Globals.profile);
         Dictionary<string, object> profile = (Dictionary<string, object>)Globals.profile;
         UsernameText.text = profile["name"].ToString();
         CoinText.text = profile["coins"].ToString();
