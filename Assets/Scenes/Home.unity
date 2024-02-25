@@ -135,7 +135,7 @@ GameObject:
   - component: {fileID: 86898567}
   - component: {fileID: 86898566}
   m_Layer: 0
-  m_Name: avatar2
+  m_Name: avatar
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1063,6 +1063,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   UsernameText: {fileID: 532662184}
   CoinText: {fileID: 662121683}
+  Avatar: {fileID: 86898564}
 --- !u!4 &609918690
 Transform:
   m_ObjectHideFlags: 0
