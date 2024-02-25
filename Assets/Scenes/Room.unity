@@ -8145,6 +8145,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23629fc8cd6e9f94088d4192c3b629a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  myCards: {fileID: 1320116196}
 --- !u!4 &1189902639
 Transform:
   m_ObjectHideFlags: 0
@@ -9275,6 +9276,11 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1316087213}
   m_CullTransparentMesh: 1
+--- !u!1 &1320116196 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5815660955254373782, guid: d5894104c356d3646ae26f57c725cb64, type: 3}
+  m_PrefabInstance: {fileID: 4352188175451110685}
+  m_PrefabAsset: {fileID: 0}
 --- !u!1 &1341002470
 GameObject:
   m_ObjectHideFlags: 0

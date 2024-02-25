@@ -48,7 +48,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 1172328283666848702, guid: 3b3c2a38d4cb999419dd4d15ec67ea67, type: 3}
       propertyPath: m_Name
-      value: AvatarMe
+      value: Avatar
       objectReference: {fileID: 0}
     - target: {fileID: 1942134399512641990, guid: 3b3c2a38d4cb999419dd4d15ec67ea67, type: 3}
       propertyPath: m_Pivot.x
@@ -292,11 +292,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 2695816272160479241, guid: e6d4a0dcd94946e4ca991c6fcd4d6834, type: 3}
       propertyPath: m_AnchoredPosition.x
-      value: -8.3
+      value: 103.4
       objectReference: {fileID: 0}
     - target: {fileID: 2695816272160479241, guid: e6d4a0dcd94946e4ca991c6fcd4d6834, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -20
+      value: -38
       objectReference: {fileID: 0}
     - target: {fileID: 2695816272160479241, guid: e6d4a0dcd94946e4ca991c6fcd4d6834, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
