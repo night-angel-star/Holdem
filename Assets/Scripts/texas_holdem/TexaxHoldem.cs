@@ -11,6 +11,7 @@ using UnityEngine.SceneManagement;
 using System.Globalization;
 using UnityEngine.Windows;
 using UnityEngine.UI;
+using Unity.VisualScripting;
 
 public class TexasHoldem : MonoBehaviour
 {
@@ -45,7 +46,7 @@ public class TexasHoldem : MonoBehaviour
             string[] rowContents = parseRow(dictionary);
             UnityMainThreadDispatcher.Instance().Enqueue(() =>
             {
-                AddRowToTable(rowContents, index);
+                AddRowToTable(rowContents, Int32.Parse(dictionary["id"].ToString()));
             });
         }
 
@@ -74,9 +75,66 @@ public class TexasHoldem : MonoBehaviour
         return output;
     }
 
-    private void JoinHandler(int index)
+    private void JoinHandler(int roomIndex)
     {
-        Debug.Log(index);
+        Dictionary<string, object> token = (Dictionary<string, object>)Globals.token;
+        string uid = token["uid"].ToString();
+        int pin = Int32.Parse(token["pin"].ToString());
+        var data = new
+        {
+            uid = uid,
+            pin = pin,
+            f = "entergame",
+            args = new
+            {
+                is_new = "old",
+                id = roomIndex
+            }
+        };
+        Globals.socketIoConnection.SendRpc(data, OnJoinResponse);
+    }
+
+    private void OnJoinResponse(JToken jsonResponse)
+    {
+        string errorString = "";
+        Dictionary<string, object> res = JsonResponse.ToDictionary(jsonResponse);
+
+        do
+        {
+            if (res == null)
+            {
+                errorString = "Invalid response";
+                break;
+            }
+            int err = res["err"].ConvertTo<int>();
+            if (err != 0)
+            {
+                if (!res.ContainsKey("ret"))
+                {
+                    errorString = "Invalid response";
+                    break;
+                }
+                errorString = res["ret"].ToString();
+                break;
+            }
+            if (!res.ContainsKey("ret"))
+            {
+                errorString = "Invalid response";
+                break;
+            }
+            Dictionary<string, object> ret = JsonResponse.ToDictionary(res["ret"]);
+            if (ret == null)
+            {
+                errorString = "Invalid response";
+                break;
+            }
+
+            UnityMainThreadDispatcher.Instance().Enqueue(() =>
+            {
+                SceneManager.LoadScene("Room");
+            });
+            return;
+        } while (false);
     }
 
     public void AddRowToTable(string[] rowElements, int index)
@@ -91,7 +149,7 @@ public class TexasHoldem : MonoBehaviour
         cellObject.transform.SetParent(newRow.Cells[5].transform);
         cellObject.transform.localScale = Vector3.one;
 
-        GameObject instantiatedButton = Instantiate(joinButtonPrefab, newRow.Cells[5].transform);
+        GameObject instantiatedButton = Instantiate(joinButtonPrefab, cellObject.transform);
         instantiatedButton.transform.localScale = Vector3.one;
 
         Button button = instantiatedButton.GetComponent<Button>();
