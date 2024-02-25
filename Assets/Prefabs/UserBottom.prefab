@@ -339,7 +339,7 @@ PrefabInstance:
     m_Modifications:
     - target: {fileID: 2043114915303167582, guid: f8c78956319759947b83dcc831f02ca4, type: 3}
       propertyPath: m_Name
-      value: AvatarUser
+      value: Avatar
       objectReference: {fileID: 0}
     - target: {fileID: 5309900361122207918, guid: f8c78956319759947b83dcc831f02ca4, type: 3}
       propertyPath: m_Pivot.x
