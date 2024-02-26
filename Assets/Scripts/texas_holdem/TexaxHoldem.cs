@@ -1,6 +1,5 @@
 using UnityEngine;
 using UI.Tables;
-using TMPro;
 using System.Collections.Generic;
 using Newtonsoft.Json.Linq;
 using System.Collections;
@@ -9,7 +8,6 @@ using Newtonsoft.Json;
 using System;
 using UnityEngine.SceneManagement;
 using System.Globalization;
-using UnityEngine.Windows;
 using UnityEngine.UI;
 using Unity.VisualScripting;
 
