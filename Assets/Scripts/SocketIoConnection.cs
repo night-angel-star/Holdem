@@ -22,7 +22,7 @@ public class SocketIoConnection
     {
         // Hello Handshack
         socketIoUnity.On("hello", (data) => {
-            Debug.Log("Hello");
+            // Debug.Log("Hello");
             socketIoUnity.Emit("hello");
         });
         socketIoUnity.On("notify", OnNotify);
@@ -96,21 +96,41 @@ public class SocketIoConnection
                         _rpcEventHandlers.Remove(seq);
                         _rpcEventTimes.Remove(seq);
                     }
-                }
+                } 
             }
         }
     }
     private void OnRpcRet(SocketIOResponse response)
     {
-        Debug.Log("rpc_ret");
-        Debug.Log(response);
+        // Debug.Log("rpc_ret");
+        // Debug.Log(response);
         ProcessRpcRet(response);
 
     }
-    private void OnNotify(SocketIOResponse data)
+    private void OnNotify(SocketIOResponse response)
     {
-        Debug.Log("notify");
-        Debug.Log(data);
+        IEnumerable e = JsonConvert.DeserializeObject(response.ToString()) as IEnumerable;
+        object[] responseArray = e.Cast<object>().ToArray();
+        if (responseArray != null)
+        {
+            for (int i = 0; i < responseArray.Length; i++)
+            {
+                JContainer jContainer = (JContainer)responseArray[i];
+                if (jContainer == null)
+                {
+                    Debug.Log("Invalid rpc response (JContainer): " + responseArray[i].ToString());
+                    continue;
+                }
+                JToken jToken = jContainer.SelectToken("e");
+                if (jToken == null)
+                {
+                    Debug.Log("Invalid rpc response (jToken): " + jContainer.ToString());
+                    continue;
+                }
+                string eventType = jToken.Value<string>();
+                Debug.Log(eventType);
+            }
+        }
     }
 
     public void SendRpc(object data, Action<JToken> callback, bool oneTime=true)

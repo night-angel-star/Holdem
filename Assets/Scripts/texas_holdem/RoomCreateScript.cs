@@ -90,6 +90,7 @@ public class RoomCreateScript : MonoBehaviour
                 pin = pin,
                 args = new
                 {
+                    is_new = "new",
                     type = "limit",
                     room_name = RoomNameInput.text,
                     seat = seatSelectManager.GetComponent<SelectManager>().currentActive,
