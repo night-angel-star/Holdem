@@ -133,12 +133,15 @@ public class SocketIoConnection
                 switch (eventType)
                 {
                     case "look":
+                        JContainer argsContainerForLook = (JContainer)jContainer.SelectToken("args");
+                        JToken whereJToken = argsContainerForLook.SelectToken("id");
+                        int roomIndex = Array.IndexOf(Globals.roomIdArray, -1);
+                        Globals.roomIdArray[roomIndex] = Int32.Parse(whereJToken.Value<int>().ToString());
+                        Globals.rooms[roomIndex] = argsContainerForLook.ToObject<Dictionary<string, object>>();
+                        Debug.Log(Globals.rooms);
                         break;
                     case "enter":
-                        JContainer argsContainer = (JContainer)jContainer.SelectToken("args");
-                        JToken whereJToken = argsContainer.SelectToken("where");
-                        int roomIndex = Array.IndexOf(Globals.rooms, -1);
-                        Globals.rooms[roomIndex] = Int32.Parse(whereJToken.Value<int>().ToString());
+                        JContainer argsContainerForEnter = (JContainer)jContainer.SelectToken("args");
                         break;
 
                     default:
