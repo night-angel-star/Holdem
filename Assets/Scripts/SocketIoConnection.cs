@@ -130,18 +130,44 @@ public class SocketIoConnection
                 string eventType = eventJToken.Value<string>();
                 Debug.Log(eventType);
                 Debug.Log(response);
+                JContainer argsContainer = null;
+                int roomId = -1;
+                int seatId = -1;
+                int roomArrayIndex = -1;
                 switch (eventType)
                 {
                     case "look":
-                        JContainer argsContainerForLook = (JContainer)jContainer.SelectToken("args");
-                        JToken whereJToken = argsContainerForLook.SelectToken("id");
-                        int roomIndex = Array.IndexOf(Globals.roomIdArray, -1);
-                        Globals.roomIdArray[roomIndex] = Int32.Parse(whereJToken.Value<int>().ToString());
-                        Globals.rooms[roomIndex] = argsContainerForLook.ToObject<Dictionary<string, object>>();
-                        Debug.Log(Globals.rooms);
+                        argsContainer = (JContainer)jContainer.SelectToken("args");
+                        roomId = argsContainer.SelectToken("id").Value<int>();
+                        roomArrayIndex = Array.IndexOf(Globals.roomIdArray, -1);
+                        Globals.roomIdArray[roomArrayIndex] = roomId;
+                        Globals.rooms[roomArrayIndex] = argsContainer.ToObject<Dictionary<string, object>>();
                         break;
                     case "enter":
-                        JContainer argsContainerForEnter = (JContainer)jContainer.SelectToken("args");
+                        argsContainer = (JContainer)jContainer.SelectToken("args");
+                        roomId = argsContainer.SelectToken("where").Value<int>();
+                        roomArrayIndex = Array.IndexOf(Globals.roomIdArray, roomId);
+                        break;
+                    case "takeseat":
+                        argsContainer = (JContainer)jContainer.SelectToken("args");
+                        seatId = argsContainer.SelectToken("where").Value<int>();
+                        string seatedUserid = argsContainer.SelectToken("uid").Value<string>();
+                        break;
+                    case "ready":
+                        break;
+                    case "drop":
+                        break;
+                    case "seecard":
+                        break;
+                    case "moveturn":
+                        break;
+                    case "countdown":
+                        break;
+                    case "fold":
+                        break;
+                    case "gameover":
+                        break;
+                    case "leave":
                         break;
 
                     default:

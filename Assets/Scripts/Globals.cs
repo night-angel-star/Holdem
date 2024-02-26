@@ -16,6 +16,19 @@ public static class Globals
     public static object token;
     public static int[] roomIdArray = { -1, -1, -1 };
     public static Dictionary<string, object>[] rooms = { null, null, null };
+    public static Dictionary<string, object> myRoom =
+    new Dictionary<string, object>
+    {
+        { "id", -1 },
+        { "leave", null },
+        { "ready", null },
+        { "unseat", null },
+        { "fold", null },
+        { "raise", null },
+        { "call", null },
+        { "check", null },
+        { "takeseat", null },
+    };
     public static string strUri = "http://192.168.148.182:3000";
 
 }
