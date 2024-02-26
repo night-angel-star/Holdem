@@ -102,8 +102,8 @@ public class SocketIoConnection
     }
     private void OnRpcRet(SocketIOResponse response)
     {
-        // Debug.Log("rpc_ret");
-        // Debug.Log(response);
+        Debug.Log("rpc_ret");
+        Debug.Log(response);
         ProcessRpcRet(response);
 
     }
@@ -121,14 +121,29 @@ public class SocketIoConnection
                     Debug.Log("Invalid rpc response (JContainer): " + responseArray[i].ToString());
                     continue;
                 }
-                JToken jToken = jContainer.SelectToken("e");
-                if (jToken == null)
+                JToken eventJToken = jContainer.SelectToken("e");
+                if (eventJToken == null)
                 {
                     Debug.Log("Invalid rpc response (jToken): " + jContainer.ToString());
                     continue;
                 }
-                string eventType = jToken.Value<string>();
+                string eventType = eventJToken.Value<string>();
                 Debug.Log(eventType);
+                Debug.Log(response);
+                switch (eventType)
+                {
+                    case "look":
+                        break;
+                    case "enter":
+                        JContainer argsContainer = (JContainer)jContainer.SelectToken("args");
+                        JToken whereJToken = argsContainer.SelectToken("where");
+                        int roomIndex = Array.IndexOf(Globals.rooms, -1);
+                        Globals.rooms[roomIndex] = Int32.Parse(whereJToken.Value<int>().ToString());
+                        break;
+
+                    default:
+                        break;
+                }
             }
         }
     }
