@@ -138,7 +138,6 @@ public class SocketIoConnection
                         int roomIndex = Array.IndexOf(Globals.roomIdArray, -1);
                         Globals.roomIdArray[roomIndex] = Int32.Parse(whereJToken.Value<int>().ToString());
                         Globals.rooms[roomIndex] = argsContainerForLook.ToObject<Dictionary<string, object>>();
-                        Debug.Log(Globals.rooms);
                         break;
                     case "enter":
                         JContainer argsContainerForEnter = (JContainer)jContainer.SelectToken("args");
