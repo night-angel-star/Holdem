@@ -19,6 +19,7 @@ public class GameBehavior : MonoBehaviour
     public GameObject chipMaxBuyLimitObject;
     public Slider chipsSliderObject;
     public GameObject publicCardArea;
+    public GameObject sitToSeatArea;
 
     public string roomName = "ROOM-1";
     public int chipsMinBuy = 25;
@@ -26,6 +27,12 @@ public class GameBehavior : MonoBehaviour
     public int[] myCardsNumber = new int[] { 53, 18 };
     public Dictionary<string, string>[] usersInfo;
     public int[] openedCards = new int[] { };
+
+    public int sitPosition = -1;
+
+    public int currentActiveUser = -1;
+    public int currentTimeout = 30;
+    public int totalTime = 30;
 
     void Start()
     {
@@ -35,12 +42,17 @@ public class GameBehavior : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        GetMyCard(myCardsNumber);
+        if (sitPosition != -1)
+        {
+            GetMyCard(myCardsNumber);
+        }
+        
         makeFakeData();
         SetUserInfo();
         SetRoomName();
         InitializeAddChipsModal();
         SetPublicCards();
+        SetTimer();
     }
 
     private void OnRpcResponse(JToken jsonResponse)
@@ -71,10 +83,10 @@ public class GameBehavior : MonoBehaviour
         string user3WalletChips = "12323";
         string user3Chips = "12323";
 
-        string user4AvatarIndex = "3";
-        string user4Name = "CHARLIE4";
-        string user4WalletChips = "12323";
-        string user4Chips = "12323";
+        //string user4AvatarIndex = "3";
+        //string user4Name = "CHARLIE4";
+        //string user4WalletChips = "12323";
+        //string user4Chips = "12323";
 
         string user5AvatarIndex = "4";
         string user5Name = "CHARLIE5";
@@ -91,10 +103,10 @@ public class GameBehavior : MonoBehaviour
         string user7WalletChips = "12323";
         string user7Chips = "12323";
 
-        string user8AvatarIndex = "7";
-        string user8Name = "CHARLIE8";
-        string user8WalletChips = "12323";
-        string user8Chips = "12323";
+        //string user8AvatarIndex = "7";
+        //string user8Name = "CHARLIE8";
+        //string user8WalletChips = "12323";
+        //string user8Chips = "12323";
 
         string user9AvatarIndex = "8";
         string user9Name = "CHARLIE9";
@@ -164,39 +176,117 @@ public class GameBehavior : MonoBehaviour
 
     void SetUserInfo()
     {
-
-        GameObject[] usersArray = GameObjectHelper.GetChildren(usersParent);
-        for (int i = 0; i < usersArray.Length; i++)
+        if (sitPosition == -1)
         {
-            if (usersInfo[i].Count!=0)
+            GameObject[] usersArray = GameObjectHelper.GetChildren(usersParent);
+            GameObject[] sitButtons = GameObjectHelper.GetChildren(sitToSeatArea);
+            initalizeUsers(usersArray);
+            initalizeSitButtons(sitButtons);
+            for (int i = 0; i < usersArray.Length; i++)
             {
-                if (i == 0)
+                if (usersInfo[i].Count != 0)
                 {
-                    usersArray[i].transform.GetChild(1).gameObject.SetActive(true);
-                    usersArray[i].transform.GetChild(2).gameObject.SetActive(true);
-                }
-                else
-                {
-                    usersArray[i].transform.GetChild(1).gameObject.SetActive(true);
-                    usersArray[i].transform.GetChild(2).gameObject.SetActive(true);
-                    usersArray[i].transform.GetChild(3).gameObject.SetActive(true);
-                }
-                GameObject avatar = usersArray[i].transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.transform.GetChild(1).gameObject;
-                avatar.GetComponent<SpriteRenderer>().sprite = AvatarHelper.GetAvatar(usersInfo[i]["avatar"]);
-                GameObject name = usersArray[i].transform.GetChild(1).gameObject.transform.GetChild(1).gameObject.transform.GetChild(1).gameObject;
-                name.GetComponent<TMP_Text>().text = usersInfo[i]["name"];
-                GameObject wallet_money = usersArray[i].transform.GetChild(1).gameObject.transform.GetChild(1).gameObject.transform.GetChild(2).gameObject;
-                wallet_money.GetComponent<TMP_Text>().text = usersInfo[i]["walletChips"] + " ₮";
-                if (i == 0)
-                {
+                    
+                    if (i == 0)
+                    {
+                        usersArray[i].transform.GetChild(1).gameObject.SetActive(true);
+                        //usersArray[i].transform.GetChild(2).gameObject.SetActive(true);
+                    }
+                    else
+                    {
+                        usersArray[i].transform.GetChild(1).gameObject.SetActive(true);
+                        //usersArray[i].transform.GetChild(2).gameObject.SetActive(true);
+                        //usersArray[i].transform.GetChild(3).gameObject.SetActive(true);
+                    }
+                    GameObject avatar = usersArray[i].transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.transform.GetChild(1).gameObject;
+                    avatar.GetComponent<SpriteRenderer>().sprite = AvatarHelper.GetAvatar(usersInfo[i]["avatar"]);
+                    GameObject name = usersArray[i].transform.GetChild(1).gameObject.transform.GetChild(1).gameObject.transform.GetChild(1).gameObject;
+                    name.GetComponent<TMP_Text>().text = usersInfo[i]["name"];
+                    //GameObject wallet_money = usersArray[i].transform.GetChild(1).gameObject.transform.GetChild(1).gameObject.transform.GetChild(2).gameObject;
+                    //wallet_money.GetComponent<TMP_Text>().text = usersInfo[i]["walletChips"] + " ₮";
+                    if (i == 0)
+                    {
 
+                    }
+                    else
+                    {
+                        //GameObject money = usersArray[i].transform.GetChild(3).gameObject.transform.GetChild(1).gameObject;
+                        //money.GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated(long.Parse(usersInfo[i]["chips"]));
+                    }
                 }
                 else
                 {
-                    GameObject money = usersArray[i].transform.GetChild(3).gameObject.transform.GetChild(1).gameObject;
-                    money.GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated(long.Parse(usersInfo[i]["chips"]));
+                    sitButtons[i].SetActive(true);
                 }
             }
+        }
+        else
+        {
+            GameObject[] usersArray = GameObjectHelper.GetChildren(usersParent);
+            GameObject[] sitButtons = GameObjectHelper.GetChildren(sitToSeatArea);
+            Dictionary<string, string>[] rotatedUserInfo = ArrayHelper.RotateArray(usersInfo, sitPosition);
+            initalizeUsers(usersArray);
+            initalizeSitButtons(sitButtons);
+            for (int i = 0; i < usersArray.Length; i++)
+            {
+                if (rotatedUserInfo[i].Count != 0)
+                {
+                    
+                    if (i == 0)
+                    {
+                        usersArray[i].transform.GetChild(1).gameObject.SetActive(true);
+                        usersArray[i].transform.GetChild(2).gameObject.SetActive(true);
+                    }
+                    else
+                    {
+                        usersArray[i].transform.GetChild(1).gameObject.SetActive(true);
+                        usersArray[i].transform.GetChild(2).gameObject.SetActive(true);
+                        usersArray[i].transform.GetChild(3).gameObject.SetActive(true);
+                    }
+                    GameObject avatar = usersArray[i].transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.transform.GetChild(1).gameObject;
+                    avatar.GetComponent<SpriteRenderer>().sprite = AvatarHelper.GetAvatar(rotatedUserInfo[i]["avatar"]);
+                    GameObject name = usersArray[i].transform.GetChild(1).gameObject.transform.GetChild(1).gameObject.transform.GetChild(1).gameObject;
+                    name.GetComponent<TMP_Text>().text = rotatedUserInfo[i]["name"];
+                    GameObject wallet_money = usersArray[i].transform.GetChild(1).gameObject.transform.GetChild(1).gameObject.transform.GetChild(2).gameObject;
+                    wallet_money.GetComponent<TMP_Text>().text = rotatedUserInfo[i]["walletChips"] + " ₮";
+                    if (i == 0)
+                    {
+
+                    }
+                    else
+                    {
+                        GameObject money = usersArray[i].transform.GetChild(3).gameObject.transform.GetChild(1).gameObject;
+                        money.GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated(long.Parse(rotatedUserInfo[i]["chips"]));
+                    }
+                }
+            }
+        }
+
+    }
+
+    void initalizeUsers(GameObject[] usersArray)
+    {
+        for(int i = 0; i < usersArray.Length; i++)
+        {
+            if (i == 0)
+            {
+                usersArray[i].transform.GetChild(1).gameObject.SetActive(false);
+                usersArray[i].transform.GetChild(2).gameObject.SetActive(false);
+            }
+            else
+            {
+                usersArray[i].transform.GetChild(1).gameObject.SetActive(false);
+                usersArray[i].transform.GetChild(2).gameObject.SetActive(false);
+                usersArray[i].transform.GetChild(3).gameObject.SetActive(false);
+            }
+        }
+    }
+
+    void initalizeSitButtons(GameObject[] sitButtons)
+    {
+        for(int i=0;i< sitButtons.Length; i++)
+        {
+            sitButtons[i].SetActive(false);
         }
     }
 
@@ -224,7 +314,34 @@ public class GameBehavior : MonoBehaviour
         }
     }
 
-    
+    public void sitToRoom(int index)
+    {
+        sitPosition = index;
+    }
+
+    public void SetTimer()
+    {
+        if (sitPosition != -1)
+        {
+            GameObject[] usersArray = GameObjectHelper.GetChildren(usersParent);
+            Dictionary<string, string>[] rotatedUserInfo = ArrayHelper.RotateArray(usersInfo, sitPosition);
+            int currentActiveUserRotated = ArrayHelper.RotateNumber(currentActiveUser, sitPosition, usersInfo.Length);
+            for (int i = 0; i < rotatedUserInfo.Length; i++)
+            {
+                GameObject progressbar = usersArray[i].transform.GetChild(1).transform.GetChild(2).transform.GetChild(0).gameObject;
+                if (i == currentActiveUserRotated)
+                {
+                    progressbar.GetComponent<Image>().fillAmount = ((float)currentTimeout / totalTime);
+                }
+                else
+                {
+                    progressbar.GetComponent<Image>().fillAmount = 0;
+                }
+            }
+        }
+    }
+
+
 
 
 }
