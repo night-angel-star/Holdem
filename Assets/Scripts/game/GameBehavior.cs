@@ -83,10 +83,10 @@ public class GameBehavior : MonoBehaviour
         string user3WalletChips = "12323";
         string user3Chips = "12323";
 
-        string user4AvatarIndex = "3";
-        string user4Name = "CHARLIE4";
-        string user4WalletChips = "12323";
-        string user4Chips = "12323";
+        //string user4AvatarIndex = "3";
+        //string user4Name = "CHARLIE4";
+        //string user4WalletChips = "12323";
+        //string user4Chips = "12323";
 
         string user5AvatarIndex = "4";
         string user5Name = "CHARLIE5";
@@ -103,10 +103,10 @@ public class GameBehavior : MonoBehaviour
         string user7WalletChips = "12323";
         string user7Chips = "12323";
 
-        string user8AvatarIndex = "7";
-        string user8Name = "CHARLIE8";
-        string user8WalletChips = "12323";
-        string user8Chips = "12323";
+        //string user8AvatarIndex = "7";
+        //string user8Name = "CHARLIE8";
+        //string user8WalletChips = "12323";
+        //string user8Chips = "12323";
 
         string user9AvatarIndex = "8";
         string user9Name = "CHARLIE9";
