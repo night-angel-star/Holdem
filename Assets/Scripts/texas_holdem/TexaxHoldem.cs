@@ -55,13 +55,9 @@ public class TexasHoldem : MonoBehaviour
         string[] rowElements = { };
         Array.Resize(ref rowElements, 5);
         rowElements[0] = convertToTitleCase(data["type"].ToString());
-        //Array.Resize(ref rowElements, rowElements.Length + 1);
         rowElements[1] = convertToTitleCase(data["room_name"].ToString());
-        //Array.Resize(ref rowElements, rowElements.Length + 1);
         rowElements[2] = data["seats_taken"].ToString() + "/" + data["seat"].ToString();
-        //Array.Resize(ref rowElements, rowElements.Length + 1);
         rowElements[3] = data["small_blind"].ToString() + "/" + data["big_blind"].ToString();
-        //Array.Resize(ref rowElements, rowElements.Length + 1);
         rowElements[4] = data["min_buy"].ToString();
         return rowElements;
     }
