@@ -130,30 +130,54 @@ public class SocketIoConnection
                 string eventType = eventJToken.Value<string>();
                 Debug.Log(eventType);
                 Debug.Log(response);
-                JContainer argsContainer = null;
+                JContainer argsContainer = (JContainer)jContainer.SelectToken("args"); ;
                 int roomId = -1;
                 int seatId = -1;
                 int roomArrayIndex = -1;
+                string seatedUserid = null;
+                JObject who = null;
                 switch (eventType)
                 {
                     case "look":
-                        argsContainer = (JContainer)jContainer.SelectToken("args");
                         roomId = argsContainer.SelectToken("id").Value<int>();
                         roomArrayIndex = Array.IndexOf(Globals.roomIdArray, -1);
                         Globals.roomIdArray[roomArrayIndex] = roomId;
                         Globals.rooms[roomArrayIndex] = argsContainer.ToObject<Dictionary<string, object>>();
+                        Globals.myRoom["id"] = roomId;
                         break;
                     case "enter":
-                        argsContainer = (JContainer)jContainer.SelectToken("args");
                         roomId = argsContainer.SelectToken("where").Value<int>();
+                        who = JObject.Parse(argsContainer.SelectToken("who").Value<object>().ToString());
                         roomArrayIndex = Array.IndexOf(Globals.roomIdArray, roomId);
+                        JObject gamers = (JObject)Globals.rooms[roomArrayIndex]["gamers"];
+                        try
+                        {
+                            gamers.Add(who["uid"].ToString(), (JToken)who);
+                        } catch(Exception)
+                        {
+                            break;
+                        }
+                        Globals.rooms[roomArrayIndex]["gamers"] = gamers;
                         break;
                     case "takeseat":
-                        argsContainer = (JContainer)jContainer.SelectToken("args");
                         seatId = argsContainer.SelectToken("where").Value<int>();
-                        string seatedUserid = argsContainer.SelectToken("uid").Value<string>();
+                        seatedUserid = argsContainer.SelectToken("uid").Value<object>().ToString();
+                        roomArrayIndex = Array.IndexOf(Globals.roomIdArray, Globals.myRoom["id"]);
+                        JArray seats = (JArray)Globals.rooms[roomArrayIndex]["seats"];
+                        seats[seatId] = seatedUserid;
+                        Globals.rooms[roomArrayIndex]["seats"] = seats;
                         break;
                     case "ready":
+                        seatedUserid = argsContainer.SelectToken("uid").Value<object>().ToString();
+                        seatId = argsContainer.SelectToken("where").Value<int>();
+                        Debug.Log(seatedUserid + " is ready in seat "+ seatId);
+                        break;
+                    case "gamestart":
+                        Dictionary<string, object> startedRoom = argsContainer.SelectToken("room").Value<Dictionary<string, object>>();
+                        int startedRoomId = Int32.Parse(startedRoom["id"].ToString());
+                        roomArrayIndex = Array.IndexOf(Globals.roomIdArray, startedRoomId);
+                        break;
+                    case "deal":
                         break;
                     case "drop":
                         break;
