@@ -4527,7 +4527,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 629026123}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1189902638}
+        m_TargetAssemblyTypeName: GameBehavior, Assembly-CSharp
+        m_MethodName: Check
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &629026123
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -6515,7 +6527,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 856442561}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1189902638}
+        m_TargetAssemblyTypeName: GameBehavior, Assembly-CSharp
+        m_MethodName: Call
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &856442561
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -8747,15 +8771,16 @@ MonoBehaviour:
   roomName: ROOM-1
   chipsMinBuy: 25
   chipsMaxBuy: 1000
-  myCardsNumber: 3500000012000000
+  myCardsNumber: 0000000000000000
   openedCards: 
   sitPosition: -1
   currentActiveUser: -1
-  currentTimeout: 30
-  totalTime: 30
+  currentTimeout: 20
+  totalTime: 20
   actionButtonAreaIndex: -1
   currentRoomId: -1
   currentRoomIndex: -1
+  gameStarted: 0
 --- !u!4 &1189902639
 Transform:
   m_ObjectHideFlags: 0
@@ -9907,7 +9932,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1301383336}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1189902638}
+        m_TargetAssemblyTypeName: GameBehavior, Assembly-CSharp
+        m_MethodName: Raise
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1301383336
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10245,7 +10282,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1316087216}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1189902638}
+        m_TargetAssemblyTypeName: GameBehavior, Assembly-CSharp
+        m_MethodName: Fold
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1316087216
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -11974,7 +12023,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1492736714
 RectTransform:
   m_ObjectHideFlags: 0

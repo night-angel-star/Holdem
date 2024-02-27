@@ -179,6 +179,7 @@ public class SocketIoConnection
                         Dictionary<string, object> roomObject = NewtonSoftHelper.JObjectToObject<string, object>(startedRoom);
                         int startedRoomId = Int32.Parse(roomObject["id"].ToString());
                         roomArrayIndex = Array.IndexOf(Globals.roomIdArray, startedRoomId);
+                        Globals.roomGameStarted[roomArrayIndex] = true;
                         Globals.rooms[roomArrayIndex] = roomObject;
                         break;
                     case "deal":
@@ -186,20 +187,39 @@ public class SocketIoConnection
                     case "drop":
                         break;
                     case "seecard":
-                        int[] myCards = argsContainer.SelectToken("cards").Value<int[]>();
+                        JArray myCardsJArray = argsContainer.SelectToken("cards").Value<JArray>();
+                        int[] myCards = NewtonSoftHelper.JArrayToArray<int>(myCardsJArray);
                         roomArrayIndex = Array.IndexOf(Globals.roomIdArray, Globals.myRoom["id"]);
                         Globals.rooms[roomArrayIndex].Add("myCards", myCards);
 
                         break;
                     case "moveturn":
+                        roomArrayIndex = Array.IndexOf(Globals.roomIdArray, Globals.myRoom["id"]);
+                        Globals.rooms[roomArrayIndex]["countDownSec"] = (object)0;
                         break;
                     case "countdown":
                         int countDownRoomId = argsContainer.SelectToken("roomid").Value<int>();
                         int countDownActiveUserIndex = argsContainer.SelectToken("seat").Value<int>();
                         int countDownSec = argsContainer.SelectToken("sec").Value<int> ();
                         roomArrayIndex = Array.IndexOf(Globals.roomIdArray, countDownRoomId);
-                        Globals.rooms[roomArrayIndex].Add("activeUserIndex", countDownActiveUserIndex);
-                        Globals.rooms[roomArrayIndex].Add("countDownSec", countDownSec);
+
+                        if (Globals.rooms[roomArrayIndex].ContainsKey("activeUserIndex"))
+                        {
+                            Globals.rooms[roomArrayIndex]["activeUserIndex"] = (object)countDownActiveUserIndex;
+                        }
+                        else
+                        {
+                            Globals.rooms[roomArrayIndex].Add("activeUserIndex", (object)countDownActiveUserIndex);
+                        }
+
+                        if (Globals.rooms[roomArrayIndex].ContainsKey("countDownSec"))
+                        {
+                            Globals.rooms[roomArrayIndex]["countDownSec"] = (object)countDownSec;
+                        }
+                        else
+                        {
+                            Globals.rooms[roomArrayIndex].Add("countDownSec", (object)countDownSec);
+                        }
                         break;
                     case "fold":
                         break;
