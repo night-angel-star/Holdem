@@ -23,6 +23,7 @@ public class GameBehavior : MonoBehaviour
     public Slider chipsSliderObject;
     public GameObject publicCardArea;
     public GameObject sitToSeatArea;
+    public GameObject ActionArea;
 
     public string roomName;
     public int chipsMinBuy;
@@ -304,6 +305,7 @@ public class GameBehavior : MonoBehaviour
                 break;
             }
             Globals.myRoom["ready"] = true;
+            sitPosition = sitPositionTemp;
             return;
         } while (false);
     }
@@ -348,6 +350,12 @@ public class GameBehavior : MonoBehaviour
                 }
             }
         }
+    }
+
+    public void actionArea(int index)
+    {
+        GameObject[] actionButtonGroup = GameObjectHelper.GetChildren(ActionArea);
+
     }
 
 
