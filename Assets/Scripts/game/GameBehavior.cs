@@ -334,7 +334,7 @@ public class GameBehavior : MonoBehaviour
 
     private void OnReadyResponse(JToken jsonResponse)
     {
-        
+        Globals.myRoom["ready"] = null;
     }
 
     public void SetTimer()

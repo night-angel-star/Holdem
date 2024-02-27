@@ -202,6 +202,10 @@ public class SocketIoConnection
                     case "gameover":
                         break;
                     case "leave":
+                        roomId = argsContainer.SelectToken("where").Value<int>();
+                        int roomIndex = Array.IndexOf(Globals.roomIdArray, roomId);
+                        //string[] seatArray = NewtonSoftHelper.JArrayToArray<string>(Globals.rooms[roomIndex]["seats"]);
+                        //Dictionary<string, object> gamersObject = NewtonSoftHelper.JArrayToObject<string, object>(Globals.rooms[roomIndex]["gamers"]);
                         break;
 
                     default:
