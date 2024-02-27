@@ -8743,6 +8743,7 @@ MonoBehaviour:
   chipsSliderObject: {fileID: 2098966995}
   publicCardArea: {fileID: 385525405}
   sitToSeatArea: {fileID: 1398504375}
+  ActionButtonsArea: {fileID: 1792248560}
   roomName: ROOM-1
   chipsMinBuy: 25
   chipsMaxBuy: 1000
@@ -8752,6 +8753,9 @@ MonoBehaviour:
   currentActiveUser: -1
   currentTimeout: 30
   totalTime: 30
+  actionButtonAreaIndex: -1
+  currentRoomId: -1
+  currentRoomIndex: -1
 --- !u!4 &1189902639
 Transform:
   m_ObjectHideFlags: 0
