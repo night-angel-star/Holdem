@@ -30,18 +30,19 @@ public class GameBehavior : MonoBehaviour
     public int chipsMaxBuy;
     public int[] myCardsNumber;
     public Dictionary<string, string>[] usersInfo;
-    public int[] openedCards;
+    public int[] openedCards=new int[] { 0, 0 };
 
     public int sitPosition;
     private int sitPositionTemp;
 
     public int currentActiveUser;
     public int currentTimeout;
-    public int totalTime;
+    public int totalTime=20;
 
     public int actionButtonAreaIndex = -1;
     public int currentRoomId = -1;
     public int currentRoomIndex = -1;
+    public bool gameStarted = false;
 
     void Start()
     {
@@ -65,16 +66,6 @@ public class GameBehavior : MonoBehaviour
         SetTimer();
     }
 
-    private void OnRpcResponse(JToken jsonResponse)
-    {
-        if (jsonResponse == null)
-        {
-            return;
-        }
-    }
-    
-
-
     void SetRoomData()
     {
         currentRoomId = int.Parse(Globals.myRoom["id"].ToString());
@@ -86,9 +77,23 @@ public class GameBehavior : MonoBehaviour
         chipsMinBuy = int.Parse(options["min_buy"].ToString());
         chipsMaxBuy = int.Parse(options["limit"].ToString());
 
+        gameStarted = Globals.roomGameStarted[currentRoomIndex];
 
+        if (gameStarted)
+        {
+            try
+            {
+                currentActiveUser = int.Parse(Globals.rooms[currentRoomIndex]["activeUserIndex"].ToString());
+                currentTimeout = int.Parse(Globals.rooms[currentRoomIndex]["countDownSec"].ToString());
+                myCardsNumber = (int[])Globals.rooms[currentRoomIndex]["myCards"];
+                actionButtonAreaIndex = 1;
+            }
+            catch (Exception)
+            {
 
-        
+            }
+            
+        }
 
         //user info
         string[] seats = NewtonSoftHelper.JArrayToArray<string>(Globals.rooms[currentRoomIndex]["seats"]);
@@ -180,13 +185,29 @@ public class GameBehavior : MonoBehaviour
                     if (i == 0)
                     {
                         usersArray[i].transform.GetChild(1).gameObject.SetActive(true);
-                        usersArray[i].transform.GetChild(2).gameObject.SetActive(true);
+                        if (gameStarted)
+                        {
+                            usersArray[i].transform.GetChild(2).gameObject.SetActive(true);
+                        }
+                        else
+                        {
+                            usersArray[i].transform.GetChild(2).gameObject.SetActive(false);
+                        }
                     }
                     else
                     {
                         usersArray[i].transform.GetChild(1).gameObject.SetActive(true);
-                        usersArray[i].transform.GetChild(2).gameObject.SetActive(true);
-                        usersArray[i].transform.GetChild(3).gameObject.SetActive(true);
+                        if (gameStarted)
+                        {
+                            usersArray[i].transform.GetChild(2).gameObject.SetActive(true);
+                            usersArray[i].transform.GetChild(3).gameObject.SetActive(true);
+                        }
+                        else
+                        {
+                            usersArray[i].transform.GetChild(2).gameObject.SetActive(false);
+                            usersArray[i].transform.GetChild(3).gameObject.SetActive(false);
+                        }
+                        
                     }
                     GameObject avatar = usersArray[i].transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.transform.GetChild(1).gameObject;
                     avatar.GetComponent<SpriteRenderer>().sprite = AvatarHelper.GetAvatar(rotatedUserInfo[i]["avatar"]);
@@ -335,6 +356,7 @@ public class GameBehavior : MonoBehaviour
     private void OnReadyResponse(JToken jsonResponse)
     {
         Globals.myRoom["ready"] = null;
+        actionButtonAreaIndex = -1;
     }
 
     public void SetTimer()
@@ -349,7 +371,7 @@ public class GameBehavior : MonoBehaviour
                 GameObject progressbar = usersArray[i].transform.GetChild(1).transform.GetChild(2).transform.GetChild(0).gameObject;
                 if (i == currentActiveUserRotated)
                 {
-                    progressbar.GetComponent<Image>().fillAmount = ((float)currentTimeout / totalTime);
+                    progressbar.GetComponent<Image>().fillAmount = ((float)(20-currentTimeout) / totalTime);
                 }
                 else
                 {
@@ -373,6 +395,26 @@ public class GameBehavior : MonoBehaviour
                 actionButtonGroup[i].SetActive(false);
             }
         }
+    }
+
+    public void Fold()
+    {
+
+    }
+    
+    public void Check()
+    {
+
+    }
+
+    public void Call()
+    {
+
+    }
+
+    public void Raise()
+    {
+
     }
 
 
