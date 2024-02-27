@@ -251,10 +251,10 @@ public class GameBehavior : MonoBehaviour
             f = "takeseat",
             args = index.ToString(),
         };
-        Globals.socketIoConnection.SendRpc(data, OnResponse);
+        Globals.socketIoConnection.SendRpc(data, OnTakeSeatResponse);
     }
 
-    private void OnResponse(JToken jsonResponse)
+    private void OnTakeSeatResponse(JToken jsonResponse)
     {
         string errorString = "";
         Dictionary<string, object> res = JsonResponse.ToDictionary(jsonResponse);
@@ -288,8 +288,29 @@ public class GameBehavior : MonoBehaviour
                 errorString = "Invalid response";
                 break;
             }
+            Globals.myRoom["ready"] = true;
             return;
         } while (false);
+    }
+
+    public void readyForGame()
+    {
+        Dictionary<string, object> token = (Dictionary<string, object>)Globals.token;
+        string uid = token["uid"].ToString();
+        int pin = Int32.Parse(token["pin"].ToString());
+        var data = new
+        {
+            uid = uid,
+            pin = pin,
+            f = "ready",
+            args = "0",
+        };
+        Globals.socketIoConnection.SendRpc(data, OnReadyResponse);
+    }
+
+    private void OnReadyResponse(JToken jsonResponse)
+    {
+        
     }
 
     public void SetTimer()
