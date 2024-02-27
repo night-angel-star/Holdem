@@ -186,10 +186,20 @@ public class SocketIoConnection
                     case "drop":
                         break;
                     case "seecard":
+                        int[] myCards = argsContainer.SelectToken("cards").Value<int[]>();
+                        roomArrayIndex = Array.IndexOf(Globals.roomIdArray, Globals.myRoom["id"]);
+                        Globals.rooms[roomArrayIndex].Add("myCards", myCards);
+
                         break;
                     case "moveturn":
                         break;
                     case "countdown":
+                        int countDownRoomId = argsContainer.SelectToken("roomid").Value<int>();
+                        int countDownActiveUserIndex = argsContainer.SelectToken("seat").Value<int>();
+                        int countDownSec = argsContainer.SelectToken("sec").Value<int> ();
+                        roomArrayIndex = Array.IndexOf(Globals.roomIdArray, countDownRoomId);
+                        Globals.rooms[roomArrayIndex].Add("activeUserIndex", countDownActiveUserIndex);
+                        Globals.rooms[roomArrayIndex].Add("countDownSec", countDownSec);
                         break;
                     case "fold":
                         break;
