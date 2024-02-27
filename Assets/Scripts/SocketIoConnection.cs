@@ -50,7 +50,8 @@ public class SocketIoConnection
             if (!socketIoUnity.Connected)
             {
                 SafeConnect();
-            } else
+            }
+            else
             {
                 return true;
             }
@@ -79,7 +80,7 @@ public class SocketIoConnection
                     Debug.Log("Invalid rpc response (JContainer): " + responseArray[i].ToString());
                     continue;
                 }
-                    
+
                 JToken jToken = jContainer.SelectToken("seq");
                 if (jToken == null)
                 {
@@ -96,7 +97,7 @@ public class SocketIoConnection
                         _rpcEventHandlers.Remove(seq);
                         _rpcEventTimes.Remove(seq);
                     }
-                } 
+                }
             }
         }
     }
@@ -153,7 +154,8 @@ public class SocketIoConnection
                         try
                         {
                             gamers.Add(who["uid"].ToString(), (JToken)who);
-                        } catch(Exception)
+                        }
+                        catch (Exception)
                         {
                             break;
                         }
@@ -170,12 +172,14 @@ public class SocketIoConnection
                     case "ready":
                         seatedUserid = argsContainer.SelectToken("uid").Value<object>().ToString();
                         seatId = argsContainer.SelectToken("where").Value<int>();
-                        Debug.Log(seatedUserid + " is ready in seat "+ seatId);
+                        Debug.Log(seatedUserid + " is ready in seat " + seatId);
                         break;
                     case "gamestart":
-                        Dictionary<string, object> startedRoom = argsContainer.SelectToken("room").Value<Dictionary<string, object>>();
-                        int startedRoomId = Int32.Parse(startedRoom["id"].ToString());
+                        JObject startedRoom = argsContainer.SelectToken("room").Value<object>() as JObject;
+                        Dictionary<string, object> roomObject = NewtonSoftHelper.JObjectToObject<string, object>(startedRoom);
+                        int startedRoomId = Int32.Parse(roomObject["id"].ToString());
                         roomArrayIndex = Array.IndexOf(Globals.roomIdArray, startedRoomId);
+                        Globals.rooms[roomArrayIndex] = roomObject;
                         break;
                     case "deal":
                         break;
@@ -193,9 +197,17 @@ public class SocketIoConnection
                         break;
                     case "leave":
                         roomId = argsContainer.SelectToken("where").Value<int>();
+                        string leaveUserid = argsContainer.SelectToken("uid").Value<object>().ToString();
                         int roomIndex = Array.IndexOf(Globals.roomIdArray, roomId);
-                        //string[] seatArray = NewtonSoftHelper.JArrayToArray<string>(Globals.rooms[roomIndex]["seats"]);
-                        //Dictionary<string, object> gamersObject = NewtonSoftHelper.JArrayToObject<string, object>(Globals.rooms[roomIndex]["gamers"]);
+                        string[] seatArray = NewtonSoftHelper.JArrayToArray<string>(Globals.rooms[roomIndex]["seats"]);
+                        if((seatId = Array.IndexOf(seatArray, leaveUserid)) != -1)
+                        {
+                            seatArray[seatId] = null;
+                        }
+                        Dictionary<string, object> gamersObject = NewtonSoftHelper.JObjectToObject<string, object>(Globals.rooms[roomIndex]["gamers"]);
+                        gamersObject.Remove(leaveUserid);
+                        Globals.rooms[roomIndex]["seats"] = seatArray;
+                        Globals.rooms[roomIndex]["gamers"] = gamersObject;
                         break;
 
                     default:
@@ -205,7 +217,7 @@ public class SocketIoConnection
         }
     }
 
-    public void SendRpc(object data, Action<JToken> callback, bool oneTime=true)
+    public void SendRpc(object data, Action<JToken> callback, bool oneTime = true)
     {
         var req = new ExpandoObject() as IDictionary<string, System.Object>;
         var props = data.GetType().GetProperties();
