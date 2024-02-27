@@ -32,6 +32,7 @@ public class GameBehavior : MonoBehaviour
     public int[] openedCards;
 
     public int sitPosition;
+    private int sitPositionTemp;
 
     public int currentActiveUser;
     public int currentTimeout;
@@ -44,8 +45,11 @@ public class GameBehavior : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        setRoomData();
 
+        //read from global
+        SetRoomData();
+
+        //draw ui
         if (sitPosition != -1)
         {
             GetMyCard(myCardsNumber);
@@ -66,13 +70,24 @@ public class GameBehavior : MonoBehaviour
     }
     
 
-    void setRoomData()
+
+    void SetRoomData()
     {
+        //room info
+        roomName = Globals.rooms[0]["name"] as string;
+        Dictionary<string, object> options = NewtonSoftHelper.JArrayToObject<string, object>(Globals.rooms[0]["options"]);
+        chipsMinBuy = int.Parse(options["min_buy"].ToString());
+        chipsMaxBuy = int.Parse(options["limit"].ToString());
+
+
+
+        
+
+        //user info
         string[] seats = NewtonSoftHelper.JArrayToArray<string>(Globals.rooms[0]["seats"]);
         Dictionary<string,object> gamers=NewtonSoftHelper.JArrayToObject<string,object>(Globals.rooms[0]["gamers"]);
 
         usersInfo = new Dictionary<string, string>[seats.Length];
-        string avatarIndex, name, walletChips,chips;
         for (int i = 0; i < seats.Length; i++)
         {
             usersInfo[i] = new Dictionary<string, string>();
@@ -239,7 +254,7 @@ public class GameBehavior : MonoBehaviour
 
     public void sitToRoom(int index)
     {
-        sitPosition = index;
+        sitPositionTemp = index;
 
         Dictionary<string, object> token = (Dictionary<string, object>)Globals.token;
         string uid = token["uid"].ToString();
