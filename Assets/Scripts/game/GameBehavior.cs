@@ -23,7 +23,7 @@ public class GameBehavior : MonoBehaviour
     public Slider chipsSliderObject;
     public GameObject publicCardArea;
     public GameObject sitToSeatArea;
-    public GameObject ActionArea;
+    public GameObject ActionButtonsArea;
 
     public string roomName;
     public int chipsMinBuy;
@@ -39,9 +39,12 @@ public class GameBehavior : MonoBehaviour
     public int currentTimeout;
     public int totalTime;
 
+    public int actionButtonAreaIndex = -1;
+    public int currentRoomId = -1;
+    public int currentRoomIndex = -1;
+
     void Start()
     {
-
     }
     // Update is called once per frame
     void Update()
@@ -49,7 +52,7 @@ public class GameBehavior : MonoBehaviour
 
         //read from global
         SetRoomData();
-
+        SetActionButtonArea();
         //draw ui
         if (sitPosition != -1)
         {
@@ -74,9 +77,12 @@ public class GameBehavior : MonoBehaviour
 
     void SetRoomData()
     {
+        currentRoomId = int.Parse(Globals.myRoom["id"].ToString());
+
+        currentRoomIndex = NewtonSoftHelper.GetIndexFromJArray(Globals.rooms, "id", currentRoomId.ToString());
         //room info
-        roomName = Globals.rooms[0]["name"] as string;
-        Dictionary<string, object> options = NewtonSoftHelper.JArrayToObject<string, object>(Globals.rooms[0]["options"]);
+        roomName = Globals.rooms[currentRoomIndex]["name"] as string;
+        Dictionary<string, object> options = NewtonSoftHelper.JObjectToObject<string, object>(Globals.rooms[currentRoomIndex]["options"]);
         chipsMinBuy = int.Parse(options["min_buy"].ToString());
         chipsMaxBuy = int.Parse(options["limit"].ToString());
 
@@ -85,8 +91,8 @@ public class GameBehavior : MonoBehaviour
         
 
         //user info
-        string[] seats = NewtonSoftHelper.JArrayToArray<string>(Globals.rooms[0]["seats"]);
-        Dictionary<string,object> gamers=NewtonSoftHelper.JArrayToObject<string,object>(Globals.rooms[0]["gamers"]);
+        string[] seats = NewtonSoftHelper.JArrayToArray<string>(Globals.rooms[currentRoomIndex]["seats"]);
+        Dictionary<string,object> gamers=NewtonSoftHelper.JObjectToObject<string,object>(Globals.rooms[currentRoomIndex]["gamers"]);
 
         usersInfo = new Dictionary<string, string>[seats.Length];
         for (int i = 0; i < seats.Length; i++)
@@ -94,7 +100,7 @@ public class GameBehavior : MonoBehaviour
             usersInfo[i] = new Dictionary<string, string>();
             if (seats[i] != null)
             {
-                Dictionary<string,string> gamer = NewtonSoftHelper.JArrayToObject<string,string>(gamers[seats[i]]);
+                Dictionary<string,string> gamer = NewtonSoftHelper.JObjectToObject<string,string>(gamers[seats[i]]);
                 usersInfo[i].Add("avatar", gamer["avatar"]);
                 usersInfo[i].Add("name", gamer["name"]);
                 usersInfo[i].Add("walletChips", gamer["coins"]);
@@ -306,6 +312,7 @@ public class GameBehavior : MonoBehaviour
             }
             Globals.myRoom["ready"] = true;
             sitPosition = sitPositionTemp;
+            actionButtonAreaIndex = 0;
             return;
         } while (false);
     }
@@ -352,10 +359,20 @@ public class GameBehavior : MonoBehaviour
         }
     }
 
-    public void actionArea(int index)
+    public void SetActionButtonArea()
     {
-        GameObject[] actionButtonGroup = GameObjectHelper.GetChildren(ActionArea);
-
+        GameObject[] actionButtonGroup = GameObjectHelper.GetChildren(ActionButtonsArea);
+        for(int i=0;i<actionButtonGroup.Length;i++)
+        {
+            if (i == actionButtonAreaIndex)
+            {
+                actionButtonGroup[i].SetActive(true);
+            }
+            else
+            {
+                actionButtonGroup[i].SetActive(false);
+            }
+        }
     }
 
 
