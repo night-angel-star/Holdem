@@ -15,6 +15,7 @@ public static class Globals
     public static object profile;
     public static object token;
     public static int[] roomIdArray = { -1, -1, -1 };
+    public static bool[] roomGameStarted = { false, false, false };
     public static Dictionary<string, object>[] rooms = { null, null, null };
     public static Dictionary<string, object> myRoom =
         new Dictionary<string, object>
