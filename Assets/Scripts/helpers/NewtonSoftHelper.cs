@@ -40,7 +40,8 @@ public class NewtonSoftHelper : MonoBehaviour
         int index = -1;
         for(int i = 0; i < array.Length; i++)
         {
-            if (array[i][key].ToString() == value)
+            object idObject = array[i][key];
+            if (idObject.ToString() == value)
             {
                 return i;
             }
