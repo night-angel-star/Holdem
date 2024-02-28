@@ -110,6 +110,7 @@ public class GameBehavior : MonoBehaviour
                 usersInfo[i].Add("name", gamer["name"]);
                 usersInfo[i].Add("walletChips", gamer["coins"]);
                 usersInfo[i].Add("chips", "1200000");
+                usersInfo[i].Add("uid", gamer["uid"]);
             }
         }
 
@@ -130,6 +131,7 @@ public class GameBehavior : MonoBehaviour
         {
             GameObject[] usersArray = GameObjectHelper.GetChildren(usersParent);
             GameObject[] sitButtons = GameObjectHelper.GetChildren(sitToSeatArea);
+            sitPosition=GetSitPosition();
             initalizeUsers(usersArray);
             initalizeSitButtons(sitButtons);
             for (int i = 0; i < usersArray.Length; i++)
@@ -228,6 +230,27 @@ public class GameBehavior : MonoBehaviour
             }
         }
 
+    }
+
+    int GetSitPosition()
+    {
+        int position = -1;
+        Dictionary<string, object> token = NewtonSoftHelper.JObjectToObject<string, object>(Globals.token);
+
+        for(int i = 0; i < usersInfo.Length; i++)
+        {
+            if (usersInfo[i].Count > 0)
+            {
+                if (usersInfo[i]["uid"] == token["uid"].ToString())
+                {
+                    return i;
+                }
+                
+            }
+            
+        }
+
+        return position;
     }
 
     void initalizeUsers(GameObject[] usersArray)
