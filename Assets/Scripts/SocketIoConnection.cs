@@ -210,7 +210,15 @@ public class SocketIoConnection
                     case "drop":
                         break;
                     case "seecard":
-                        roomId = argsContainer.SelectToken("roomid").Value<int>();
+                        try
+                        {
+                            roomId = argsContainer.SelectToken("roomid").Value<int>();
+                        }
+                        catch (Exception)
+                        {
+                            roomId = Globals.currentRoomId;
+                        }
+                        
                         JArray myCardsJArray = argsContainer.SelectToken("cards").Value<JArray>();
                         int[] myCards = NewtonSoftHelper.JArrayToArray<int>(myCardsJArray);
                         roomArrayIndex = Globals.getRoomIndex(roomId);
@@ -222,11 +230,12 @@ public class SocketIoConnection
                         Globals.rooms[roomArrayIndex]["countDownSec"] = (object)0;
                         break;
                     case "countdown":
+                        
                         roomId = argsContainer.SelectToken("roomid").Value<int>();
                         int countDownActiveUserIndex = argsContainer.SelectToken("seat").Value<int>();
                         int countDownSec = argsContainer.SelectToken("sec").Value<int>();
                         roomArrayIndex = Globals.getRoomIndex(roomId);
-
+                        Globals.roomGameStarted[roomArrayIndex] = true;
                         if (Globals.rooms[roomArrayIndex].ContainsKey("activeUserIndex"))
                         {
                             Globals.rooms[roomArrayIndex]["activeUserIndex"] = (object)countDownActiveUserIndex;
