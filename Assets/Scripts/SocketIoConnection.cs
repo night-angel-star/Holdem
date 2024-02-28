@@ -105,8 +105,8 @@ public class SocketIoConnection
     }
     private void OnRpcRet(SocketIOResponse response)
     {
-        Debug.Log("rpc_ret");
-        Debug.Log(response);
+        // Debug.Log("rpc_ret");
+        // Debug.Log(response);
         ProcessRpcRet(response);
 
     }
@@ -131,9 +131,7 @@ public class SocketIoConnection
                     continue;
                 }
                 string eventType = eventJToken.Value<string>();
-                Debug.Log(eventType);
-                Debug.Log(response);
-                JContainer argsContainer = (JContainer)jContainer.SelectToken("args"); ;
+                JContainer argsContainer = (JContainer)jContainer.SelectToken("args"); 
                 int roomId = -1;
                 int seatId = -1;
                 int roomArrayIndex = -1;
@@ -141,6 +139,34 @@ public class SocketIoConnection
                 JObject who = null;
                 switch (eventType)
                 {
+                    case "prompt":
+                        Debug.Log(eventType);
+                        Debug.Log(response);
+                        if (jContainer.SelectToken("roomid") != null)
+                        {
+                            roomId = jContainer.SelectToken("roomid").Value<int>();
+                            roomArrayIndex = Globals.getRoomIndex(roomId);
+                            if (Globals.roomGameStarted[roomArrayIndex])
+                            {
+                                Dictionary<string, object> roomState = Globals.roomStates[roomArrayIndex];
+                                Dictionary<string, object> argsDictionary = argsContainer.ToObject<Dictionary<string, object>>();
+                                List<string> commonKeys = new List<string>();
+
+                                foreach (string key in argsDictionary.Keys)
+                                {
+                                    if (roomState.ContainsKey(key))
+                                    {
+                                        commonKeys.Add(key);
+                                    }
+                                }
+                                foreach (string key in commonKeys)
+                                {
+                                    Globals.roomStates[roomArrayIndex][key] = argsDictionary[key];
+                                }
+                                Debug.Log("Globals.roomStates");
+                            }
+                        }
+                        break;
                     case "relogin":
                         UnityMainThreadDispatcher.Instance().Enqueue(() =>
                         {
@@ -150,23 +176,28 @@ public class SocketIoConnection
                     case "look":
                         roomId = argsContainer.SelectToken("id").Value<int>();
                         roomArrayIndex = Globals.getBlankRoomIndex();
-                        Globals.roomIdArray[roomArrayIndex] = roomId;
-                        Globals.rooms[roomArrayIndex] = argsContainer.ToObject<Dictionary<string, object>>();
-                        Globals.currentRoomIndex = roomArrayIndex;
-                        Globals.roomStates[Globals.currentRoomIndex] =
-                            new Dictionary<string, object>
-                            {
+                        if(Globals.getRoomIndex(roomId) > -1)
+                        {
+                            roomArrayIndex = Globals.getRoomIndex(roomId);
+                            Globals.currentRoomId = roomId;
+                        } else if(roomArrayIndex > -1)
+                        {
+                            Globals.roomIdArray[roomArrayIndex] = roomId;
+                            Globals.rooms[roomArrayIndex] = argsContainer.ToObject<Dictionary<string, object>>();
+                            Globals.currentRoomIndex = roomArrayIndex;
+                            Globals.roomStates[Globals.currentRoomIndex] =
+                                new Dictionary<string, object>
+                                {
                                 { "id", roomId },
-                                { "leave", null },
-                                { "ready", null },
-                                { "unseat", null },
                                 { "fold", null },
-                                { "raise", null },
-                                { "call", null },
                                 { "check", null },
-                                { "takeseat", null },
-                            };
-                        Globals.currentRoomId = roomId;
+                                { "call", null },
+                                { "raise", null },
+                                { "all_in", null },
+                                { "ready", null },
+                                };
+                            Globals.currentRoomId = roomId;
+                        }
                         break;
                     case "enter":
                         roomId = argsContainer.SelectToken("where").Value<int>();
