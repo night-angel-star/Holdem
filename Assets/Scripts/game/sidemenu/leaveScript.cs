@@ -17,7 +17,7 @@ public class leaveScript : MonoBehaviour
         {
             args = "0",
             f = "leave",
-            pin = pin, 
+            pin = pin,
             uid = uid,
         };
         Globals.socketIoConnection.SendRpc(data, OnResponse);
@@ -57,29 +57,24 @@ public class leaveScript : MonoBehaviour
                 errorString = "Invalid response";
                 break;
             }
-            int roomId = Int32.Parse(Globals.myRoom["id"].ToString());
-            int roomIndex = Array.IndexOf(Globals.roomIdArray, roomId);
-            Globals.rooms[roomIndex] = null;
-            Globals.roomIdArray[roomIndex] = -1;
+            Globals.rooms[Globals.currentRoomIndex] = null;
+            Globals.roomIdArray[Globals.currentRoomIndex] = -1;
 
-            Globals.myRoom =
-                new Dictionary<string, object>
-                {
-                    { "id", -1 },
-                    { "leave", null },
-                    { "ready", null },
-                    { "unseat", null },
-                    { "fold", null },
-                    { "raise", null },
-                    { "call", null },
-                    { "check", null },
-                    { "takeseat", null },
-                };
+            Globals.roomStates[Globals.currentRoomIndex] = null;
 
-            UnityMainThreadDispatcher.Instance().Enqueue(() =>
+            Globals.currentRoomIndex = Globals.getActiveRoomIndex();
+
+            if(Globals.currentRoomIndex == -1)
             {
-                SceneManager.LoadScene("TexasHoldem");
-            });
+                UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                {
+                    SceneManager.LoadScene("TexasHoldem");
+                });
+            } else
+            {
+                Globals.currentRoomId = Globals.roomIdArray[Globals.currentRoomIndex];
+                Debug.Log(Globals.roomIdArray);
+            }
             return;
         } while (false);
     }

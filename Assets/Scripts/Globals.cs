@@ -17,19 +17,31 @@ public static class Globals
     public static int[] roomIdArray = { -1, -1, -1 };
     public static bool[] roomGameStarted = { false, false, false };
     public static Dictionary<string, object>[] rooms = { null, null, null };
-    public static Dictionary<string, object> myRoom =
-        new Dictionary<string, object>
-        {
-            { "id", -1 },
-            { "leave", null },
-            { "ready", null },
-            { "unseat", null },
-            { "fold", null },
-            { "raise", null },
-            { "call", null },
-            { "check", null },
-            { "takeseat", null },
-        };
+    public static Dictionary<string, object>[] roomStates = { null, null, null };
+    public static int currentRoomId = -1;
+    public static int currentRoomIndex = -1;
     public static string strUri = "http://192.168.148.182:3000";
 
+    public static int getBlankRoomIndex()
+    {
+        return Array.IndexOf(roomIdArray, -1);
+    }
+
+    public static int getActiveRoomIndex()
+    {
+        int index = -1;
+        for (int i = 0; i < roomIdArray.Length; i++)
+        {
+            if (roomIdArray[i] != -1)
+            {
+                index = i;
+                break;
+            }
+        }
+        return index;
+    }
+    public static int getRoomIndex(int index)
+    {
+        return Array.IndexOf(roomIdArray, index);
+    }
 }

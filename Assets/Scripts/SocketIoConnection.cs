@@ -9,6 +9,7 @@ using Newtonsoft.Json.Linq;
 using System.Linq;
 using System.Dynamic;
 using static UnityEditor.Progress;
+using UnityEngine.SceneManagement;
 
 public class SocketIoConnection
 {
@@ -21,7 +22,8 @@ public class SocketIoConnection
     private bool SafeConnect()
     {
         // Hello Handshack
-        socketIoUnity.On("hello", (data) => {
+        socketIoUnity.On("hello", (data) =>
+        {
             // Debug.Log("Hello");
             socketIoUnity.Emit("hello");
         });
@@ -139,17 +141,37 @@ public class SocketIoConnection
                 JObject who = null;
                 switch (eventType)
                 {
+                    case "relogin":
+                        UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                        {
+                            SceneManager.LoadScene("Room");
+                        });
+                        break;
                     case "look":
                         roomId = argsContainer.SelectToken("id").Value<int>();
-                        roomArrayIndex = Array.IndexOf(Globals.roomIdArray, -1);
+                        roomArrayIndex = Globals.getBlankRoomIndex();
                         Globals.roomIdArray[roomArrayIndex] = roomId;
                         Globals.rooms[roomArrayIndex] = argsContainer.ToObject<Dictionary<string, object>>();
-                        Globals.myRoom["id"] = roomId;
+                        Globals.currentRoomIndex = roomArrayIndex;
+                        Globals.roomStates[Globals.currentRoomIndex] =
+                            new Dictionary<string, object>
+                            {
+                                { "id", roomId },
+                                { "leave", null },
+                                { "ready", null },
+                                { "unseat", null },
+                                { "fold", null },
+                                { "raise", null },
+                                { "call", null },
+                                { "check", null },
+                                { "takeseat", null },
+                            };
+                        Globals.currentRoomId = roomId;
                         break;
                     case "enter":
                         roomId = argsContainer.SelectToken("where").Value<int>();
                         who = JObject.Parse(argsContainer.SelectToken("who").Value<object>().ToString());
-                        roomArrayIndex = Array.IndexOf(Globals.roomIdArray, roomId);
+                        roomArrayIndex = Globals.getRoomIndex(roomId);
                         JObject gamers = (JObject)Globals.rooms[roomArrayIndex]["gamers"];
                         try
                         {
@@ -163,8 +185,9 @@ public class SocketIoConnection
                         break;
                     case "takeseat":
                         seatId = argsContainer.SelectToken("where").Value<int>();
+                        roomId = argsContainer.SelectToken("roomid").Value<int>();
                         seatedUserid = argsContainer.SelectToken("uid").Value<object>().ToString();
-                        roomArrayIndex = Array.IndexOf(Globals.roomIdArray, Globals.myRoom["id"]);
+                        roomArrayIndex = Globals.getRoomIndex(roomId);
                         JArray seats = (JArray)Globals.rooms[roomArrayIndex]["seats"];
                         seats[seatId] = seatedUserid;
                         Globals.rooms[roomArrayIndex]["seats"] = seats;
@@ -187,21 +210,22 @@ public class SocketIoConnection
                     case "drop":
                         break;
                     case "seecard":
+                        roomId = argsContainer.SelectToken("roomid").Value<int>();
                         JArray myCardsJArray = argsContainer.SelectToken("cards").Value<JArray>();
                         int[] myCards = NewtonSoftHelper.JArrayToArray<int>(myCardsJArray);
-                        roomArrayIndex = Array.IndexOf(Globals.roomIdArray, Globals.myRoom["id"]);
+                        roomArrayIndex = Globals.getRoomIndex(roomId);
                         Globals.rooms[roomArrayIndex].Add("myCards", myCards);
-
                         break;
                     case "moveturn":
-                        roomArrayIndex = Array.IndexOf(Globals.roomIdArray, Globals.myRoom["id"]);
+                        roomId = argsContainer.SelectToken("roomid").Value<int>();
+                        roomArrayIndex = Globals.getRoomIndex(roomId);
                         Globals.rooms[roomArrayIndex]["countDownSec"] = (object)0;
                         break;
                     case "countdown":
-                        int countDownRoomId = argsContainer.SelectToken("roomid").Value<int>();
+                        roomId = argsContainer.SelectToken("roomid").Value<int>();
                         int countDownActiveUserIndex = argsContainer.SelectToken("seat").Value<int>();
-                        int countDownSec = argsContainer.SelectToken("sec").Value<int> ();
-                        roomArrayIndex = Array.IndexOf(Globals.roomIdArray, countDownRoomId);
+                        int countDownSec = argsContainer.SelectToken("sec").Value<int>();
+                        roomArrayIndex = Globals.getRoomIndex(roomId);
 
                         if (Globals.rooms[roomArrayIndex].ContainsKey("activeUserIndex"))
                         {
@@ -228,9 +252,9 @@ public class SocketIoConnection
                     case "leave":
                         roomId = argsContainer.SelectToken("where").Value<int>();
                         string leaveUserid = argsContainer.SelectToken("uid").Value<object>().ToString();
-                        int roomIndex = Array.IndexOf(Globals.roomIdArray, roomId);
+                        int roomIndex = Globals.getRoomIndex(roomId);
                         string[] seatArray = NewtonSoftHelper.JArrayToArray<string>(Globals.rooms[roomIndex]["seats"]);
-                        if((seatId = Array.IndexOf(seatArray, leaveUserid)) != -1)
+                        if ((seatId = Array.IndexOf(seatArray, leaveUserid)) != -1)
                         {
                             seatArray[seatId] = null;
                         }
