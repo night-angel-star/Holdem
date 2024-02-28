@@ -44,6 +44,10 @@ public class GameBehavior : MonoBehaviour
     public int currentRoomIndex = -1;
     public bool gameStarted = false;
 
+    public bool sitOutNextHandButtonEnabled = false;
+    public bool sitOutNextBigBlindButtonEnabled = false;
+    public bool callAnyButtonEnabled = false;
+
     void Start()
     {
     }
@@ -86,7 +90,15 @@ public class GameBehavior : MonoBehaviour
                 currentActiveUser = int.Parse(Globals.rooms[currentRoomIndex]["activeUserIndex"].ToString());
                 currentTimeout = int.Parse(Globals.rooms[currentRoomIndex]["countDownSec"].ToString());
                 myCardsNumber = (int[])Globals.rooms[currentRoomIndex]["myCards"];
-                actionButtonAreaIndex = 1;
+                if (sitPosition == currentActiveUser)
+                {
+                    actionButtonAreaIndex = 1;
+                }
+                else
+                {
+                    actionButtonAreaIndex = 2;
+                }
+                
             }
             catch (Exception)
             {
@@ -110,6 +122,7 @@ public class GameBehavior : MonoBehaviour
                 usersInfo[i].Add("name", gamer["name"]);
                 usersInfo[i].Add("walletChips", gamer["coins"]);
                 usersInfo[i].Add("chips", "1200000");
+                usersInfo[i].Add("uid", gamer["uid"]);
             }
         }
 
@@ -130,6 +143,7 @@ public class GameBehavior : MonoBehaviour
         {
             GameObject[] usersArray = GameObjectHelper.GetChildren(usersParent);
             GameObject[] sitButtons = GameObjectHelper.GetChildren(sitToSeatArea);
+            sitPosition=GetSitPosition();
             initalizeUsers(usersArray);
             initalizeSitButtons(sitButtons);
             for (int i = 0; i < usersArray.Length; i++)
@@ -228,6 +242,27 @@ public class GameBehavior : MonoBehaviour
             }
         }
 
+    }
+
+    int GetSitPosition()
+    {
+        int position = -1;
+        Dictionary<string, object> token = NewtonSoftHelper.JObjectToObject<string, object>(Globals.token);
+
+        for(int i = 0; i < usersInfo.Length; i++)
+        {
+            if (usersInfo[i].Count > 0)
+            {
+                if (usersInfo[i]["uid"] == token["uid"].ToString())
+                {
+                    return i;
+                }
+                
+            }
+            
+        }
+
+        return position;
     }
 
     void initalizeUsers(GameObject[] usersArray)
@@ -415,6 +450,52 @@ public class GameBehavior : MonoBehaviour
     public void Raise()
     {
 
+    }
+
+    public void ToggleSitOutNextHandButton(GameObject button)
+    {
+        if (sitOutNextHandButtonEnabled)
+        {
+            sitOutNextHandButtonEnabled = false;
+            button.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-inactive");
+        }
+        else
+        {
+            sitOutNextHandButtonEnabled = true;
+            button.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-active");
+        }
+    }
+
+    public void ToggleSitOutNextBigBlindButton(GameObject button)
+    {
+        if (sitOutNextBigBlindButtonEnabled)
+        {
+            sitOutNextBigBlindButtonEnabled = false;
+            button.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-inactive");
+
+        }
+        else
+        {
+            sitOutNextBigBlindButtonEnabled= true;
+            button.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-active");
+
+        }
+    }
+
+    public void CallAnyButtonEnabled(GameObject button)
+    {
+        if (callAnyButtonEnabled)
+        {
+            callAnyButtonEnabled = false;
+            button.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-inactive");
+
+        }
+        else
+        {
+            callAnyButtonEnabled = true;
+            button.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-active");
+
+        }
     }
 
 
