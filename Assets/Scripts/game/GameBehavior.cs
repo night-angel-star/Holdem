@@ -86,6 +86,7 @@ public class GameBehavior : MonoBehaviour
         SetRaiseAmounts();
         SetRaiseBar();
         CheckRaiseAmount();
+        SetGamersActionStatus();
     }
 
     void SetRoomData()
@@ -655,6 +656,22 @@ public class GameBehavior : MonoBehaviour
         Debug.Log(addChipValue);
     }
 
+    public void SetGamersActionStatus()
+    {
+        if (gameStarted)
+        {
+            GameObject[] usersArray = GameObjectHelper.GetChildren(usersParent);
+            string[] gamerActionStatus = Globals.gamersActionStates[Globals.currentRoomIndex];
+            string[] rotatedGamerActionStatus = ArrayHelper.RotateArray(gamerActionStatus, sitPosition);
 
+            for (int i = 1; i < usersArray.Length; i++)
+            {
+                if (rotatedGamerActionStatus[i] != null)
+                {
+                    usersArray[i].transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.GetComponent<TMP_Text>().text = rotatedGamerActionStatus[i];
+                }
+            }
+        }
+    }
 
 }
