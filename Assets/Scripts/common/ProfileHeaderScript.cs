@@ -18,7 +18,7 @@ public class ProfileHearderScript : MonoBehaviour
     {
         Dictionary<string, object> profile = (Dictionary<string, object>)Globals.profile;
         UsernameText.text = profile["name"].ToString();
-        CoinText.text = profile["coins"].ToString();
+        CoinText.text = profile["deposite"].ToString();
         Avatar.GetComponent<SpriteRenderer>().sprite = AvatarHelper.GetAvatar(profile["avatar"].ToString());
     }
 

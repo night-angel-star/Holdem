@@ -131,10 +131,6 @@ public class GameBehavior : MonoBehaviour
             usersInfo[i] = new Dictionary<string, object>();
             if (seats[i] != null)
             {
-                // var a = NewtonSoftHelper.JObjectToObject<string, string>(gamers[seats[i]]);
-                // var b = gamers[seats[i]];
-                // Debug.Log(a);
-                // Debug.Log(b);
                 Dictionary<string, object> gamer = NewtonSoftHelper.JObjectToObject<string, object>(gamers[seats[i]]);
                 usersInfo[i].Add("avatar", gamer["avatar"]);
                 usersInfo[i].Add("name", gamer["name"]);
