@@ -28,9 +28,8 @@ public class NewtonSoftHelper : MonoBehaviour
             JObject jObject = jObjectObj as JObject;
             Dictionary<T, U> dic = jObject.ToObject<Dictionary<T, U>>();
             return dic;
-        } catch (Exception ex)
+        } catch (Exception)
         {
-            Debug.Log(ex);
             return (Dictionary<T, U>)jObjectObj;
         }
         
