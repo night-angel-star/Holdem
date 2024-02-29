@@ -26,6 +26,9 @@ public class GameBehavior : MonoBehaviour
     public GameObject publicCardArea;
     public GameObject sitToSeatArea;
     public GameObject ActionButtonsArea;
+    public GameObject raiseModal;
+    public GameObject raiseButton;
+    public GameObject raiseConfirmButton;
 
     public GameObject raiseBar;
     public GameObject raiseBarGradeParent;
@@ -45,9 +48,9 @@ public class GameBehavior : MonoBehaviour
     public int currentTimeout;
     public int totalTime = 20;
 
-    public int minRaise = 10000;
+    public int minRaise = 0;
     public int maxRaise = 70000;
-    public int raiseAmount = 10000;
+    public int raiseAmount = 0;
 
     public int actionButtonAreaIndex = -1;
     public int currentRoomId = -1;
@@ -80,8 +83,10 @@ public class GameBehavior : MonoBehaviour
         SetPublicCards();
         SetTimer();
         SetActionButtonAreaIndexByGlobal();
+        SetRaiseAmounts();
         SetRaiseBar();
         CheckRaiseAmount();
+        SetGamersActionStatus();
     }
 
     void SetRoomData()
@@ -521,19 +526,23 @@ public class GameBehavior : MonoBehaviour
 
     public void Raise()
     {
+        raiseModal.SetActive(true);
+        raiseButton.SetActive(false);
+        raiseConfirmButton.SetActive(true);
+    }
+
+    public void RaiseConfirm()
+    {
         Dictionary<string, object> token = (Dictionary<string, object>)Globals.token;
         string uid = token["uid"].ToString();
         int pin = Int32.Parse(token["pin"].ToString());
-        var amountOfRaiseString = Globals.roomStates[Globals.currentRoomIndex]["raise"].ToString();
-        string pattern = @"\d+"; // Matches one or more digits
-
-        Match match = Regex.Match(amountOfRaiseString, pattern);
+        
         var data = new
         {
             uid = uid,
             pin = pin,
             f = "raise",
-            args = match.Value.ToString(),
+            args = raiseAmount.ToString(),
         };
         Globals.socketIoConnection.SendRpc(data, OnRaiseResponse);
     }
@@ -541,6 +550,9 @@ public class GameBehavior : MonoBehaviour
     private void OnRaiseResponse(JToken jsonResponse)
     {
         Debug.Log("Raise");
+        raiseModal.SetActive(false);
+        raiseButton.SetActive(true);
+        raiseConfirmButton.SetActive(false);
     }
 
     public void ToggleSitOutNextHandButton(GameObject button)
@@ -586,6 +598,16 @@ public class GameBehavior : MonoBehaviour
             callAnyButtonEnabled = true;
             button.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-active");
 
+        }
+    }
+
+    void SetRaiseAmounts()
+    {
+        if (gameStarted)
+        {
+            Dictionary<string, object> options = NewtonSoftHelper.JObjectToObject<string, object>(Globals.rooms[currentRoomIndex]["options"]);
+            minRaise = int.Parse(options["small_blind"].ToString());
+            maxRaise = int.Parse(usersInfo[sitPosition]["walletChips"].ToString());
         }
     }
 
@@ -653,6 +675,22 @@ public class GameBehavior : MonoBehaviour
 
     }
 
+    public void SetGamersActionStatus()
+    {
+        if (gameStarted)
+        {
+            GameObject[] usersArray = GameObjectHelper.GetChildren(usersParent);
+            string[] gamerActionStatus = Globals.gamersActionStates[Globals.currentRoomIndex];
+            string[] rotatedGamerActionStatus = ArrayHelper.RotateArray(gamerActionStatus, sitPosition);
 
+            for (int i = 1; i < usersArray.Length; i++)
+            {
+                if (rotatedGamerActionStatus[i] != null)
+                {
+                    usersArray[i].transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.GetComponent<TMP_Text>().text = rotatedGamerActionStatus[i];
+                }
+            }
+        }
+    }
 
 }
