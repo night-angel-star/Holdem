@@ -195,6 +195,7 @@ public class SocketIoConnection
                                 { "all_in", null },
                                 { "ready", null },
                                 };
+                            Globals.gamersActionStates[roomArrayIndex] = new string[9];
                             Globals.currentRoomId = roomId;
                         }
                         break;
@@ -252,7 +253,6 @@ public class SocketIoConnection
                         Globals.rooms[roomArrayIndex]["countDownSec"] = (object)0;
                         break;
                     case "countdown":
-                        
                         roomId = argsContainer.SelectToken("roomid").Value<int>();
                         int countDownActiveUserIndex = argsContainer.SelectToken("seat").Value<int>();
                         int countDownSec = argsContainer.SelectToken("sec").Value<int>();
@@ -277,13 +277,27 @@ public class SocketIoConnection
                         }
                         break;
                     case "check":
+                        roomId = jContainer.SelectToken("roomid").Value<int>();
+                        roomArrayIndex = Globals.getRoomIndex(roomId);
+                        roomId = jContainer.SelectToken("room").Value<int>();
+                        seatId = argsContainer.SelectToken("seat").Value<int>();
+                        Globals.gamersActionStates[roomArrayIndex][seatId] = "check";
                         break;
                     case "call":
+                        roomId = jContainer.SelectToken("roomid").Value<int>();
+                        roomArrayIndex = Globals.getRoomIndex(roomId);
+                        roomId = jContainer.SelectToken("room").Value<int>();
+                        seatId = argsContainer.SelectToken("seat").Value<int>();
+                        Globals.gamersActionStates[roomArrayIndex][seatId] = "call";
                         break;
                     case "fold":
+                        roomId = jContainer.SelectToken("roomid").Value<int>();
+                        roomArrayIndex = Globals.getRoomIndex(roomId);
+                        roomId = jContainer.SelectToken("room").Value<int>();
+                        seatId = argsContainer.SelectToken("seat").Value<int>();
+                        Globals.gamersActionStates[roomArrayIndex][seatId] = "fold";
                         break;
                     case "gameover":
-                        roomId = jContainer.SelectToken("room").Value<int>();
                         roomArrayIndex = Globals.getRoomIndex(roomId);
                         JObject gamersList = JObject.Parse(Globals.rooms[roomArrayIndex]["gamers"].ToString());
                         foreach (object player in argsContainer)
@@ -309,7 +323,6 @@ public class SocketIoConnection
                         Globals.rooms[roomIndex]["seats"] = seatArray;
                         Globals.rooms[roomIndex]["gamers"] = gamersObject;
                         break;
-
                     default:
                         break;
                 }
