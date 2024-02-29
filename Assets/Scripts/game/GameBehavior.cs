@@ -3,11 +3,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.Windows;
 
 
 public class GameBehavior : MonoBehaviour
@@ -29,7 +31,7 @@ public class GameBehavior : MonoBehaviour
     public int chipsMinBuy;
     public int chipsMaxBuy;
     public int[] myCardsNumber;
-    public Dictionary<string, string>[] usersInfo;
+    public Dictionary<string, object>[] usersInfo;
     public int[] openedCards = new int[] { 0, 0 };
 
     public int sitPosition;
@@ -54,7 +56,7 @@ public class GameBehavior : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
+        
         //read from global
         SetRoomData();
         SetActionButtonArea();
@@ -68,6 +70,7 @@ public class GameBehavior : MonoBehaviour
         InitializeAddChipsModal();
         SetPublicCards();
         SetTimer();
+        SetActionButtonAreaIndexByGlobal();
     }
 
     void SetRoomData()
@@ -111,18 +114,26 @@ public class GameBehavior : MonoBehaviour
         string[] seats = NewtonSoftHelper.JArrayToArray<string>(Globals.rooms[currentRoomIndex]["seats"]);
         Dictionary<string, object> gamers = NewtonSoftHelper.JObjectToObject<string, object>(Globals.rooms[currentRoomIndex]["gamers"]);
 
-        usersInfo = new Dictionary<string, string>[seats.Length];
+        usersInfo = new Dictionary<string, object>[seats.Length];
         for (int i = 0; i < seats.Length; i++)
         {
-            usersInfo[i] = new Dictionary<string, string>();
+            usersInfo[i] = new Dictionary<string, object>();
             if (seats[i] != null)
             {
-                Dictionary<string, string> gamer = NewtonSoftHelper.JObjectToObject<string, string>(gamers[seats[i]]);
+                // var a = NewtonSoftHelper.JObjectToObject<string, string>(gamers[seats[i]]);
+                // var b = gamers[seats[i]];
+                // Debug.Log(a);
+                // Debug.Log(b);
+                Dictionary<string, object> gamer = NewtonSoftHelper.JObjectToObject<string, object>(gamers[seats[i]]);
                 usersInfo[i].Add("avatar", gamer["avatar"]);
                 usersInfo[i].Add("name", gamer["name"]);
                 usersInfo[i].Add("walletChips", gamer["coins"]);
                 usersInfo[i].Add("chips", "1200000");
                 usersInfo[i].Add("uid", gamer["uid"]);
+                if (gamer.ContainsKey("cards"))
+                {
+                    usersInfo[i].Add("cards", NewtonSoftHelper.JArrayToArray<int>(gamer["cards"]));
+                }
             }
         }
 
@@ -163,9 +174,9 @@ public class GameBehavior : MonoBehaviour
                         //usersArray[i].transform.GetChild(3).gameObject.SetActive(true);
                     }
                     GameObject avatar = usersArray[i].transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.transform.GetChild(1).gameObject;
-                    avatar.GetComponent<SpriteRenderer>().sprite = AvatarHelper.GetAvatar(usersInfo[i]["avatar"]);
+                    avatar.GetComponent<SpriteRenderer>().sprite = AvatarHelper.GetAvatar(usersInfo[i]["avatar"].ToString());
                     GameObject name = usersArray[i].transform.GetChild(1).gameObject.transform.GetChild(1).gameObject.transform.GetChild(1).gameObject;
-                    name.GetComponent<TMP_Text>().text = usersInfo[i]["name"];
+                    name.GetComponent<TMP_Text>().text = usersInfo[i]["name"].ToString();
                     GameObject wallet_money = usersArray[i].transform.GetChild(1).gameObject.transform.GetChild(1).gameObject.transform.GetChild(2).gameObject;
                     wallet_money.GetComponent<TMP_Text>().text = usersInfo[i]["walletChips"] + " ₮";
                     if (i == 0)
@@ -188,7 +199,7 @@ public class GameBehavior : MonoBehaviour
         {
             GameObject[] usersArray = GameObjectHelper.GetChildren(usersParent);
             GameObject[] sitButtons = GameObjectHelper.GetChildren(sitToSeatArea);
-            Dictionary<string, string>[] rotatedUserInfo = ArrayHelper.RotateArray(usersInfo, sitPosition);
+            Dictionary<string, object>[] rotatedUserInfo = ArrayHelper.RotateArray(usersInfo, sitPosition);
             initalizeUsers(usersArray);
             initalizeSitButtons(sitButtons);
             for (int i = 0; i < usersArray.Length; i++)
@@ -224,9 +235,9 @@ public class GameBehavior : MonoBehaviour
 
                     }
                     GameObject avatar = usersArray[i].transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.transform.GetChild(1).gameObject;
-                    avatar.GetComponent<SpriteRenderer>().sprite = AvatarHelper.GetAvatar(rotatedUserInfo[i]["avatar"]);
+                    avatar.GetComponent<SpriteRenderer>().sprite = AvatarHelper.GetAvatar(rotatedUserInfo[i]["avatar"].ToString());
                     GameObject name = usersArray[i].transform.GetChild(1).gameObject.transform.GetChild(1).gameObject.transform.GetChild(1).gameObject;
-                    name.GetComponent<TMP_Text>().text = rotatedUserInfo[i]["name"];
+                    name.GetComponent<TMP_Text>().text = rotatedUserInfo[i]["name"].ToString();
                     GameObject wallet_money = usersArray[i].transform.GetChild(1).gameObject.transform.GetChild(1).gameObject.transform.GetChild(2).gameObject;
                     wallet_money.GetComponent<TMP_Text>().text = rotatedUserInfo[i]["walletChips"] + " ₮";
                     if (i == 0)
@@ -236,7 +247,7 @@ public class GameBehavior : MonoBehaviour
                     else
                     {
                         GameObject money = usersArray[i].transform.GetChild(3).gameObject.transform.GetChild(1).gameObject;
-                        money.GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated(long.Parse(rotatedUserInfo[i]["chips"]));
+                        money.GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated(long.Parse(rotatedUserInfo[i]["chips"].ToString()));
                     }
                 }
             }
@@ -253,7 +264,7 @@ public class GameBehavior : MonoBehaviour
         {
             if (usersInfo[i].Count > 0)
             {
-                if (usersInfo[i]["uid"] == token["uid"].ToString())
+                if (usersInfo[i]["uid"].ToString() == token["uid"].ToString())
                 {
                     return i;
                 }
@@ -399,7 +410,7 @@ public class GameBehavior : MonoBehaviour
         if (sitPosition != -1)
         {
             GameObject[] usersArray = GameObjectHelper.GetChildren(usersParent);
-            Dictionary<string, string>[] rotatedUserInfo = ArrayHelper.RotateArray(usersInfo, sitPosition);
+            Dictionary<string, object>[] rotatedUserInfo = ArrayHelper.RotateArray(usersInfo, sitPosition);
             int currentActiveUserRotated = ArrayHelper.RotateNumber(currentActiveUser, sitPosition, usersInfo.Length);
             for (int i = 0; i < rotatedUserInfo.Length; i++)
             {
@@ -413,6 +424,15 @@ public class GameBehavior : MonoBehaviour
                     progressbar.GetComponent<Image>().fillAmount = 0;
                 }
             }
+        }
+    }
+
+    public void SetActionButtonAreaIndexByGlobal()
+    {
+        var readyButtonStatus = Globals.roomStates[Globals.currentRoomIndex]["ready"];
+        if (readyButtonStatus!=null)
+        {
+            actionButtonAreaIndex = 0;
         }
     }
 
@@ -434,22 +454,86 @@ public class GameBehavior : MonoBehaviour
 
     public void Fold()
     {
+        Dictionary<string, object> token = (Dictionary<string, object>)Globals.token;
+        string uid = token["uid"].ToString();
+        int pin = Int32.Parse(token["pin"].ToString());
+        var data = new
+        {
+            uid = uid,
+            pin = pin,
+            f = "fold",
+            args = "0",
+        };
+        Globals.socketIoConnection.SendRpc(data, OnFoldResponse);
+    }
 
+    private void OnFoldResponse(JToken jsonResponse)
+    {
+        Debug.Log("Fold");
     }
 
     public void Check()
     {
+        Dictionary<string, object> token = (Dictionary<string, object>)Globals.token;
+        string uid = token["uid"].ToString();
+        int pin = Int32.Parse(token["pin"].ToString());
+        var data = new
+        {
+            uid = uid,
+            pin = pin,
+            f = "check",
+            args = "0",
+        };
+        Globals.socketIoConnection.SendRpc(data, OnCheckResponse);
+    }
 
+    private void OnCheckResponse(JToken jsonResponse)
+    {
+        Debug.Log("Check");
     }
 
     public void Call()
     {
+        Dictionary<string, object> token = (Dictionary<string, object>)Globals.token;
+        string uid = token["uid"].ToString();
+        int pin = Int32.Parse(token["pin"].ToString());
+        var data = new
+        {
+            uid = uid,
+            pin = pin,
+            f = "call",
+            args = "0",
+        };
+        Globals.socketIoConnection.SendRpc(data, OnCallResponse);
+    }
 
+    private void OnCallResponse(JToken jsonResponse)
+    {
+        Debug.Log("call");
     }
 
     public void Raise()
     {
+        Dictionary<string, object> token = (Dictionary<string, object>)Globals.token;
+        string uid = token["uid"].ToString();
+        int pin = Int32.Parse(token["pin"].ToString());
+        var amountOfRaiseString = Globals.roomStates[Globals.currentRoomIndex]["raise"].ToString();
+        string pattern = @"\d+"; // Matches one or more digits
 
+        Match match = Regex.Match(amountOfRaiseString, pattern);
+        var data = new
+        {
+            uid = uid,
+            pin = pin,
+            f = "raise",
+            args = match.Value.ToString(),
+        };
+        Globals.socketIoConnection.SendRpc(data, OnRaiseResponse);
+    }
+
+    private void OnRaiseResponse(JToken jsonResponse)
+    {
+        Debug.Log("Raise");
     }
 
     public void ToggleSitOutNextHandButton(GameObject button)
@@ -497,6 +581,8 @@ public class GameBehavior : MonoBehaviour
 
         }
     }
+
+
 
 
 
