@@ -276,6 +276,10 @@ public class SocketIoConnection
                             Globals.rooms[roomArrayIndex].Add("countDownSec", (object)countDownSec);
                         }
                         break;
+                    case "check":
+                        break;
+                    case "call":
+                        break;
                     case "fold":
                         break;
                     case "gameover":
