@@ -11,6 +11,12 @@ using System.Dynamic;
 using static UnityEditor.Progress;
 using UnityEngine.SceneManagement;
 
+public class DealArgs
+{
+    public int delay;
+    public List<List<object>> deals;
+}
+
 public class SocketIoConnection
 {
     public static SocketIOUnity socketIoUnity;
@@ -141,6 +147,8 @@ public class SocketIoConnection
                 int roomArrayIndex = -1;
                 string seatedUserid = null;
                 JObject who = null;
+                JObject gamerList;
+                string userid;
                 switch (eventType)
                 {
                     case "prompt":
@@ -196,6 +204,7 @@ public class SocketIoConnection
                                 { "ready", null },
                                 };
                             Globals.gamersActionStates[roomArrayIndex] = new string[9];
+                            Globals.shareCards[roomArrayIndex] = new int[5];
                             Globals.currentRoomId = roomId;
                         }
                         break;
@@ -216,9 +225,9 @@ public class SocketIoConnection
                         break;
                     case "buychip":
                         roomId = jContainer.SelectToken("room").Value<int>();
-                        string userid = argsContainer.SelectToken("uid").Value<string>();
+                        userid = argsContainer.SelectToken("uid").Value<string>();
                         roomArrayIndex = Globals.getRoomIndex(roomId);
-                        JObject gamerList = JObject.Parse(Globals.rooms[roomArrayIndex]["gamers"].ToString());
+                        gamerList = JObject.Parse(Globals.rooms[roomArrayIndex]["gamers"].ToString());
                         gamerList[userid]["coins"] = Int32.Parse(argsContainer.SelectToken("coins").ToString());
                         Globals.rooms[roomArrayIndex]["gamers"] = gamerList;
                         break;
@@ -245,6 +254,18 @@ public class SocketIoConnection
                         Globals.rooms[roomArrayIndex] = roomObject;
                         break;
                     case "deal":
+                        roomId = jContainer.SelectToken("room").Value<int>();
+                        roomArrayIndex = Globals.getRoomIndex(roomId);
+                        DealArgs args = JsonConvert.DeserializeObject < DealArgs > (argsContainer.ToString());
+                        if(args.delay == 1)
+                        {
+                            int[] shareCards = JsonConvert.DeserializeObject<int[]>(args.deals[0][1].ToString());
+                            foreach (int card in shareCards)
+                            {
+                                int index1 = Array.IndexOf(Globals.shareCards[roomArrayIndex], 0);
+                                Globals.shareCards[roomArrayIndex][index1] = card;
+                            }
+                        }
                         break;
                     case "drop":
                         break;
@@ -292,10 +313,17 @@ public class SocketIoConnection
                         Globals.gamersActionStates[roomArrayIndex][seatId] = "check";
                         break;
                     case "call":
-                        roomId = jContainer.SelectToken("roomid").Value<int>();
-                        roomArrayIndex = Globals.getRoomIndex(roomId);
                         roomId = jContainer.SelectToken("room").Value<int>();
+                        roomArrayIndex = Globals.getRoomIndex(roomId);
+                        userid = argsContainer.SelectToken("uid").Value<string>();
                         seatId = argsContainer.SelectToken("seat").Value<int>();
+                        int pot = Int32.Parse(Globals.rooms[roomArrayIndex]["pot"].ToString());
+                        pot += argsContainer.SelectToken("call").Value<int>();
+                        Globals.rooms[roomArrayIndex]["pot"] = (object)pot;
+                        gamerList = JObject.Parse(Globals.rooms[roomArrayIndex]["gamers"].ToString());
+                        gamerList[userid]["coins"] = Int32.Parse(gamerList[userid]["coins"].ToString()) - argsContainer.SelectToken("call").Value<int>();
+                        gamerList[userid]["chips"] = Int32.Parse(gamerList[userid]["chips"].ToString()) + argsContainer.SelectToken("call").Value<int>();
+                        Globals.rooms[roomArrayIndex]["gamers"] = gamerList;
                         Globals.gamersActionStates[roomArrayIndex][seatId] = "call";
                         break;
                     case "fold":
@@ -317,20 +345,22 @@ public class SocketIoConnection
                         }
                         Globals.roomGameStarted[roomArrayIndex] = false;
                         Globals.rooms[roomArrayIndex]["gamers"] = gamersList;
+                        Globals.shareCards[roomArrayIndex] = new int[5];
                         break;
                     case "leave":
                         roomId = argsContainer.SelectToken("where").Value<int>();
                         string leaveUserid = argsContainer.SelectToken("uid").Value<object>().ToString();
-                        int roomIndex = Globals.getRoomIndex(roomId);
-                        string[] seatArray = NewtonSoftHelper.JArrayToArray<string>(Globals.rooms[roomIndex]["seats"]);
+                        roomArrayIndex = Globals.getRoomIndex(roomId);
+                        string[] seatArray = NewtonSoftHelper.JArrayToArray<string>(Globals.rooms[roomArrayIndex]["seats"]);
                         if ((seatId = Array.IndexOf(seatArray, leaveUserid)) != -1)
                         {
                             seatArray[seatId] = null;
                         }
-                        Dictionary<string, object> gamersObject = NewtonSoftHelper.JObjectToObject<string, object>(Globals.rooms[roomIndex]["gamers"]);
+                        Dictionary<string, object> gamersObject = NewtonSoftHelper.JObjectToObject<string, object>(Globals.rooms[roomArrayIndex]["gamers"]);
                         gamersObject.Remove(leaveUserid);
-                        Globals.rooms[roomIndex]["seats"] = seatArray;
-                        Globals.rooms[roomIndex]["gamers"] = gamersObject;
+                        Globals.rooms[roomArrayIndex]["seats"] = seatArray;
+                        Globals.rooms[roomArrayIndex]["gamers"] = gamersObject;
+                        Globals.shareCards[roomArrayIndex] = new int[5];
                         break;
                     default:
                         break;

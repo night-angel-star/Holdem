@@ -19,6 +19,7 @@ public static class Globals
     public static Dictionary<string, object>[] rooms = { null, null, null };
     public static Dictionary<string, object>[] roomStates = { null, null, null };
     public static string[][] gamersActionStates = new string[3][];
+    public static int[][] shareCards = new int[3][];
     public static int currentRoomId = -1;
     public static int currentRoomIndex = -1;
     public static string strUri = "http://192.168.148.182:3000";
