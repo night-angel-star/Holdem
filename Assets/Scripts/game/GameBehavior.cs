@@ -631,7 +631,26 @@ public class GameBehavior : MonoBehaviour
     public void AddChips()
     {
         int addChipValue = (int)chipsSliderObject.value;
-        Debug.Log(addChipValue);
+        Dictionary<string, object> token = (Dictionary<string, object>)Globals.token;
+        string uid = token["uid"].ToString();
+        int pin = Int32.Parse(token["pin"].ToString());
+        var data = new
+        {
+            uid = uid,
+            pin = pin,
+            f = "buychip",
+            args = new
+            {
+                roomid = Globals.currentRoomId,
+                amount = addChipValue
+            },
+        };
+        Globals.socketIoConnection.SendRpc(data, OnAddChipsResponse);
+    }
+
+    private void OnAddChipsResponse(JToken jsonResponse)
+    {
+
     }
 
 
