@@ -97,7 +97,15 @@ public class GameBehavior : MonoBehaviour
 
         currentRoomIndex = NewtonSoftHelper.GetIndexFromJArray(Globals.rooms, "id", Globals.currentRoomId.ToString());
         //room info
-        roomName = Globals.rooms[currentRoomIndex]["name"] as string;
+        try
+        {
+            roomName = Globals.rooms[currentRoomIndex]["name"] as string;
+        }
+        catch (Exception ex)
+        {
+            Debug.Log(ex);
+        }
+        
         Dictionary<string, object> options = NewtonSoftHelper.JObjectToObject<string, object>(Globals.rooms[currentRoomIndex]["options"]);
         chipsMinBuy = int.Parse(options["min_buy"].ToString());
         chipsMaxBuy = int.Parse(((Dictionary<string, object>)Globals.profile)["deposite"].ToString());
@@ -547,14 +555,15 @@ public class GameBehavior : MonoBehaviour
             args = raiseAmount.ToString(),
         };
         Globals.socketIoConnection.SendRpc(data, OnRaiseResponse);
+        raiseModal.SetActive(false);
+        raiseButton.SetActive(true);
+        raiseConfirmButton.SetActive(false);
     }
 
     private void OnRaiseResponse(JToken jsonResponse)
     {
         Debug.Log("Raise");
-        raiseModal.SetActive(false);
-        raiseButton.SetActive(true);
-        raiseConfirmButton.SetActive(false);
+        
     }
 
     public void ToggleSitOutNextHandButton(GameObject button)
