@@ -34,6 +34,8 @@ public class GameBehavior : MonoBehaviour
     public GameObject raiseBarGradeParent;
     public GameObject raiseToValue;
 
+    public GameObject raiseBarSlider;
+
     public string roomName;
     public int chipsMinBuy;
     public int chipsMaxBuy;
@@ -608,6 +610,8 @@ public class GameBehavior : MonoBehaviour
             Dictionary<string, object> options = NewtonSoftHelper.JObjectToObject<string, object>(Globals.rooms[currentRoomIndex]["options"]);
             minRaise = int.Parse(options["small_blind"].ToString());
             maxRaise = int.Parse(usersInfo[sitPosition]["walletChips"].ToString());
+            raiseBarSlider.GetComponent<Slider>().minValue = minRaise;
+            raiseBarSlider.GetComponent<Slider>().maxValue = maxRaise;
         }
     }
 
@@ -651,6 +655,12 @@ public class GameBehavior : MonoBehaviour
     public void ChangeRaiseAmount(int delta)
     {
         raiseAmount += delta;
+        raiseBarSlider.GetComponent<Slider>().value = raiseAmount;
+    }
+
+    public void OnRaiseBarSliderChanged()
+    {
+        raiseAmount = (int)raiseBarSlider.GetComponent<Slider>().value;
     }
 
 
