@@ -3,11 +3,13 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text.RegularExpressions;
 using TMPro;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using UnityEngine.Windows;
 
 
 public class GameBehavior : MonoBehaviour
@@ -117,6 +119,10 @@ public class GameBehavior : MonoBehaviour
             usersInfo[i] = new Dictionary<string, string>();
             if (seats[i] != null)
             {
+                // var a = NewtonSoftHelper.JObjectToObject<string, string>(gamers[seats[i]]);
+                // var b = gamers[seats[i]];
+                // Debug.Log(a);
+                // Debug.Log(b);
                 Dictionary<string, string> gamer = NewtonSoftHelper.JObjectToObject<string, string>(gamers[seats[i]]);
                 usersInfo[i].Add("avatar", gamer["avatar"]);
                 usersInfo[i].Add("name", gamer["name"]);
@@ -434,22 +440,86 @@ public class GameBehavior : MonoBehaviour
 
     public void Fold()
     {
+        Dictionary<string, object> token = (Dictionary<string, object>)Globals.token;
+        string uid = token["uid"].ToString();
+        int pin = Int32.Parse(token["pin"].ToString());
+        var data = new
+        {
+            uid = uid,
+            pin = pin,
+            f = "fold",
+            args = "0",
+        };
+        Globals.socketIoConnection.SendRpc(data, OnFoldResponse);
+    }
 
+    private void OnFoldResponse(JToken jsonResponse)
+    {
+        Debug.Log("Fold");
     }
 
     public void Check()
     {
+        Dictionary<string, object> token = (Dictionary<string, object>)Globals.token;
+        string uid = token["uid"].ToString();
+        int pin = Int32.Parse(token["pin"].ToString());
+        var data = new
+        {
+            uid = uid,
+            pin = pin,
+            f = "check",
+            args = "0",
+        };
+        Globals.socketIoConnection.SendRpc(data, OnCheckResponse);
+    }
 
+    private void OnCheckResponse(JToken jsonResponse)
+    {
+        Debug.Log("Check");
     }
 
     public void Call()
     {
+        Dictionary<string, object> token = (Dictionary<string, object>)Globals.token;
+        string uid = token["uid"].ToString();
+        int pin = Int32.Parse(token["pin"].ToString());
+        var data = new
+        {
+            uid = uid,
+            pin = pin,
+            f = "call",
+            args = "0",
+        };
+        Globals.socketIoConnection.SendRpc(data, OnCallResponse);
+    }
 
+    private void OnCallResponse(JToken jsonResponse)
+    {
+        Debug.Log("call");
     }
 
     public void Raise()
     {
+        Dictionary<string, object> token = (Dictionary<string, object>)Globals.token;
+        string uid = token["uid"].ToString();
+        int pin = Int32.Parse(token["pin"].ToString());
+        var amountOfRaiseString = Globals.roomStates[Globals.currentRoomIndex]["raise"].ToString();
+        string pattern = @"\d+"; // Matches one or more digits
 
+        Match match = Regex.Match(amountOfRaiseString, pattern);
+        var data = new
+        {
+            uid = uid,
+            pin = pin,
+            f = "raise",
+            args = match.Value.ToString(),
+        };
+        Globals.socketIoConnection.SendRpc(data, OnRaiseResponse);
+    }
+
+    private void OnRaiseResponse(JToken jsonResponse)
+    {
+        Debug.Log("Raise");
     }
 
     public void ToggleSitOutNextHandButton(GameObject button)

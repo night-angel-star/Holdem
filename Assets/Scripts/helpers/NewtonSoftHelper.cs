@@ -30,7 +30,7 @@ public class NewtonSoftHelper : MonoBehaviour
             return dic;
         } catch (Exception)
         {
-            return jObjectObj as Dictionary<T, U>;
+            return (Dictionary<T, U>)jObjectObj;
         }
         
     }
