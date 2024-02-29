@@ -613,23 +613,27 @@ public class GameBehavior : MonoBehaviour
 
     void SetRaiseBar()
     {
-        GameObject[] raiseBarGrades = GameObjectHelper.GetChildren(raiseBarGradeParent);
-        raiseToValue.GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated((long)raiseAmount, 1);
-        int raiseBarStep = (maxRaise - minRaise) / raiseBarGrades.Length;
-        for(int i = 0; i < raiseBarGrades.Length; i++)
+        if(gameStarted)
         {
-            if (i != raiseBarGrades.Length - 1)
+            GameObject[] raiseBarGrades = GameObjectHelper.GetChildren(raiseBarGradeParent);
+            raiseToValue.GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated((long)raiseAmount, 1);
+            int raiseBarStep = (maxRaise - minRaise) / raiseBarGrades.Length;
+            for (int i = 0; i < raiseBarGrades.Length; i++)
             {
-                raiseBarGrades[i].GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated((long)(minRaise + raiseBarStep * i),0);
+                if (i != raiseBarGrades.Length - 1)
+                {
+                    raiseBarGrades[i].GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated((long)(minRaise + raiseBarStep * i), 0);
+                }
+                else
+                {
+                    raiseBarGrades[i].GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated((long)maxRaise, 0);
+                }
             }
-            else
-            {
-                raiseBarGrades[i].GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated((long)maxRaise,0);
-            }
-        }
 
-        float raiseBarScale=(float)(raiseAmount-minRaise)/(maxRaise - minRaise);
-        raiseBar.transform.localScale = (new Vector3(1, raiseBarScale, 1));
+            float raiseBarScale = (float)(raiseAmount - minRaise) / (maxRaise - minRaise);
+            raiseBar.transform.localScale = (new Vector3(1, raiseBarScale, 1));
+        }
+        
     }
 
     void CheckRaiseAmount()
