@@ -37,15 +37,22 @@ public class NewtonSoftHelper : MonoBehaviour
 
     public static int GetIndexFromJArray(Dictionary<string,object>[] array, string key, string value)
     {
-        int index = -1;
-        for(int i = 0; i < array.Length; i++)
+        try
         {
-            object idObject = array[i][key];
-            if (idObject.ToString() == value)
+            int index = -1;
+            for (int i = 0; i < array.Length; i++)
             {
-                return i;
+                object idObject = array[i][key];
+                if (idObject.ToString() == value)
+                {
+                    return i;
+                }
             }
+            return index;
         }
-        return index;
+        catch (Exception)
+        {
+            return -1;
+        }
     }
 }
