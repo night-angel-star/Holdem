@@ -105,8 +105,8 @@ public class SocketIoConnection
     }
     private void OnRpcRet(SocketIOResponse response)
     {
-        // Debug.Log("rpc_ret");
-        // Debug.Log(response);
+        Debug.Log("rpc_ret");
+        Debug.Log(response);
         ProcessRpcRet(response);
 
     }
@@ -131,7 +131,11 @@ public class SocketIoConnection
                     continue;
                 }
                 string eventType = eventJToken.Value<string>();
-                JContainer argsContainer = (JContainer)jContainer.SelectToken("args"); 
+                JContainer argsContainer = (JContainer)jContainer.SelectToken("args");
+
+                Debug.Log(eventType);
+                Debug.Log(response);
+
                 int roomId = -1;
                 int seatId = -1;
                 int roomArrayIndex = -1;
@@ -140,30 +144,25 @@ public class SocketIoConnection
                 switch (eventType)
                 {
                     case "prompt":
-                        Debug.Log(eventType);
-                        Debug.Log(response);
+                        
                         if (jContainer.SelectToken("roomid") != null)
                         {
                             roomId = jContainer.SelectToken("roomid").Value<int>();
                             roomArrayIndex = Globals.getRoomIndex(roomId);
-                            if (Globals.roomGameStarted[roomArrayIndex])
-                            {
-                                Dictionary<string, object> roomState = Globals.roomStates[roomArrayIndex];
-                                Dictionary<string, object> argsDictionary = argsContainer.ToObject<Dictionary<string, object>>();
-                                List<string> commonKeys = new List<string>();
+                            Dictionary<string, object> roomState = Globals.roomStates[roomArrayIndex];
+                            Dictionary<string, object> argsDictionary = argsContainer.ToObject<Dictionary<string, object>>();
+                            List<string> commonKeys = new List<string>();
 
-                                foreach (string key in argsDictionary.Keys)
+                            foreach (string key in argsDictionary.Keys)
+                            {
+                                if (roomState.ContainsKey(key))
                                 {
-                                    if (roomState.ContainsKey(key))
-                                    {
-                                        commonKeys.Add(key);
-                                    }
+                                    commonKeys.Add(key);
                                 }
-                                foreach (string key in commonKeys)
-                                {
-                                    Globals.roomStates[roomArrayIndex][key] = argsDictionary[key];
-                                }
-                                Debug.Log("Globals.roomStates");
+                            }
+                            foreach (string key in commonKeys)
+                            {
+                                Globals.roomStates[roomArrayIndex][key] = argsDictionary[key];
                             }
                         }
                         break;
@@ -241,15 +240,7 @@ public class SocketIoConnection
                     case "drop":
                         break;
                     case "seecard":
-                        try
-                        {
-                            roomId = argsContainer.SelectToken("roomid").Value<int>();
-                        }
-                        catch (Exception)
-                        {
-                            roomId = Globals.currentRoomId;
-                        }
-                        
+                        roomId = jContainer.SelectToken("roomid").Value<int>();
                         JArray myCardsJArray = argsContainer.SelectToken("cards").Value<JArray>();
                         int[] myCards = NewtonSoftHelper.JArrayToArray<int>(myCardsJArray);
                         roomArrayIndex = Globals.getRoomIndex(roomId);
@@ -288,6 +279,17 @@ public class SocketIoConnection
                     case "fold":
                         break;
                     case "gameover":
+                        roomId = jContainer.SelectToken("room").Value<int>();
+                        roomArrayIndex = Globals.getRoomIndex(roomId);
+                        JObject gamersList = JObject.Parse(Globals.rooms[roomArrayIndex]["gamers"].ToString());
+                        foreach (object player in argsContainer)
+                        {
+                            JContainer playerJContainer = (JContainer)player;
+                            string playerUid = playerJContainer.SelectToken("uid").ToString();
+                            gamersList[playerUid] = JObject.Parse(player.ToString());
+                        }
+                        Globals.roomGameStarted[roomArrayIndex] = false;
+                        Globals.rooms[roomArrayIndex]["gamers"] = gamersList;
                         break;
                     case "leave":
                         roomId = argsContainer.SelectToken("where").Value<int>();
