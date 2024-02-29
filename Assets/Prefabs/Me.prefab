@@ -287,6 +287,10 @@ PrefabInstance:
       propertyPath: m_SortingLayer
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 1055242077082289061, guid: 3b3c2a38d4cb999419dd4d15ec67ea67, type: 3}
+      propertyPath: m_PresetInfoIsWorld
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 1172328283666848702, guid: 3b3c2a38d4cb999419dd4d15ec67ea67, type: 3}
       propertyPath: m_Name
       value: Avatar
