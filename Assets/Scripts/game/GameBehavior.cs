@@ -67,19 +67,19 @@ public class GameBehavior : MonoBehaviour
     {
         
         //read from global
-        //SetRoomData();
-        //SetActionButtonArea();
+        SetRoomData();
+        SetActionButtonArea();
         //draw ui
         if (sitPosition != -1)
         {
-            //GetMyCard(myCardsNumber);
+            GetMyCard(myCardsNumber);
         }
-        //SetUserInfo();
-        //SetRoomName();
-        //InitializeAddChipsModal();
-        //SetPublicCards();
-        //SetTimer();
-        //SetActionButtonAreaIndexByGlobal();
+        SetUserInfo();
+        SetRoomName();
+        InitializeAddChipsModal();
+        SetPublicCards();
+        SetTimer();
+        SetActionButtonAreaIndexByGlobal();
         SetRaiseBar();
         CheckRaiseAmount();
     }
@@ -93,7 +93,7 @@ public class GameBehavior : MonoBehaviour
         roomName = Globals.rooms[currentRoomIndex]["name"] as string;
         Dictionary<string, object> options = NewtonSoftHelper.JObjectToObject<string, object>(Globals.rooms[currentRoomIndex]["options"]);
         chipsMinBuy = int.Parse(options["min_buy"].ToString());
-        chipsMaxBuy = int.Parse(options["limit"].ToString());
+        chipsMaxBuy = int.Parse(((Dictionary<string, object>)Globals.profile)["deposite"].ToString());
 
         gameStarted = Globals.roomGameStarted[currentRoomIndex];
 
@@ -131,10 +131,6 @@ public class GameBehavior : MonoBehaviour
             usersInfo[i] = new Dictionary<string, object>();
             if (seats[i] != null)
             {
-                // var a = NewtonSoftHelper.JObjectToObject<string, string>(gamers[seats[i]]);
-                // var b = gamers[seats[i]];
-                // Debug.Log(a);
-                // Debug.Log(b);
                 Dictionary<string, object> gamer = NewtonSoftHelper.JObjectToObject<string, object>(gamers[seats[i]]);
                 usersInfo[i].Add("avatar", gamer["avatar"]);
                 usersInfo[i].Add("name", gamer["name"]);
@@ -632,7 +628,11 @@ public class GameBehavior : MonoBehaviour
     }
 
 
-
+    public void AddChips()
+    {
+        int addChipValue = (int)chipsSliderObject.value;
+        Debug.Log(addChipValue);
+    }
 
 
 

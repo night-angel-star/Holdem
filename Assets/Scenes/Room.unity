@@ -11825,6 +11825,7 @@ MonoBehaviour:
   raiseBar: {fileID: 113392886}
   raiseBarGradeParent: {fileID: 805374122}
   raiseToValue: {fileID: 484829154}
+  addChipsSlider: {fileID: 0}
   roomName: ROOM-1
   chipsMinBuy: 25
   chipsMaxBuy: 1000
