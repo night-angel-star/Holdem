@@ -27,6 +27,10 @@ public class GameBehavior : MonoBehaviour
     public GameObject sitToSeatArea;
     public GameObject ActionButtonsArea;
 
+    public GameObject raiseBar;
+    public GameObject raiseBarGradeParent;
+    public GameObject raiseToValue;
+
     public string roomName;
     public int chipsMinBuy;
     public int chipsMaxBuy;
@@ -41,6 +45,10 @@ public class GameBehavior : MonoBehaviour
     public int currentTimeout;
     public int totalTime = 20;
 
+    public int minRaise = 10000;
+    public int maxRaise = 70000;
+    public int raiseAmount = 10000;
+
     public int actionButtonAreaIndex = -1;
     public int currentRoomId = -1;
     public int currentRoomIndex = -1;
@@ -50,6 +58,7 @@ public class GameBehavior : MonoBehaviour
     public bool sitOutNextBigBlindButtonEnabled = false;
     public bool callAnyButtonEnabled = false;
 
+
     void Start()
     {
     }
@@ -58,19 +67,21 @@ public class GameBehavior : MonoBehaviour
     {
         
         //read from global
-        SetRoomData();
-        SetActionButtonArea();
+        //SetRoomData();
+        //SetActionButtonArea();
         //draw ui
         if (sitPosition != -1)
         {
-            GetMyCard(myCardsNumber);
+            //GetMyCard(myCardsNumber);
         }
-        SetUserInfo();
-        SetRoomName();
-        InitializeAddChipsModal();
-        SetPublicCards();
-        SetTimer();
-        SetActionButtonAreaIndexByGlobal();
+        //SetUserInfo();
+        //SetRoomName();
+        //InitializeAddChipsModal();
+        //SetPublicCards();
+        //SetTimer();
+        //SetActionButtonAreaIndexByGlobal();
+        SetRaiseBar();
+        CheckRaiseAmount();
     }
 
     void SetRoomData()
@@ -247,7 +258,7 @@ public class GameBehavior : MonoBehaviour
                     else
                     {
                         GameObject money = usersArray[i].transform.GetChild(3).gameObject.transform.GetChild(1).gameObject;
-                        money.GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated(long.Parse(rotatedUserInfo[i]["chips"].ToString()));
+                        money.GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated(long.Parse(rotatedUserInfo[i]["chips"].ToString()),1);
                     }
                 }
             }
@@ -580,6 +591,44 @@ public class GameBehavior : MonoBehaviour
             button.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-active");
 
         }
+    }
+
+    void SetRaiseBar()
+    {
+        GameObject[] raiseBarGrades = GameObjectHelper.GetChildren(raiseBarGradeParent);
+        raiseToValue.GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated((long)raiseAmount, 1);
+        int raiseBarStep = (maxRaise - minRaise) / raiseBarGrades.Length;
+        for(int i = 0; i < raiseBarGrades.Length; i++)
+        {
+            if (i != raiseBarGrades.Length - 1)
+            {
+                raiseBarGrades[i].GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated((long)(minRaise + raiseBarStep * i),0);
+            }
+            else
+            {
+                raiseBarGrades[i].GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated((long)maxRaise,0);
+            }
+        }
+
+        float raiseBarScale=(float)(raiseAmount-minRaise)/(maxRaise - minRaise);
+        raiseBar.transform.localScale = (new Vector3(1, raiseBarScale, 1));
+    }
+
+    void CheckRaiseAmount()
+    {
+        if (raiseAmount > maxRaise)
+        {
+            raiseAmount = maxRaise;
+        }
+        else if( raiseAmount < minRaise)
+        {
+            raiseAmount = minRaise;
+        }
+    }
+
+    public void ChangeRaiseAmount(int delta)
+    {
+        raiseAmount += delta;
     }
 
 
