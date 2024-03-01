@@ -51,7 +51,7 @@ public class GameBehavior : MonoBehaviour
     public int chipsMaxBuy;
     public int[] myCardsNumber;
     public Dictionary<string, object>[] usersInfo;
-    public int[] openedCards = new int[] { 0, 0 };
+    public int[] openedCards;
 
     public int sitPosition;
     private int sitPositionTemp;
@@ -101,6 +101,7 @@ public class GameBehavior : MonoBehaviour
         SetGamersActionStatus();
         SetRoomsToggler();
         SetRoomsView();
+        SetSharedCards();
     }
 
     void SetRoomData()
@@ -170,7 +171,7 @@ public class GameBehavior : MonoBehaviour
                 usersInfo[i].Add("avatar", gamer["avatar"]);
                 usersInfo[i].Add("name", gamer["name"]);
                 usersInfo[i].Add("walletChips", gamer["coins"]);
-                usersInfo[i].Add("chips", "1200000");
+                usersInfo[i].Add("chips", gamer["chips"]);
                 usersInfo[i].Add("uid", gamer["uid"]);
                 if (gamer.ContainsKey("cards"))
                 {
@@ -960,5 +961,13 @@ public class GameBehavior : MonoBehaviour
     {
         Globals.currentRoomId = roomId;
         Globals.currentRoomIndex = roomIndex;
+    }
+
+    void SetSharedCards()
+    {
+        if (gameStarted)
+        {
+            openedCards = Globals.shareCards[Globals.currentRoomIndex];
+        }
     }
 }
