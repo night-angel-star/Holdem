@@ -17,7 +17,7 @@ public class Room
 {
     public Dictionary<int, int[]> cards = new Dictionary<int, int[]>();
     public int casino = -1;
-    public object chips = null;
+    public Dictionary<int, int> chips = null;
     public int dealer_seat = -1;
     public int activeSeat = -1;
     public int countdown = -1;
@@ -47,7 +47,7 @@ public class Room
     } ;
     public Options options = new Options();
     public int pot = 0 ;
-    public int[] pot_chips = new int[9];
+    public int[] pot_chips = null;
     public string[] seats = null;
     public int seats_count = 0;
     public int seats_taken = 0;
@@ -60,10 +60,8 @@ public class Room
         public bool check = false;
         public bool call = false;
         public bool raise = false;
-        public bool all_in = false;
         public bool takeseat = false;
-        public bool unseat = false;
-        public bool leave = false;
+        public bool ready = false;
     }
     public Operations operations = new Operations();
 
