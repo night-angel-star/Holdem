@@ -29,4 +29,10 @@ public class ArrayHelper
         int rotatedIndex = (number + size - index) % size;
         return rotatedIndex;
     }
+
+    public static int ReRotateNumber(int number, int index, int size)
+    {
+        int rotatedIndex = (number + index) % size;
+        return rotatedIndex;
+    }
 }
