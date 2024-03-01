@@ -25,9 +25,4 @@ public static class Globals
     public static GameRoomsT gameRooms = new GameRoomsT();
     public static string currentRoom = null;
     public static string strUri = "http://192.168.148.182:3000";
-
-
-
-
-    
 }

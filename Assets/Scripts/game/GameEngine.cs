@@ -50,40 +50,37 @@ public class GameEngine
             Debug.Log(errorString);
         }
     }
-    private void OnPrompt(JToken jsonResponse)
+    private void OnPrompt(JToken baseToken)
     {
-        if (jsonResponse == null)
+        string errorString = "";
+        do
         {
-            return;
-        }
-        JToken uidToken = jsonResponse.SelectToken("uid");
-        if (uidToken == null || uidToken.Type == JTokenType.Null)
-        {
-            return;
-        }
-        string uidString = uidToken.ToString();
-        JToken roomIdToken = jsonResponse.SelectToken("roomid");
-        if (roomIdToken != null)
-        {
-            if (roomIdToken.Type == JTokenType.Integer || roomIdToken.Type == JTokenType.String)
-            {
-                string roomId = roomIdToken.ToString();
+            if (baseToken == null)
+                break;
+            if (baseToken.Type != JTokenType.Object)
+                break;
 
-                JToken argsToken = jsonResponse.SelectToken("args");
-                if (argsToken != null)
+            PromptNotifyEvent json = baseToken.ToObject<PromptNotifyEvent>();
+            if (json != null)
+            {
+                foreach (var field in typeof(PromptNotifyEvent).GetFields())
                 {
-                    if (Globals.gameRooms.ContainsKey(roomId))
+                    if (field.FieldType == typeof(bool))
                     {
-                        Globals.gameRooms[roomId].UpdateCmdsFromJson(argsToken);
-                        /* if (parentBehavior.room.id == roomId)
+                        bool temp = (bool)field.GetValue(json.args);
+                        if(temp == true)
                         {
-                            parentBehavior.room.UpdateCmdsFromJson(argsToken);
-                        } */
+                            field.SetValue(Globals.gameRooms[json.roomid.ToString()].operations, field.GetValue(json.args)); 
+                        }
                     }
                 }
             }
-        }
 
+        } while (false);
+        if (errorString != "")
+        {
+            Debug.Log(errorString);
+        }
     }
     private void OnTakeSeat(JToken baseToken)
     {
@@ -178,6 +175,10 @@ public class GameEngine
                         {
                             Globals.gameRooms[roomid].seats[i] = null;
                             Globals.gameRooms[roomid].seats_count--;
+
+                            Globals.gameRooms[roomid].cards.Remove(i);
+
+                            Globals.gameRooms[roomid].status[i] = "";
                         }
                     }
                     Globals.gameRooms[roomid].gamers.Remove(uid);
@@ -243,13 +244,14 @@ public class GameEngine
             if (Globals.gameRooms.ContainsKey(r.id))
             {
                 Globals.gameRooms[r.id] = r;
-
             }
             else
             {
                 Globals.gameRooms.Add(r.id, r);
             }
             Globals.currentRoom = r.id;
+            Globals.gameRooms[r.id].status = new string[r.options.max_seats];
+            Globals.gameRooms[r.id].shared_cards = new int[5];
         } while (false);
         if (errorString != "")
         {
@@ -319,20 +321,18 @@ public class GameEngine
             DealNotifyEvent json = baseToken.ToObject<DealNotifyEvent>();
             if (json != null)
             {
-                JToken[][] deals= json.args.deals;
+                List<List<object>> deals = json.args.deals;
                 if (deals != null)
                 {
                     return;
                 }
-                for (int i = 0; i < deals.Length; i++)
+                if (json.args.delay == 1)
                 {
-                    if (deals[i].Length != 2)
-                        continue;
-                    int seat = deals[i][0].Value<int>();
-                    int[] cards = deals[i][1].ToObject<int[]>();
-                    if (seat >= 0) // private card
+                    int[] shareCards = JsonConvert.DeserializeObject<int[]>(deals[0][1].ToString());
+                    foreach (int card in shareCards)
                     {
-                        
+                        int index = Array.IndexOf(Globals.gameRooms[json.roomid.ToString()].shared_cards, 0);
+                        Globals.gameRooms[json.roomid.ToString()].shared_cards[index] = card;
                     }
                 }
             }
@@ -365,28 +365,106 @@ public class GameEngine
             Debug.Log(errorString);
         }
     }
-    private void OnFold(JToken jsonResponse)
+    private void OnFold(JToken baseToken)
     {
         string errorString = "";
         do
         {
-            if (jsonResponse == null)
+            if (baseToken == null)
                 break;
+            FoldNotifyEvent json = baseToken.ToObject<FoldNotifyEvent>();
 
+            if (json == null)
+            {
+                break;
+            }
+            Globals.gameRooms[json.roomid.ToString()].status[json.args.seat] = "fold";
         } while (false);
         if (errorString != "")
         {
             Debug.Log(errorString);
         }
     }
-    private void OnGameOver(JToken jsonResponse)
+    private void OnCheck(JToken baseToken)
     {
         string errorString = "";
         do
         {
-            if (jsonResponse == null)
+            if (baseToken == null)
                 break;
+            CheckNotifyEvent json = baseToken.ToObject<CheckNotifyEvent>();
 
+            if (json == null)
+            {
+                break;
+            }
+            Globals.gameRooms[json.roomid.ToString()].status[json.args.seat] = "check";
+        } while (false);
+        if (errorString != "")
+        {
+            Debug.Log(errorString);
+        }
+    }
+    private void OnCall(JToken baseToken)
+    {
+        string errorString = "";
+        do
+        {
+            if (baseToken == null)
+                break;
+            CallNotifyEvent json = baseToken.ToObject<CallNotifyEvent>();
+
+            if (json == null)
+            {
+                break;
+            }
+            Globals.gameRooms[json.roomid.ToString()].status[json.args.seat] = "call";
+            Globals.gameRooms[json.roomid.ToString()].pot += json.args.call;
+            Globals.gameRooms[json.roomid.ToString()].chips[json.args.seat] += json.args.call;
+            Globals.gameRooms[json.roomid.ToString()].gamers[json.args.uid].coins -= json.args.call;
+        } while (false);
+        if (errorString != "")
+        {
+            Debug.Log(errorString);
+        }
+    }
+    private void OnRaise(JToken baseToken)
+    {
+        string errorString = "";
+        do
+        {
+            if (baseToken == null)
+                break;
+            RaiseNotifyEvent json = baseToken.ToObject<RaiseNotifyEvent>();
+
+            if (json == null)
+            {
+                break;
+            }
+            Globals.gameRooms[json.roomid.ToString()].status[json.args.seat] = "raise";
+            Globals.gameRooms[json.roomid.ToString()].pot += json.args.call + json.args.raise;
+            Globals.gameRooms[json.roomid.ToString()].chips[json.args.seat] += json.args.call + json.args.raise;
+            Globals.gameRooms[json.roomid.ToString()].gamers[json.args.uid].coins -= json.args.call + json.args.raise;
+        } while (false);
+        if (errorString != "")
+        {
+            Debug.Log(errorString);
+        }
+    }
+    private void OnGameOver(JToken baseToken)
+    {
+        string errorString = "";
+        do
+        {
+            if (baseToken == null)
+                break;
+            GameoverNotifyEvent json = baseToken.ToObject<GameoverNotifyEvent>();
+
+            if (json == null)
+            {
+                break;
+            }
+            Globals.gameRooms[json.roomid.ToString()].gameStatus = 3;
         } while (false);
         if (errorString != "")
         {
@@ -441,7 +519,7 @@ public class GameEngine
     {
         Globals.socketIoConnection.AddNotifyHandler("relogin", OnRelogin);
         Globals.socketIoConnection.AddNotifyHandler("seecard", OnSeecard);
-        Globals.socketIoConnection.AddNotifyHandler("unseat", OnUnseat);
+        // Globals.socketIoConnection.AddNotifyHandler("unseat", OnUnseat);
         Globals.socketIoConnection.AddNotifyHandler("leave", OnLeave);
         Globals.socketIoConnection.AddNotifyHandler("look", OnLook);
         Globals.socketIoConnection.AddNotifyHandler("enter", OnEnter);
@@ -452,11 +530,11 @@ public class GameEngine
         Globals.socketIoConnection.AddNotifyHandler("gameover", OnGameOver);
         Globals.socketIoConnection.AddNotifyHandler("deal", OnDeal);
         Globals.socketIoConnection.AddNotifyHandler("moveturn", OnMoveTurn);
-        Globals.socketIoConnection.AddNotifyHandler("fold", OnMoveTurn);
-        Globals.socketIoConnection.AddNotifyHandler("check", OnMoveTurn);
-        Globals.socketIoConnection.AddNotifyHandler("call", OnMoveTurn);
-        Globals.socketIoConnection.AddNotifyHandler("raise", OnMoveTurn);
-        Globals.socketIoConnection.AddNotifyHandler("all_in", OnMoveTurn);
+        Globals.socketIoConnection.AddNotifyHandler("fold", OnFold);
+        Globals.socketIoConnection.AddNotifyHandler("check", OnCheck);
+        Globals.socketIoConnection.AddNotifyHandler("call", OnCall);
+        Globals.socketIoConnection.AddNotifyHandler("raise", OnRaise);
+        // Globals.socketIoConnection.AddNotifyHandler("all_in", OnMoveTurn);
         Globals.socketIoConnection.AddNotifyHandler("countdown", OnCountDown);
         // Globals.socketIoConnection.AddNotifyHandler("shout", OnPrompt);
         // Globals.socketIoConnection.AddNotifyHandler("exit", OnPrompt);
@@ -514,8 +592,12 @@ public class GameEngine
     {
         if (Globals.gameRooms.ContainsKey(roomid))
         {
+            if(Globals.userProfile.uid == uid)
+            {
+                Globals.gameRooms[roomid].user_seat = seat;
+            }
             Globals.gameRooms[roomid].seats[seat] = uid;
-            Globals.gameRooms[roomid].seats_count++;
+            Globals.gameRooms[roomid].seats_taken++;
             Globals.gameRooms[roomid].gameStatus = 0;
         }
     }

@@ -2,6 +2,7 @@ using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -56,14 +57,8 @@ public class leaveScript : MonoBehaviour
                 errorString = "Invalid response";
                 break;
             }
-            Globals.rooms[Globals.currentRoomIndex] = null;
-            Globals.roomIdArray[Globals.currentRoomIndex] = -1;
-
-            Globals.roomStates[Globals.currentRoomIndex] = null;
-
-            Globals.currentRoomIndex = Globals.getActiveRoomIndex();
-
-            if(Globals.currentRoomIndex == -1)
+            Globals.gameRooms.Remove(Globals.currentRoom);
+            if(Globals.gameRooms.Count == 0)
             {
                 UnityMainThreadDispatcher.Instance().Enqueue(() =>
                 {
@@ -71,8 +66,7 @@ public class leaveScript : MonoBehaviour
                 });
             } else
             {
-                Globals.currentRoomId = Globals.roomIdArray[Globals.currentRoomIndex];
-                Debug.Log(Globals.roomIdArray);
+                Globals.currentRoom = Globals.gameRooms.Keys.First();
             }
             return;
         } while (false);
