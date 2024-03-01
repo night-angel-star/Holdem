@@ -11,6 +11,7 @@ using UnityEngine.SceneManagement;
 
 public static class Globals
 {
+    public static bool connected = false;
     public static SocketIoConnection socketIoConnection = new SocketIoConnection();
     public static object profile;
     public static object token;
