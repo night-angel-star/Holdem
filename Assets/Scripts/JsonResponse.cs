@@ -6,17 +6,21 @@ using UnityEngine;
 using Newtonsoft.Json;
 using System.Linq;
 
+using JsonResponseT = System.Collections.Generic.Dictionary<string, object>;
+using System.Reflection;
+using System;
+
 public class JsonResponse
 {
     JToken jToken;
 
-    public static Dictionary<string, object> ToDictionary(object token)
+    public static JsonResponseT ToDictionary(object token)
     {
         if (token.ConvertTo<JToken>().Type != JTokenType.Object) 
         {
             return null;
         }
-        Dictionary<string, object> keyValuePairs = JsonConvert.DeserializeObject<Dictionary<string, object>>(token.ToString());
+        JsonResponseT keyValuePairs = JsonConvert.DeserializeObject<JsonResponseT>(token.ToString());
 
         return keyValuePairs;
     }
@@ -33,5 +37,34 @@ public class JsonResponse
         return arr;
     }
 
+    public static T ConvertTo<T>(object token) 
+    {
+        return token.ConvertTo<JToken>().Value<T>();
+    }
 
+    public static void SetObjectValue(JToken token, object obj, string[] props)
+    {
+        for (int i = 0; i < props.Length; i++)
+        {
+            JToken t = token.SelectToken(props[i]);
+            if (t == null)
+                continue;
+            
+            FieldInfo property = obj.GetType().GetField(props[i]);
+            if (property == null)
+                continue;
+            if (property.FieldType == typeof(string) && (t.Type == JTokenType.String || t.Type == JTokenType.Integer || t.Type == JTokenType.Float))
+            {
+                property.SetValue(obj, t.Value<string>());
+            }
+            if (property.FieldType == typeof(int) && t.Type == JTokenType.Integer)
+            {
+                property.SetValue(obj, t.Value<int>());
+            }
+            if (property.FieldType == typeof(bool) && t.Type == JTokenType.Boolean)
+            {
+                property.SetValue(obj, t.Value<bool>());
+            }
+        }
+    }
 }

@@ -19,6 +19,11 @@ public class GameBehavior : MonoBehaviour
 {
     // Start is called before the first frame update
 
+    // public GameEngine engine;
+    public Room room;
+
+    public GameObject[] roomButtons;
+    public string[] roomIdOfButtons;
 
     public TMP_Text roomNameObject;
     public GameObject myCards;
@@ -76,7 +81,46 @@ public class GameBehavior : MonoBehaviour
 
     void Start()
     {
+        roomIdOfButtons = new string[roomButtons.Length];
+        // engine = new GameEngine(this);
+        // engine.Start();
+        UnityMainThreadDispatcher.Instance();
     }
+
+    public void UpdateRoomButtons()
+    {
+        int i = 0;
+        foreach (string roomId in Globals.gameRooms.Keys)
+        {
+            roomButtons[i].name = roomId;
+            GameObject gameObject = Utils.GetChildGameObject(roomButtons[i], "RoomName");
+            if (gameObject != null)
+            {
+                gameObject.GetComponent<TextMeshProUGUI>().text = Globals.gameRooms[roomId].name;
+            }
+            roomButtons[i].SetActive(true);
+            roomIdOfButtons[i++] = roomId;
+        }
+        while (i < roomButtons.Length)
+        {
+            roomButtons[i++].SetActive(false);
+        }
+    }
+    public void UpdateTable()
+    {
+
+    }
+
+    public void ShowRoom()
+    {
+        UnityMainThreadDispatcher.Instance().Enqueue(() =>
+        {
+            UpdateRoomButtons();
+            UpdateTable();
+        });
+        
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -309,13 +353,12 @@ public class GameBehavior : MonoBehaviour
     int GetSitPosition()
     {
         int position = -1;
-        Dictionary<string, object> token = NewtonSoftHelper.JObjectToObject<string, object>(Globals.token);
 
         for(int i = 0; i < usersInfo.Length; i++)
         {
             if (usersInfo[i].Count > 0)
             {
-                if (usersInfo[i]["uid"].ToString() == token["uid"].ToString())
+                if (usersInfo[i]["uid"].ToString() == Globals.gameToken.uid)
                 {
                     return i;
                 }
@@ -381,9 +424,8 @@ public class GameBehavior : MonoBehaviour
     {
         sitPositionTemp = index;
 
-        Dictionary<string, object> token = (Dictionary<string, object>)Globals.token;
-        string uid = token["uid"].ToString();
-        int pin = Int32.Parse(token["pin"].ToString());
+        string uid = Globals.gameToken.uid;
+        int pin = Globals.gameToken.pin;
         var data = new
         {
             uid = uid,
@@ -437,9 +479,8 @@ public class GameBehavior : MonoBehaviour
 
     public void readyForGame()
     {
-        Dictionary<string, object> token = (Dictionary<string, object>)Globals.token;
-        string uid = token["uid"].ToString();
-        int pin = Int32.Parse(token["pin"].ToString());
+        string uid = Globals.gameToken.uid;
+        int pin = Globals.gameToken.pin;
         var data = new
         {
             uid = uid,
@@ -505,9 +546,8 @@ public class GameBehavior : MonoBehaviour
 
     public void Fold()
     {
-        Dictionary<string, object> token = (Dictionary<string, object>)Globals.token;
-        string uid = token["uid"].ToString();
-        int pin = Int32.Parse(token["pin"].ToString());
+        string uid = Globals.gameToken.uid;
+        int pin = Globals.gameToken.pin;
         var data = new
         {
             uid = uid,
@@ -525,9 +565,8 @@ public class GameBehavior : MonoBehaviour
 
     public void Check()
     {
-        Dictionary<string, object> token = (Dictionary<string, object>)Globals.token;
-        string uid = token["uid"].ToString();
-        int pin = Int32.Parse(token["pin"].ToString());
+        string uid = Globals.gameToken.uid;
+        int pin = Globals.gameToken.pin;
         var data = new
         {
             uid = uid,
@@ -545,9 +584,8 @@ public class GameBehavior : MonoBehaviour
 
     public void Call()
     {
-        Dictionary<string, object> token = (Dictionary<string, object>)Globals.token;
-        string uid = token["uid"].ToString();
-        int pin = Int32.Parse(token["pin"].ToString());
+        string uid = Globals.gameToken.uid;
+        int pin = Globals.gameToken.pin;
         var data = new
         {
             uid = uid,
@@ -572,9 +610,8 @@ public class GameBehavior : MonoBehaviour
 
     public void RaiseConfirm()
     {
-        Dictionary<string, object> token = (Dictionary<string, object>)Globals.token;
-        string uid = token["uid"].ToString();
-        int pin = Int32.Parse(token["pin"].ToString());
+        string uid = Globals.gameToken.uid;
+        int pin = Globals.gameToken.pin;
         
         var data = new
         {
@@ -705,9 +742,8 @@ public class GameBehavior : MonoBehaviour
     public void AddChips()
     {
         int addChipValue = (int)chipsSliderObject.value;
-        Dictionary<string, object> token = (Dictionary<string, object>)Globals.token;
-        string uid = token["uid"].ToString();
-        int pin = Int32.Parse(token["pin"].ToString());
+        string uid = Globals.gameToken.uid;
+        int pin = Globals.gameToken.pin;
         var data = new
         {
             uid = uid,
@@ -748,9 +784,8 @@ public class GameBehavior : MonoBehaviour
 
     public void getRoomsListData()
     {
-        Dictionary<string, object> token = (Dictionary<string, object>)Globals.token;
-        string uid = token["uid"].ToString();
-        int pin = Int32.Parse(token["pin"].ToString());
+        string uid = Globals.gameToken.uid;
+        int pin = Globals.gameToken.pin;
         var data = new
         {
             uid = uid,
@@ -817,9 +852,8 @@ public class GameBehavior : MonoBehaviour
 
     private void JoinHandler(int roomIndex)
     {
-        Dictionary<string, object> token = (Dictionary<string, object>)Globals.token;
-        string uid = token["uid"].ToString();
-        int pin = Int32.Parse(token["pin"].ToString());
+        string uid = Globals.gameToken.uid;
+        int pin = Globals.gameToken.pin;
         var data = new
         {
             uid = uid,

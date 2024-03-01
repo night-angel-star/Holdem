@@ -19,9 +19,8 @@ public class TexasHoldem : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Dictionary<string, object> token = (Dictionary<string, object>)Globals.token;
-        string uid = token["uid"].ToString();
-        int pin = Int32.Parse(token["pin"].ToString());
+        string uid = Globals.gameToken.uid;
+        int pin = Globals.gameToken.pin;
         var data = new
         {
             uid = uid,
@@ -71,9 +70,8 @@ public class TexasHoldem : MonoBehaviour
 
     private void JoinHandler(int roomIndex)
     {
-        Dictionary<string, object> token = (Dictionary<string, object>)Globals.token;
-        string uid = token["uid"].ToString();
-        int pin = Int32.Parse(token["pin"].ToString());
+        string uid = Globals.gameToken.uid;
+        int pin = Globals.gameToken.pin;
         var data = new
         {
             uid = uid,
