@@ -149,6 +149,7 @@ public class SocketIoConnection
                 JObject who = null;
                 JObject gamerList;
                 string userid;
+                int pot;
                 switch (eventType)
                 {
                     case "prompt":
@@ -317,12 +318,27 @@ public class SocketIoConnection
                         roomArrayIndex = Globals.getRoomIndex(roomId);
                         userid = argsContainer.SelectToken("uid").Value<string>();
                         seatId = argsContainer.SelectToken("seat").Value<int>();
-                        int pot = Int32.Parse(Globals.rooms[roomArrayIndex]["pot"].ToString());
+                        pot = Int32.Parse(Globals.rooms[roomArrayIndex]["pot"].ToString());
                         pot += argsContainer.SelectToken("call").Value<int>();
                         Globals.rooms[roomArrayIndex]["pot"] = (object)pot;
                         gamerList = JObject.Parse(Globals.rooms[roomArrayIndex]["gamers"].ToString());
                         gamerList[userid]["coins"] = Int32.Parse(gamerList[userid]["coins"].ToString()) - argsContainer.SelectToken("call").Value<int>();
                         gamerList[userid]["chips"] = Int32.Parse(gamerList[userid]["chips"].ToString()) + argsContainer.SelectToken("call").Value<int>();
+                        Globals.rooms[roomArrayIndex]["gamers"] = gamerList;
+                        Globals.gamersActionStates[roomArrayIndex][seatId] = "call";
+                        break;
+                    case "raise":
+                        roomId = jContainer.SelectToken("room").Value<int>();
+                        roomArrayIndex = Globals.getRoomIndex(roomId);
+                        userid = argsContainer.SelectToken("uid").Value<string>();
+                        seatId = argsContainer.SelectToken("seat").Value<int>();
+                        int amount_sum = argsContainer.SelectToken("call").Value<int>() + argsContainer.SelectToken("raise").Value<int>();
+                        pot = Int32.Parse(Globals.rooms[roomArrayIndex]["pot"].ToString());
+                        pot += amount_sum;
+                        Globals.rooms[roomArrayIndex]["pot"] = (object)pot;
+                        gamerList = JObject.Parse(Globals.rooms[roomArrayIndex]["gamers"].ToString());
+                        gamerList[userid]["coins"] = Int32.Parse(gamerList[userid]["coins"].ToString()) - amount_sum;
+                        gamerList[userid]["chips"] = Int32.Parse(gamerList[userid]["chips"].ToString()) + amount_sum;
                         Globals.rooms[roomArrayIndex]["gamers"] = gamerList;
                         Globals.gamersActionStates[roomArrayIndex][seatId] = "call";
                         break;
