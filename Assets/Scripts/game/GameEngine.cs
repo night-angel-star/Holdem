@@ -12,20 +12,9 @@ using UnityEngine.SceneManagement;
 using JsonResponseT = System.Collections.Generic.Dictionary<string, object>;
 public class GameEngine
 {
-    // private GameBehavior parentBehavior;
-
-    // public GameEngine(GameBehavior behavior)
-    // {
-        // parentBehavior = behavior;
-    // }
     public void Start()
     {
         RegisterGameEvents();
-    }
-    public void ShowRoom(Room room)
-    {
-        // parentBehavior.room = room;
-        // parentBehavior.ShowRoom();
     }
 
     private void OnRpcResponse(JToken jsonResponse)
@@ -39,33 +28,22 @@ public class GameEngine
     private void OnRpcEnter(JToken baseToken)
     {
     }
-    private void OnRelogin(JToken jsonResponse)
+    private void OnRelogin(JToken baseToken)
     {
         string errorString = "";
-        if (jsonResponse == null)
-        {
-            return;
-        }
         do
         {
-            if (jsonResponse.Type != JTokenType.Object)
-            {
-                errorString = "Invalid notify event (message is not object) : " + jsonResponse.ToString();
+            if (baseToken == null)
                 break;
-            }
-            JsonResponseT response = JsonResponse.ToDictionary(jsonResponse);
-            if (!response.ContainsKey("args"))
-            {
-                errorString = "Invalid notify event (no args) : " + jsonResponse.ToString();
+            if (baseToken.Type != JTokenType.Object)
                 break;
-            }
-            if (response["args"].ConvertTo<JToken>().Type != JTokenType.Object)
+
+            TakeSeatNotifyEvent json = baseToken.ToObject<TakeSeatNotifyEvent>();
+            if (json != null)
             {
-                errorString = "Invalid notify event (args is not object) : " + jsonResponse.ToString();
-                break;
+                ProcessRelogin();
             }
-            JsonResponseT args = JsonResponse.ToDictionary(response["args"]);
-            ProcessRelogin(args["uid"].ToString(), args["where"].ToString());
+
         } while (false);
         if (errorString != "")
         {
@@ -121,6 +99,29 @@ public class GameEngine
             if (json != null)
             {
                 ProcessTakeSeat(json.args.uid, json.roomid.ToString(), json.args.where);
+            }
+
+        } while (false);
+        if (errorString != "")
+        {
+            Debug.Log(errorString);
+        }
+    }
+
+    private void OnBuyChip(JToken baseToken)
+    {
+        string errorString = "";
+        do
+        {
+            if (baseToken == null)
+                break;
+            if (baseToken.Type != JTokenType.Object)
+                break;
+
+            BuyChipNotifyEvent json = baseToken.ToObject<BuyChipNotifyEvent>();
+            if (json != null)
+            {
+                ProcessBuyChip(json.uid, json.args.roomid.ToString(), json.args.amount);
             }
 
         } while (false);
@@ -249,7 +250,6 @@ public class GameEngine
                 Globals.gameRooms.Add(r.id, r);
             }
             Globals.currentRoom = r.id;
-            ShowRoom(r);
         } while (false);
         if (errorString != "")
         {
@@ -296,7 +296,7 @@ public class GameEngine
                 if (Globals.gameRooms.ContainsKey(roomid))
                 {
                     Globals.gameRooms[roomid] = room;
-                    // Process seats
+                    Globals.gameRooms[roomid].gameStatus = 2;
                 }
             }
 
@@ -343,13 +343,21 @@ public class GameEngine
             Debug.Log(errorString);
         }
     }
-    private void OnMoveTurn(JToken jsonResponse)
+    private void OnMoveTurn(JToken baseToken)
     {
         string errorString = "";
         do
         {
-            if (jsonResponse == null)
+            if (baseToken == null)
                 break;
+            if (baseToken.Type != JTokenType.Object)
+                break;
+
+            MoveturnNotifyEvent json = baseToken.ToObject<MoveturnNotifyEvent>();
+            if (json != null)
+            {
+                ProcessMoveturn(json.roomid.ToString(), json.args.seat, json.args.countdown);
+            }
 
         } while (false);
         if (errorString != "")
@@ -385,13 +393,21 @@ public class GameEngine
             Debug.Log(errorString);
         }
     }
-    private void OnCountDown(JToken jsonResponse)
+    private void OnCountDown(JToken baseToken)
     {
         string errorString = "";
         do
         {
-            if (jsonResponse == null)
+            if (baseToken == null)
                 break;
+            if (baseToken.Type != JTokenType.Object)
+                break;
+
+            CountdownNotifyEvent json = baseToken.ToObject<CountdownNotifyEvent>();
+            if (json != null)
+            {
+                ProcessCountdown(json.roomid.ToString(), json.args.sec);
+            }
 
         } while (false);
         if (errorString != "")
@@ -399,72 +415,38 @@ public class GameEngine
             Debug.Log(errorString);
         }
     }
-    private void OnSeecard(JToken jsonResponse)
+    private void OnSeecard(JToken baseToken)
     {
         string errorString = "";
-        if (jsonResponse == null)
-        {
-            return;
-        }
         do
         {
-            if (jsonResponse.Type != JTokenType.Object)
-            {
-                errorString = "Invalid notify event (message is not object) : " + jsonResponse.ToString();
+            if (baseToken == null)
                 break;
-            }
-            JsonResponseT response = JsonResponse.ToDictionary(jsonResponse);
-            if (!response.ContainsKey("args"))
-            {
-                errorString = "Invalid notify event (no args) : " + jsonResponse.ToString();
+            if (baseToken.Type != JTokenType.Object)
                 break;
-            }
-            if (response["args"].ConvertTo<JToken>().Type != JTokenType.Object)
-            {
-                errorString = "Invalid notify event (args is not object) : " + jsonResponse.ToString();
-                break;
-            }
-            JsonResponseT args = JsonResponse.ToDictionary(response["args"]);
-            if (!args.ContainsKey("seat"))
-            {
-                errorString = "Invalid notify event (no seat) : " + jsonResponse.ToString();
-                break;
-            }
-            if (!args.ContainsKey("cards"))
-            {
-                errorString = "Invalid notify event (no cards) : " + jsonResponse.ToString();
-                break;
-            }
-            if (!args.ContainsKey("uid"))
-            {
-                errorString = "Invalid notify event (no uid) : " + jsonResponse.ToString();
-                break;
-            }
-            if (args["cards"].ConvertTo<JToken>().Type != JTokenType.Array)
-            {
-                errorString = "Invalid notify event (cards is not array) : " + jsonResponse.ToString();
-                break;
-            }
-            object[] oCards = JsonResponse.ToArray(args["cards"]);
-            int[] iCards = new int[oCards.Length];
 
-            for (int i = 0; i < oCards.Length; i++)
+            SeeCardNotifyEvent json = baseToken.ToObject<SeeCardNotifyEvent>();
+            if (json != null)
             {
-                iCards[i] = oCards[i].ConvertTo<JToken>().Value<int>();
+                if(json.args.cards != null) ProcessSeeCard(json.args.uid, json.roomid.ToString(), json.args.seat, json.args.cards);
             }
-            ProcessSeeCard(JsonResponse.ConvertTo<string>(args["uid"]), JsonResponse.ConvertTo<int>(args["seat"]), iCards);
 
         } while (false);
+        if (errorString != "")
+        {
+            Debug.Log(errorString);
+        }
     }
     public void RegisterGameEvents()
     {
         Globals.socketIoConnection.AddNotifyHandler("relogin", OnRelogin);
         Globals.socketIoConnection.AddNotifyHandler("seecard", OnSeecard);
-        Globals.socketIoConnection.AddNotifyHandler("takeseat", OnTakeSeat);
         Globals.socketIoConnection.AddNotifyHandler("unseat", OnUnseat);
         Globals.socketIoConnection.AddNotifyHandler("leave", OnLeave);
-        Globals.socketIoConnection.AddNotifyHandler("enter", OnEnter);
         Globals.socketIoConnection.AddNotifyHandler("look", OnLook);
+        Globals.socketIoConnection.AddNotifyHandler("enter", OnEnter);
+        Globals.socketIoConnection.AddNotifyHandler("buychip", OnBuyChip);
+        Globals.socketIoConnection.AddNotifyHandler("takeseat", OnTakeSeat);
         Globals.socketIoConnection.AddNotifyHandler("ready", OnReady);
         Globals.socketIoConnection.AddNotifyHandler("gamestart", OnGameStart);
         Globals.socketIoConnection.AddNotifyHandler("gameover", OnGameOver);
@@ -476,17 +458,17 @@ public class GameEngine
         Globals.socketIoConnection.AddNotifyHandler("raise", OnMoveTurn);
         Globals.socketIoConnection.AddNotifyHandler("all_in", OnMoveTurn);
         Globals.socketIoConnection.AddNotifyHandler("countdown", OnCountDown);
-        Globals.socketIoConnection.AddNotifyHandler("shout", OnPrompt);
-        Globals.socketIoConnection.AddNotifyHandler("exit", OnPrompt);
-        Globals.socketIoConnection.AddNotifyHandler("pk", OnPrompt);
-        Globals.socketIoConnection.AddNotifyHandler("showcard", OnPrompt);
-        Globals.socketIoConnection.AddNotifyHandler("bue", OnPrompt);
-        Globals.socketIoConnection.AddNotifyHandler("say", OnPrompt);
+        // Globals.socketIoConnection.AddNotifyHandler("shout", OnPrompt);
+        // Globals.socketIoConnection.AddNotifyHandler("exit", OnPrompt);
+        // Globals.socketIoConnection.AddNotifyHandler("pk", OnPrompt);
+        // Globals.socketIoConnection.AddNotifyHandler("showcard", OnPrompt);
+        // Globals.socketIoConnection.AddNotifyHandler("bue", OnPrompt);
+        // Globals.socketIoConnection.AddNotifyHandler("say", OnPrompt);
         Globals.socketIoConnection.AddNotifyHandler("prompt", OnPrompt);
 
     }
 
-    private void ProcessRelogin(string uId, string roomId)
+    private void ProcessRelogin()
     {
         UnityMainThreadDispatcher.Instance().Enqueue(() =>
         {
@@ -494,16 +476,54 @@ public class GameEngine
         });
     }
 
-    private void ProcessSeeCard(string uid, int seat, int[] cards)
+    private void ProcessSeeCard(string uid, string roomid, int seat, int[] cards)
     {
-
+        if (Globals.gameRooms.ContainsKey(roomid))
+        {
+            if (Globals.gameRooms[roomid].cards.ContainsKey(seat))
+            {
+                Globals.gameRooms[roomid].cards[seat] = cards;
+            } else
+            {
+                Globals.gameRooms[roomid].cards[seat] = cards;
+            }
+        }
     }
+    private void ProcessCountdown(string roomid, int sec)
+    {
+        if (Globals.gameRooms.ContainsKey(roomid))
+        {
+             Globals.gameRooms[roomid].countdown = sec;
+        }
+    }
+
+    private void ProcessMoveturn(string roomid, int seat, int countdown)
+    {
+        if (Globals.gameRooms.ContainsKey(roomid))
+        {
+            if (Globals.gameRooms[roomid].totalCount == -1)
+            {
+                Globals.gameRooms[roomid].totalCount = countdown;
+            }
+            Globals.gameRooms[roomid].activeSeat = seat;
+            Globals.gameRooms[roomid].countdown = countdown;
+        }
+    }
+
     private void ProcessTakeSeat(string uid, string roomid, int seat)
     {
         if (Globals.gameRooms.ContainsKey(roomid))
         {
             Globals.gameRooms[roomid].seats[seat] = uid;
             Globals.gameRooms[roomid].seats_count++;
+            Globals.gameRooms[roomid].gameStatus = 0;
+        }
+    }
+    private void ProcessBuyChip(string uid, string roomid, int amount)
+    {
+        if (Globals.gameRooms.ContainsKey(roomid))
+        {
+            Globals.gameRooms[roomid].gamers[uid].coins = amount;
         }
     }
     private void ProcessUnseat(string uid, string roomid, int seat)
@@ -519,6 +539,7 @@ public class GameEngine
         if (Globals.gameRooms.ContainsKey(roomid))
         {
             Globals.gameRooms[roomid].status[seat] = "ready";
+            Globals.gameRooms[roomid].gameStatus = 1;
         }
     }
 

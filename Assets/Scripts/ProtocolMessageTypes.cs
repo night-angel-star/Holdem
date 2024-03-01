@@ -81,6 +81,17 @@ public class RoomEvent : NotifyEvent
 {
     public int roomid;
 }
+
+public class ReloginNotifyEvent : RoomEvent
+{
+    public class ReloginEventArgs
+    {
+        public string uid;
+        public int where;
+    }
+    public new ReloginEventArgs args;
+}
+
 public class LookNotifyEvent : RoomEvent
 {
     public new Room args;
@@ -104,6 +115,17 @@ public class TakeSeatNotifyEvent : RoomEvent
     }
     public new TakeSeatEventArgs args;
 }
+
+public class BuyChipNotifyEvent : RoomEvent
+{
+    public class BuyChipEventArgs
+    {
+        public int amount;
+        public int roomid;
+    }
+    public new BuyChipEventArgs args;
+}
+
 public class UnSeatNotifyEvent : RoomEvent
 {
     public class UnSeatEventArgs
@@ -133,6 +155,40 @@ public class ReadyNotifyEvent : RoomEvent
     }
     public new ReadyEventArgs args;
 }
+
+public class SeeCardNotifyEvent : RoomEvent
+{
+    public class SeeCardEventArgs
+    {
+        public string uid;
+        public int seat;
+        public int[] cards;
+    }
+    public new SeeCardEventArgs args;
+}
+
+public class CountdownNotifyEvent : RoomEvent
+{
+    public class CountdownEventArgs
+    {
+        public int roomid;
+        public int seat;
+        public int sec;
+    }
+    public new CountdownEventArgs args;
+}
+
+public class MoveturnNotifyEvent : RoomEvent
+{
+    public class MoveturnEventArgs
+    {
+        public int roomid;
+        public int seat;
+        public int countdown;
+    }
+    public new MoveturnEventArgs args;
+}
+
 public class GameStartNotifyEvent : RoomEvent
 {
     public class GameStartEventArgs
