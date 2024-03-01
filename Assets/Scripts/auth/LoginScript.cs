@@ -6,6 +6,7 @@ using System.Text.RegularExpressions;
 using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using Unity.VisualScripting;
+using Newtonsoft.Json;
 
 public class LoginScript : MonoBehaviour
 {
@@ -55,9 +56,9 @@ public class LoginScript : MonoBehaviour
             }
             var profile = ret["profile"];
             var token = ret["token"];
-            Globals.profile = JsonResponse.ToDictionary(profile);
-            Globals.token = JsonResponse.ToDictionary(token);
-
+            Globals.userProfile = JsonConvert.DeserializeObject<Gamer>(profile.ToString());
+            Globals.gameToken = JsonConvert.DeserializeObject<Token>(token.ToString());
+            Debug.Log(Globals.gameToken);
             UnityMainThreadDispatcher.Instance().Enqueue(() =>
             {
                 SceneManager.LoadScene("Home");
