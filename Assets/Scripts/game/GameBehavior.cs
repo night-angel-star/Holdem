@@ -22,9 +22,6 @@ public class GameBehavior : MonoBehaviour
     // public GameEngine engine;
     public Room room;
 
-    public GameObject[] roomButtons;
-    public string[] roomIdOfButtons;
-
     public TMP_Text roomNameObject;
     public GameObject myCards;
     public GameObject usersParent;
@@ -51,28 +48,12 @@ public class GameBehavior : MonoBehaviour
     public GameObject RoomViewParent;
     public GameObject RoomAddButton;
 
-    public string roomName;
-    public int chipsMinBuy;
-    public int chipsMaxBuy;
-    public int[] myCardsNumber;
-    public Dictionary<string, object>[] usersInfo;
-    public int[] openedCards;
 
-    public int sitPosition;
-    private int sitPositionTemp;
 
-    public int currentActiveUser;
-    public int currentTimeout;
-    public int totalTime = 20;
-
-    public int minRaise = 0;
-    public int maxRaise = 70000;
+    
     public int raiseAmount = 0;
 
     public int actionButtonAreaIndex = -1;
-    public int currentRoomId = -1;
-    public int currentRoomIndex = -1;
-    public bool gameStarted = false;
 
     public bool sitOutNextHandButtonEnabled = false;
     public bool sitOutNextBigBlindButtonEnabled = false;
@@ -81,57 +62,23 @@ public class GameBehavior : MonoBehaviour
 
     void Start()
     {
-        roomIdOfButtons = new string[roomButtons.Length];
-        // engine = new GameEngine(this);
-        // engine.Start();
-        UnityMainThreadDispatcher.Instance();
     }
 
-    public void UpdateRoomButtons()
-    {
-        int i = 0;
-        foreach (string roomId in Globals.gameRooms.Keys)
-        {
-            roomButtons[i].name = roomId;
-            GameObject gameObject = Utils.GetChildGameObject(roomButtons[i], "RoomName");
-            if (gameObject != null)
-            {
-                gameObject.GetComponent<TextMeshProUGUI>().text = Globals.gameRooms[roomId].name;
-            }
-            roomButtons[i].SetActive(true);
-            roomIdOfButtons[i++] = roomId;
-        }
-        while (i < roomButtons.Length)
-        {
-            roomButtons[i++].SetActive(false);
-        }
-    }
-    public void UpdateTable()
-    {
-
-    }
-
-    public void ShowRoom()
-    {
-        UnityMainThreadDispatcher.Instance().Enqueue(() =>
-        {
-            UpdateRoomButtons();
-            UpdateTable();
-        });
-        
-    }
+    
 
     // Update is called once per frame
     void Update()
     {
-        
+
         //read from global
-        SetRoomData();
+        UpdateRoomFromGlobal();
+        //set data from room data
+        DisableUnneccessarySeats();
         SetActionButtonArea();
         //draw ui
-        if (sitPosition != -1)
+        if (room.gameStatus != 2)
         {
-            GetMyCard(myCardsNumber);
+            GetMyCard();
         }
         SetUserInfo();
         SetRoomName();
@@ -145,116 +92,84 @@ public class GameBehavior : MonoBehaviour
         SetGamersActionStatus();
         SetRoomsToggler();
         SetRoomsView();
-        SetSharedCards();
     }
 
-    void SetRoomData()
+    void UpdateRoomFromGlobal()
     {
-        currentRoomId = Globals.currentRoomId;
+        room = Globals.gameRooms[Globals.currentRoom];
+    }
 
-        currentRoomIndex = NewtonSoftHelper.GetIndexFromJArray(Globals.rooms, "id", Globals.currentRoomId.ToString());
-        //room info
-        try
+    void DisableUnneccessarySeats()
+    {
+        GameObject[] usersArray = GameObjectHelper.GetChildren(usersParent);
+        GameObject[] sitButtons = GameObjectHelper.GetChildren(sitToSeatArea);
+        switch (room.options.max_seats)
         {
-            roomName = Globals.rooms[currentRoomIndex]["name"] as string;
-        }
-        catch (Exception ex)
-        {
-            Debug.Log(ex);
-        }
-        try
-        {
-            Dictionary<string, object> options = NewtonSoftHelper.JObjectToObject<string, object>(Globals.rooms[currentRoomIndex]["options"]);
-            chipsMinBuy = int.Parse(options["min_buy"].ToString());
-        }
-        catch(Exception ex)
-        {
-            Debug.Log(ex);
-        }
-        
-        
-        chipsMaxBuy = int.Parse(((Dictionary<string, object>)Globals.profile)["deposite"].ToString());
-
-        gameStarted = Globals.roomGameStarted[currentRoomIndex];
-
-        if (gameStarted)
-        {
-            try
-            {
-                currentActiveUser = int.Parse(Globals.rooms[currentRoomIndex]["activeUserIndex"].ToString());
-                currentTimeout = int.Parse(Globals.rooms[currentRoomIndex]["countDownSec"].ToString());
-                myCardsNumber = (int[])Globals.rooms[currentRoomIndex]["myCards"];
-                if (sitPosition == currentActiveUser)
+            case 3:
+                for (int i = 0; i < usersArray.Length; i++)
                 {
-                    actionButtonAreaIndex = 1;
+                    if (i == 0 || i == 3 || i == 6)
+                    {
+                        usersArray[i].SetActive(true);
+                        sitButtons[i].SetActive(true);
+                    }
+                    else
+                    {
+                        usersArray[i].SetActive(false);
+                        sitButtons[i].SetActive(false);
+                    }
                 }
-                else
+                break;
+            case 6:
+                for (int i = 0; i < usersArray.Length; i++)
                 {
-                    actionButtonAreaIndex = 2;
+                    if (i == 1 || i == 4 || i == 8)
+                    {
+                        usersArray[i].SetActive(false);
+                        sitButtons[i].SetActive(false);
+                    }
+                    else
+                    {
+                        usersArray[i].SetActive(true);
+                        sitButtons[i].SetActive(true);
+                    }
                 }
-                
-            }
-            catch (Exception)
-            {
-
-            }
-
-        }
-
-        //user info
-        string[] seats = NewtonSoftHelper.JArrayToArray<string>(Globals.rooms[currentRoomIndex]["seats"]);
-        Dictionary<string, object> gamers = NewtonSoftHelper.JObjectToObject<string, object>(Globals.rooms[currentRoomIndex]["gamers"]);
-
-        usersInfo = new Dictionary<string, object>[seats.Length];
-        for (int i = 0; i < seats.Length; i++)
-        {
-            usersInfo[i] = new Dictionary<string, object>();
-            if (seats[i] != null)
-            {
-                Dictionary<string, object> gamer = NewtonSoftHelper.JObjectToObject<string, object>(gamers[seats[i]]);
-                usersInfo[i].Add("avatar", gamer["avatar"]);
-                usersInfo[i].Add("name", gamer["name"]);
-                usersInfo[i].Add("walletChips", gamer["coins"]);
-                if (gamer.ContainsKey("chips"))
+                break;
+            case 9:
+                for(int i = 0; i < usersArray.Length; i++)
                 {
-                    usersInfo[i].Add("chips", gamer["chips"]);
+                    usersArray[i].SetActive(true);
+                    sitButtons[i].SetActive(true);
                 }
-                else
-                {
-                    usersInfo[i].Add("chips", "0");
-                }
-                
-                usersInfo[i].Add("uid", gamer["uid"]);
-                if (gamer.ContainsKey("cards"))
-                {
-                    usersInfo[i].Add("cards", NewtonSoftHelper.JArrayToArray<int>(gamer["cards"]));
-                }
-            }
+                break;
+            default:
+                break;
         }
 
     }
 
-    void GetMyCard(int[] cardNumber)
+    void GetMyCard()
     {
+        
         myCards.SetActive(true);
         GameObject card1 = myCards.transform.GetChild(0).gameObject;
         GameObject card2 = myCards.transform.GetChild(1).gameObject;
-        card1.GetComponent<SpriteRenderer>().sprite = CardHelper.GetCard(cardNumber[0]);
-        card2.GetComponent<SpriteRenderer>().sprite = CardHelper.GetCard(cardNumber[1]);
+        card1.GetComponent<SpriteRenderer>().sprite = CardHelper.GetCard(room.cards[room.user_seat][0]);
+        card2.GetComponent<SpriteRenderer>().sprite = CardHelper.GetCard(room.cards[room.user_seat][1]);
     }
 
     void SetUserInfo()
     {
-        if (sitPosition == -1)
+        if (room.user_seat == -1)
         {
-            GameObject[] usersArray = GameObjectHelper.GetChildren(usersParent);
-            GameObject[] sitButtons = GameObjectHelper.GetChildren(sitToSeatArea);
-            sitPosition=GetSitPosition();
+            GameObject[] usersArray = GameObjectHelper.GetActiveChildren(usersParent);
+            GameObject[] sitButtons = GameObjectHelper.GetActiveChildren(sitToSeatArea);
+            
             initalizeUsers(usersArray);
             initalizeSitButtons(sitButtons);
             for (int i = 0; i < usersArray.Length; i++)
             {
-                if (usersInfo[i].Count != 0)
+                if (room.seats[i]!=null)
                 {
 
                     if (i == 0)
@@ -269,20 +184,11 @@ public class GameBehavior : MonoBehaviour
                         //usersArray[i].transform.GetChild(3).gameObject.SetActive(true);
                     }
                     GameObject avatar = usersArray[i].transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.transform.GetChild(1).gameObject;
-                    avatar.GetComponent<SpriteRenderer>().sprite = AvatarHelper.GetAvatar(usersInfo[i]["avatar"].ToString());
+                    avatar.GetComponent<SpriteRenderer>().sprite = AvatarHelper.GetAvatar(room.gamers[room.seats[i]].avatar.ToString());
                     GameObject name = usersArray[i].transform.GetChild(1).gameObject.transform.GetChild(1).gameObject.transform.GetChild(1).gameObject;
-                    name.GetComponent<TMP_Text>().text = usersInfo[i]["name"].ToString();
+                    name.GetComponent<TMP_Text>().text = room.gamers[room.seats[i]].name;
                     GameObject wallet_money = usersArray[i].transform.GetChild(1).gameObject.transform.GetChild(1).gameObject.transform.GetChild(2).gameObject;
-                    wallet_money.GetComponent<TMP_Text>().text = usersInfo[i]["walletChips"] + " ₮";
-                    if (i == 0)
-                    {
-
-                    }
-                    else
-                    {
-                        //GameObject money = usersArray[i].transform.GetChild(3).gameObject.transform.GetChild(1).gameObject;
-                        //money.GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated(long.Parse(usersInfo[i]["chips"]));
-                    }
+                    wallet_money.GetComponent<TMP_Text>().text = room.gamers[room.seats[i]].coins + " ₮";
                 }
                 else
                 {
@@ -292,20 +198,20 @@ public class GameBehavior : MonoBehaviour
         }
         else
         {
-            GameObject[] usersArray = GameObjectHelper.GetChildren(usersParent);
-            GameObject[] sitButtons = GameObjectHelper.GetChildren(sitToSeatArea);
-            Dictionary<string, object>[] rotatedUserInfo = ArrayHelper.RotateArray(usersInfo, sitPosition);
+            GameObject[] usersArray = GameObjectHelper.GetActiveChildren(usersParent);
+            GameObject[] sitButtons = GameObjectHelper.GetActiveChildren(sitToSeatArea);
+            string[] rotatedSeats = ArrayHelper.RotateArray(room.seats, room.user_seat);
             initalizeUsers(usersArray);
             initalizeSitButtons(sitButtons);
             for (int i = 0; i < usersArray.Length; i++)
             {
-                if (rotatedUserInfo[i].Count != 0)
+                if (rotatedSeats[i]!=null)
                 {
 
                     if (i == 0)
                     {
                         usersArray[i].transform.GetChild(1).gameObject.SetActive(true);
-                        if (gameStarted)
+                        if (room.gameStatus == 2)
                         {
                             usersArray[i].transform.GetChild(2).gameObject.SetActive(true);
                         }
@@ -317,7 +223,7 @@ public class GameBehavior : MonoBehaviour
                     else
                     {
                         usersArray[i].transform.GetChild(1).gameObject.SetActive(true);
-                        if (gameStarted)
+                        if (room.gameStatus == 2)
                         {
                             usersArray[i].transform.GetChild(2).gameObject.SetActive(true);
                             usersArray[i].transform.GetChild(3).gameObject.SetActive(true);
@@ -330,11 +236,11 @@ public class GameBehavior : MonoBehaviour
 
                     }
                     GameObject avatar = usersArray[i].transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.transform.GetChild(1).gameObject;
-                    avatar.GetComponent<SpriteRenderer>().sprite = AvatarHelper.GetAvatar(rotatedUserInfo[i]["avatar"].ToString());
+                    avatar.GetComponent<SpriteRenderer>().sprite = AvatarHelper.GetAvatar(room.gamers[rotatedSeats[i]].avatar.ToString());
                     GameObject name = usersArray[i].transform.GetChild(1).gameObject.transform.GetChild(1).gameObject.transform.GetChild(1).gameObject;
-                    name.GetComponent<TMP_Text>().text = rotatedUserInfo[i]["name"].ToString();
+                    name.GetComponent<TMP_Text>().text = room.gamers[rotatedSeats[i]].name;
                     GameObject wallet_money = usersArray[i].transform.GetChild(1).gameObject.transform.GetChild(1).gameObject.transform.GetChild(2).gameObject;
-                    wallet_money.GetComponent<TMP_Text>().text = rotatedUserInfo[i]["walletChips"] + " ₮";
+                    wallet_money.GetComponent<TMP_Text>().text = room.gamers[rotatedSeats[i]].coins + " ₮";
                     if (i == 0)
                     {
 
@@ -342,7 +248,7 @@ public class GameBehavior : MonoBehaviour
                     else
                     {
                         GameObject money = usersArray[i].transform.GetChild(3).gameObject.transform.GetChild(1).gameObject;
-                        money.GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated(long.Parse(rotatedUserInfo[i]["chips"].ToString()),1);
+                        money.GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated(long.Parse(room.chips[ArrayHelper.ReRotateNumber(i,room.user_seat,room.options.max_seats)]),1);
                     }
                 }
             }
@@ -350,25 +256,7 @@ public class GameBehavior : MonoBehaviour
 
     }
 
-    int GetSitPosition()
-    {
-        int position = -1;
-
-        for(int i = 0; i < usersInfo.Length; i++)
-        {
-            if (usersInfo[i].Count > 0)
-            {
-                if (usersInfo[i]["uid"].ToString() == Globals.gameToken.uid)
-                {
-                    return i;
-                }
-                
-            }
-            
-        }
-
-        return position;
-    }
+    
 
     void initalizeUsers(GameObject[] usersArray)
     {
@@ -398,32 +286,33 @@ public class GameBehavior : MonoBehaviour
 
     void SetRoomName()
     {
-        roomNameObject.text = roomName;
+        roomNameObject.text = room.name;
     }
 
     void InitializeAddChipsModal()
     {
-        chipMinBuyLimitObject.GetComponent<TMP_Text>().text = chipsMinBuy.ToString();
-        chipMaxBuyLimitObject.GetComponent<TMP_Text>().text = chipsMaxBuy.ToString();
-        chipsSliderObject.minValue = chipsMinBuy;
-        chipsSliderObject.maxValue = chipsMaxBuy;
+        chipMinBuyLimitObject.GetComponent<TMP_Text>().text = room.options.min_buy.ToString();
+        chipMaxBuyLimitObject.GetComponent<TMP_Text>().text = Globals.userProfile.deposite.ToString();
+        chipsSliderObject.minValue = room.options.min_buy;
+        chipsSliderObject.maxValue = Globals.userProfile.deposite;
 
     }
 
     void SetPublicCards()
     {
         GameObject[] publicCards = GameObjectHelper.GetChildren(publicCardArea);
-        for (int i = 0; i < openedCards.Length; i++)
+        if (room.shared_cards != null)
         {
-            GameObject publicCard = publicCards[i].transform.GetChild(0).gameObject;
-            publicCard.GetComponent<SpriteRenderer>().sprite = CardHelper.GetCard(openedCards[i]);
+            for (int i = 0; i < room.shared_cards.Length; i++)
+            {
+                GameObject publicCard = publicCards[i].transform.GetChild(0).gameObject;
+                publicCard.GetComponent<SpriteRenderer>().sprite = CardHelper.GetCard(room.shared_cards[i]);
+            }
         }
     }
 
-    public void sitToRoom(int index)
+    public void sitToRoom(int index) //api
     {
-        sitPositionTemp = index;
-
         string uid = Globals.gameToken.uid;
         int pin = Globals.gameToken.pin;
         var data = new
@@ -470,8 +359,6 @@ public class GameBehavior : MonoBehaviour
                 errorString = "Invalid response";
                 break;
             }
-            Globals.roomStates[currentRoomIndex]["ready"] = true;
-            sitPosition = sitPositionTemp;
             actionButtonAreaIndex = 0;
             return;
         } while (false);
@@ -493,23 +380,21 @@ public class GameBehavior : MonoBehaviour
 
     private void OnReadyResponse(JToken jsonResponse)
     {
-        Globals.roomStates[currentRoomIndex]["ready"] = null;
-        actionButtonAreaIndex = -1;
     }
 
     public void SetTimer()
     {
-        if (sitPosition != -1)
+        if (room.user_seat != -1)
         {
             GameObject[] usersArray = GameObjectHelper.GetChildren(usersParent);
-            Dictionary<string, object>[] rotatedUserInfo = ArrayHelper.RotateArray(usersInfo, sitPosition);
-            int currentActiveUserRotated = ArrayHelper.RotateNumber(currentActiveUser, sitPosition, usersInfo.Length);
-            for (int i = 0; i < rotatedUserInfo.Length; i++)
+            string[] rotatedSeats = ArrayHelper.RotateArray(room.seats, room.user_seat);
+            int currentActiveUserRotated = ArrayHelper.RotateNumber(room.activeSeat, room.user_seat, rotatedSeats.Length);
+            for (int i = 0; i < rotatedSeats.Length; i++)
             {
                 GameObject progressbar = usersArray[i].transform.GetChild(1).transform.GetChild(2).transform.GetChild(0).gameObject;
                 if (i == currentActiveUserRotated)
                 {
-                    progressbar.GetComponent<Image>().fillAmount = ((float)(20 - currentTimeout) / totalTime);
+                    progressbar.GetComponent<Image>().fillAmount = ((float)(20 - room.countdown) / room.totalCount);
                 }
                 else
                 {
@@ -521,10 +406,27 @@ public class GameBehavior : MonoBehaviour
 
     public void SetActionButtonAreaIndexByGlobal()
     {
-        var readyButtonStatus = Globals.roomStates[Globals.currentRoomIndex]["ready"];
-        if (readyButtonStatus!=null)
+        switch (room.gameStatus)
         {
-            actionButtonAreaIndex = 0;
+            case 0:
+                actionButtonAreaIndex = 0;
+                break;
+            case 1:
+                actionButtonAreaIndex = -1;
+                break;
+            case 2:
+                if (room.activeSeat == room.user_seat)
+                {
+                    actionButtonAreaIndex = 1;
+                }
+                else
+                {
+                    actionButtonAreaIndex = 2;
+                }
+                break;
+            default:
+                actionButtonAreaIndex = -1;
+                break;
         }
     }
 
@@ -680,36 +582,33 @@ public class GameBehavior : MonoBehaviour
 
     void SetRaiseAmounts()
     {
-        if (gameStarted)
+        if (room.gameStatus==2)
         {
-            Dictionary<string, object> options = NewtonSoftHelper.JObjectToObject<string, object>(Globals.rooms[currentRoomIndex]["options"]);
-            minRaise = int.Parse(options["small_blind"].ToString());
-            maxRaise = int.Parse(usersInfo[sitPosition]["walletChips"].ToString());
-            raiseBarSlider.GetComponent<Slider>().minValue = minRaise;
-            raiseBarSlider.GetComponent<Slider>().maxValue = maxRaise;
+            raiseBarSlider.GetComponent<Slider>().minValue = room.options.small_blind;
+            raiseBarSlider.GetComponent<Slider>().maxValue = room.gamers[Globals.userProfile.uid].coins;
         }
     }
 
     void SetRaiseBar()
     {
-        if(gameStarted)
+        if(room.gameStatus==2)
         {
             GameObject[] raiseBarGrades = GameObjectHelper.GetChildren(raiseBarGradeParent);
             raiseToValue.GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated((long)raiseAmount, 1);
-            int raiseBarStep = (maxRaise - minRaise) / raiseBarGrades.Length;
+            int raiseBarStep = (room.gamers[Globals.userProfile.uid].coins - room.options.small_blind) / raiseBarGrades.Length;
             for (int i = 0; i < raiseBarGrades.Length; i++)
             {
                 if (i != raiseBarGrades.Length - 1)
                 {
-                    raiseBarGrades[i].GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated((long)(minRaise + raiseBarStep * i), 0);
+                    raiseBarGrades[i].GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated((long)(room.options.small_blind + raiseBarStep * i), 0);
                 }
                 else
                 {
-                    raiseBarGrades[i].GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated((long)maxRaise, 0);
+                    raiseBarGrades[i].GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated((long)room.gamers[Globals.userProfile.uid].coins, 0);
                 }
             }
 
-            float raiseBarScale = (float)(raiseAmount - minRaise) / (maxRaise - minRaise);
+            float raiseBarScale = (float)(raiseAmount - room.options.small_blind) / (room.gamers[Globals.userProfile.uid].coins - room.options.small_blind);
             raiseBar.transform.localScale = (new Vector3(1, raiseBarScale, 1));
         }
         
@@ -717,13 +616,13 @@ public class GameBehavior : MonoBehaviour
 
     void CheckRaiseAmount()
     {
-        if (raiseAmount > maxRaise)
+        if (raiseAmount > room.gamers[Globals.userProfile.uid].coins)
         {
-            raiseAmount = maxRaise;
+            raiseAmount = room.gamers[Globals.userProfile.uid].coins;
         }
-        else if( raiseAmount < minRaise)
+        else if( raiseAmount < room.options.small_blind)
         {
-            raiseAmount = minRaise;
+            raiseAmount = room.options.small_blind;
         }
     }
 
@@ -751,7 +650,7 @@ public class GameBehavior : MonoBehaviour
             f = "buychip",
             args = new
             {
-                roomid = Globals.currentRoomId,
+                roomid = room.id,
                 amount = addChipValue
             },
         };
@@ -765,11 +664,11 @@ public class GameBehavior : MonoBehaviour
 
     public void SetGamersActionStatus()
     {
-        if (gameStarted)
+        if (room.gameStatus==2)
         {
             GameObject[] usersArray = GameObjectHelper.GetChildren(usersParent);
-            string[] gamerActionStatus = Globals.gamersActionStates[Globals.currentRoomIndex];
-            string[] rotatedGamerActionStatus = ArrayHelper.RotateArray(gamerActionStatus, sitPosition);
+            string[] gamerActionStatus = room.status;
+            string[] rotatedGamerActionStatus = ArrayHelper.RotateArray(gamerActionStatus, room.user_seat);
 
             for (int i = 1; i < usersArray.Length; i++)
             {
@@ -781,7 +680,74 @@ public class GameBehavior : MonoBehaviour
         }
     }
 
+    
+    public void SetRoomsToggler()
+    {
+        
+        GameObject[] rooms = GameObjectHelper.GetChildren(RoomTogglerParent);
+        for(int i = 0; i < 3; i++)
+        {
+            rooms[i].SetActive(false);
+        }
+        int joinedRoomCount = 0;
+        string[] joinedRoomIds = Globals.gameRooms.Keys.ToArray();
+        for(int i = 0; i < joinedRoomIds.Length; i++)
+        {
+            rooms[joinedRoomCount].SetActive(true);
+            rooms[joinedRoomCount].transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<TMP_Text>().text = Globals.gameRooms[joinedRoomIds[i]].name;
 
+            rooms[joinedRoomCount].transform.GetChild(0).gameObject.GetComponent<Button>().onClick.AddListener(() => ChangeRoom(joinedRoomIds[i]));
+
+            GameObject avatar = rooms[joinedRoomCount].transform.GetChild(2).gameObject;
+            if (joinedRoomIds[i] == Globals.currentRoom)
+            {
+
+                avatar.GetComponent<SpriteRenderer>().sprite = AvatarHelper.GetAvatar(Globals.userProfile.avatar.ToString());
+                avatar.SetActive(true);
+            }
+            else
+            {
+                avatar.SetActive(false);
+            }
+
+            joinedRoomCount++;
+        }
+        if (joinedRoomCount > 2)
+        {
+            RoomTogglerParent.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 245);
+            RoomAddButton.SetActive(false);
+        }
+        else
+        {
+            RoomTogglerParent.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 150);
+            RoomAddButton.SetActive(true);
+        }
+    }
+
+    public void ChangeRoom(string roomId)
+    {
+        Globals.currentRoom = roomId;
+    }
+
+    public void SetRoomsView()
+    {
+        GameObject[] rooms = GameObjectHelper.GetChildren(RoomViewParent);
+        for (int i = 0; i < 3; i++)
+        {
+            rooms[i].SetActive(false);
+        }
+        int joinedRoomCount = 0;
+        string[] joinedRoomIds = Globals.gameRooms.Keys.ToArray();
+        for (int i = 0; i < joinedRoomIds.Length; i++)
+        {
+            rooms[joinedRoomCount].SetActive(true);
+            rooms[joinedRoomCount].transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<TMP_Text>().text = Globals.gameRooms[joinedRoomIds[i]].name;
+
+            joinedRoomCount++;
+        }
+    }
+
+    //For Room Table
     public void getRoomsListData()
     {
         string uid = Globals.gameToken.uid;
@@ -804,13 +770,13 @@ public class GameBehavior : MonoBehaviour
             {
                 roomListTable.ClearRows();
             });
-            
+
         }
-        catch(Exception e)
+        catch (Exception e)
         {
             Debug.Log(e);
         }
-        
+
         Dictionary<string, object> res = JsonResponse.ToDictionary(jsonResponse);
         IEnumerable temp = JsonConvert.DeserializeObject(res["ret"].ToString()) as IEnumerable;
         JObject[] valueArray = temp.Cast<JObject>().ToArray();
@@ -818,7 +784,7 @@ public class GameBehavior : MonoBehaviour
         {
             int index = i;
             Dictionary<string, object> dictionary = valueArray[i].ToObject<Dictionary<string, object>>();
-            if (!Globals.roomIdArray.Contains(int.Parse(dictionary["id"].ToString())))
+            if (!Globals.gameRooms.ContainsKey(dictionary["id"].ToString()))
             {
                 string[] rowContents = parseRow(dictionary);
                 UnityMainThreadDispatcher.Instance().Enqueue(() =>
@@ -826,7 +792,7 @@ public class GameBehavior : MonoBehaviour
                     AddRowToTable(rowContents, Int32.Parse(dictionary["id"].ToString()));
                 });
             }
-            
+
         }
 
     }
@@ -930,86 +896,5 @@ public class GameBehavior : MonoBehaviour
         button.onClick.AddListener(() => JoinHandler(index));
     }
 
-    public void SetRoomsToggler()
-    {
-        
-        GameObject[] rooms = GameObjectHelper.GetChildren(RoomTogglerParent);
-        for(int i = 0; i < 3; i++)
-        {
-            rooms[i].SetActive(false);
-        }
-        int joinedRoomCount = 0;
-        for(int i = 0; i < Globals.rooms.Length; i++)
-        {
-            if (Globals.rooms[i] != null)
-            {
-                rooms[joinedRoomCount].SetActive(true);
-                rooms[joinedRoomCount].transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<TMP_Text>().text = Globals.rooms[i]["name"].ToString();
-                Dictionary<string, object> profile = (Dictionary<string, object>)Globals.profile;
-                
-                int roomId = int.Parse(Globals.rooms[i]["id"].ToString());
-                int roomIndex = i;
-                rooms[joinedRoomCount].transform.GetChild(0).gameObject.GetComponent<Button>().onClick.AddListener(() => ChangeRoom(roomId, roomIndex));
-
-                GameObject avatar = rooms[joinedRoomCount].transform.GetChild(2).gameObject;
-                if (roomId == Globals.currentRoomId)
-                {
-
-                    avatar.GetComponent<SpriteRenderer>().sprite = AvatarHelper.GetAvatar(profile["avatar"].ToString());
-                    avatar.SetActive(true);
-                }
-                else
-                {
-                    avatar.SetActive(false);
-                }
-
-                joinedRoomCount++;
-                
-            }
-        }
-        if (joinedRoomCount > 2)
-        {
-            RoomTogglerParent.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 245);
-            RoomAddButton.SetActive(false);
-        }
-        else
-        {
-            RoomTogglerParent.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 150);
-            RoomAddButton.SetActive(true);
-        }
-    }
-
-    public void SetRoomsView()
-    {
-        GameObject[] rooms = GameObjectHelper.GetChildren(RoomViewParent);
-        for (int i = 0; i < 3; i++)
-        {
-            rooms[i].SetActive(false);
-        }
-        int joinedRoomCount = 0;
-        for (int i = 0; i < Globals.rooms.Length; i++)
-        {
-            if (Globals.rooms[i] != null)
-            {
-                rooms[joinedRoomCount].SetActive(true);
-                rooms[joinedRoomCount].transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<TMP_Text>().text = Globals.rooms[i]["name"].ToString();
-
-                joinedRoomCount++;
-            }
-        }
-    }
-
-    public void ChangeRoom(int roomId, int roomIndex)
-    {
-        Globals.currentRoomId = roomId;
-        Globals.currentRoomIndex = roomIndex;
-    }
-
-    void SetSharedCards()
-    {
-        if (gameStarted)
-        {
-            openedCards = Globals.shareCards[Globals.currentRoomIndex];
-        }
-    }
+    //End Table
 }
