@@ -19,13 +19,17 @@ public class Room
     public int casino = -1;
     public object chips = null;
     public int dealer_seat = -1;
+    public int activeSeat = -1;
+    public int countdown = -1;
+    public int totalCount = -1;
     public Dictionary<string, Gamer> gamers = new Dictionary<string, Gamer>();
     public int gamers_count = 0;
     public string id = null;
     public int max_chip = 0;
     public string name = null;
     public int last_raise = 0;
-    public string[] status = { null, null, null, null, null, null, null, null, null };
+    public string[] status = null;
+    public int gameStatus = -1;
     public class Options {
         public int big_blind = 0;
         public int small_blind = 0;
@@ -43,7 +47,7 @@ public class Room
     } ;
     public Options options = new Options();
     public int pot = 0 ;
-    public int[] pot_chips = null;
+    public int[] pot_chips = new int[9];
     public string[] seats = null;
     public int seats_count = 0;
     public int seats_taken = 0;
