@@ -81,9 +81,8 @@ public class RoomCreateScript : MonoBehaviour
     {
         if (Validate())
         {
-            Dictionary<string, object> token = (Dictionary<string, object>)Globals.token;
-            string uid = token["uid"].ToString();
-            int pin = Int32.Parse(token["pin"].ToString());
+            string uid = Globals.gameToken.uid;
+            int pin = Globals.gameToken.pin;
             var data = new
             {
                 uid = uid,

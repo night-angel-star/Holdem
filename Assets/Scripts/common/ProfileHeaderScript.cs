@@ -1,10 +1,6 @@
-using Newtonsoft.Json.Linq;
-using System.Collections;
 using System.Collections.Generic;
-using System.Security.Cryptography;
 using TMPro;
 using UnityEngine;
-using UnityEngine.UI;
 
 public class ProfileHearderScript : MonoBehaviour
 {
@@ -16,10 +12,9 @@ public class ProfileHearderScript : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Dictionary<string, object> profile = (Dictionary<string, object>)Globals.profile;
-        UsernameText.text = profile["name"].ToString();
-        CoinText.text = profile["deposite"].ToString();
-        Avatar.GetComponent<SpriteRenderer>().sprite = AvatarHelper.GetAvatar(profile["avatar"].ToString());
+        UsernameText.text = Globals.userProfile.name;
+        CoinText.text = Globals.userProfile.deposite.ToString();
+        Avatar.GetComponent<SpriteRenderer>().sprite = AvatarHelper.GetAvatar(Globals.userProfile.avatar.ToString());
     }
 
     // Update is called once per frame

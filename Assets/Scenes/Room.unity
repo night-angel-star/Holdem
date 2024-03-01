@@ -10741,6 +10741,13 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23629fc8cd6e9f94088d4192c3b629a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  roomButtons:
+  - {fileID: 1110193594}
+  - {fileID: 1316087213}
+  - {fileID: 629026120}
+  - {fileID: 856442558}
+  - {fileID: 1301383333}
+  roomIdOfButtons: []
   roomNameObject: {fileID: 46589902}
   myCards: {fileID: 1320116196}
   usersParent: {fileID: 1424365566}

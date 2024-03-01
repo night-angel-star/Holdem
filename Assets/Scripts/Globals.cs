@@ -9,10 +9,26 @@ using SocketIOClient.Transport;
 using Newtonsoft.Json;
 using UnityEngine.SceneManagement;
 
+using GameRoomsT =  System.Collections.Generic.Dictionary<string, Room>;
+public class Token
+{
+    public string uid;
+    public int pin;
+}
+
 public static class Globals
 {
-    public static bool connected = false;
     public static SocketIoConnection socketIoConnection = new SocketIoConnection();
+    public static bool connected = false;
+    public static Token gameToken = new Token();
+    public static Gamer userProfile = new Gamer();
+    public static GameRoomsT gameRooms = new GameRoomsT();
+    public static string currentRoom = null;
+    public static string strUri = "http://192.168.148.182:3000";
+
+
+
+
     public static object profile;
     public static object token;
     public static int[] roomIdArray = { -1, -1, -1 };
@@ -23,7 +39,6 @@ public static class Globals
     public static int[][] shareCards = new int[3][];
     public static int currentRoomId = -1;
     public static int currentRoomIndex = -1;
-    public static string strUri = "http://192.168.148.182:3000";
 
     public static int getBlankRoomIndex()
     {
