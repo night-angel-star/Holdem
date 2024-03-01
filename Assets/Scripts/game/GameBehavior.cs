@@ -1,10 +1,13 @@
-﻿using Newtonsoft.Json.Linq;
+﻿using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using System.Text.RegularExpressions;
 using TMPro;
+using UI.Tables;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -35,6 +38,13 @@ public class GameBehavior : MonoBehaviour
     public GameObject raiseToValue;
 
     public GameObject raiseBarSlider;
+
+    public TableLayout roomListTable;
+    public GameObject joinButtonPrefab;
+
+    public GameObject RoomTogglerParent;
+    public GameObject RoomViewParent;
+    public GameObject RoomAddButton;
 
     public string roomName;
     public int chipsMinBuy;
@@ -89,6 +99,8 @@ public class GameBehavior : MonoBehaviour
         SetRaiseBar();
         CheckRaiseAmount();
         SetGamersActionStatus();
+        SetRoomsToggler();
+        SetRoomsView();
     }
 
     void SetRoomData()
@@ -105,9 +117,17 @@ public class GameBehavior : MonoBehaviour
         {
             Debug.Log(ex);
         }
+        try
+        {
+            Dictionary<string, object> options = NewtonSoftHelper.JObjectToObject<string, object>(Globals.rooms[currentRoomIndex]["options"]);
+            chipsMinBuy = int.Parse(options["min_buy"].ToString());
+        }
+        catch(Exception ex)
+        {
+            Debug.Log(ex);
+        }
         
-        Dictionary<string, object> options = NewtonSoftHelper.JObjectToObject<string, object>(Globals.rooms[currentRoomIndex]["options"]);
-        chipsMinBuy = int.Parse(options["min_buy"].ToString());
+        
         chipsMaxBuy = int.Parse(((Dictionary<string, object>)Globals.profile)["deposite"].ToString());
 
         gameStarted = Globals.roomGameStarted[currentRoomIndex];
@@ -716,4 +736,229 @@ public class GameBehavior : MonoBehaviour
         }
     }
 
+
+    public void getRoomsListData()
+    {
+        Dictionary<string, object> token = (Dictionary<string, object>)Globals.token;
+        string uid = token["uid"].ToString();
+        int pin = Int32.Parse(token["pin"].ToString());
+        var data = new
+        {
+            uid = uid,
+            pin = pin,
+            f = "rooms",
+            args = "0"
+        };
+        Globals.socketIoConnection.SendRpc(data, OnRoomsResponse);
+    }
+
+    private void OnRoomsResponse(JToken jsonResponse)
+    {
+        try
+        {
+            UnityMainThreadDispatcher.Instance().Enqueue(() =>
+            {
+                roomListTable.ClearRows();
+            });
+            
+        }
+        catch(Exception e)
+        {
+            Debug.Log(e);
+        }
+        
+        Dictionary<string, object> res = JsonResponse.ToDictionary(jsonResponse);
+        IEnumerable temp = JsonConvert.DeserializeObject(res["ret"].ToString()) as IEnumerable;
+        JObject[] valueArray = temp.Cast<JObject>().ToArray();
+        for (int i = 0; i < valueArray.Length; i++)
+        {
+            int index = i;
+            Dictionary<string, object> dictionary = valueArray[i].ToObject<Dictionary<string, object>>();
+            if (!Globals.roomIdArray.Contains(int.Parse(dictionary["id"].ToString())))
+            {
+                string[] rowContents = parseRow(dictionary);
+                UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                {
+                    AddRowToTable(rowContents, Int32.Parse(dictionary["id"].ToString()));
+                });
+            }
+            
+        }
+
+    }
+
+    private string[] parseRow(Dictionary<string, object> data)
+    {
+        string[] rowElements = { };
+        Array.Resize(ref rowElements, 5);
+        rowElements[0] = convertToTitleCase(data["type"].ToString());
+        rowElements[1] = convertToTitleCase(data["room_name"].ToString());
+        rowElements[2] = data["seats_taken"].ToString() + "/" + data["seat"].ToString();
+        rowElements[3] = data["small_blind"].ToString() + "/" + data["big_blind"].ToString();
+        rowElements[4] = data["min_buy"].ToString();
+        return rowElements;
+    }
+
+    private string convertToTitleCase(string str)
+    {
+        TextInfo textInfo = new CultureInfo("en-US", false).TextInfo;
+        string output = textInfo.ToTitleCase(str);
+        return output;
+    }
+
+    private void JoinHandler(int roomIndex)
+    {
+        Dictionary<string, object> token = (Dictionary<string, object>)Globals.token;
+        string uid = token["uid"].ToString();
+        int pin = Int32.Parse(token["pin"].ToString());
+        var data = new
+        {
+            uid = uid,
+            pin = pin,
+            f = "entergame",
+            args = new
+            {
+                is_new = "old",
+                id = roomIndex
+            }
+        };
+        Globals.socketIoConnection.SendRpc(data, OnJoinResponse);
+    }
+
+    private void OnJoinResponse(JToken jsonResponse)
+    {
+        string errorString = "";
+        Dictionary<string, object> res = JsonResponse.ToDictionary(jsonResponse);
+
+        do
+        {
+            if (res == null)
+            {
+                errorString = "Invalid response";
+                break;
+            }
+            int err = res["err"].ConvertTo<int>();
+            if (err != 0)
+            {
+                if (!res.ContainsKey("ret"))
+                {
+                    errorString = "Invalid response";
+                    break;
+                }
+                errorString = res["ret"].ToString();
+                break;
+            }
+            if (!res.ContainsKey("ret"))
+            {
+                errorString = "Invalid response";
+                break;
+            }
+            Dictionary<string, object> ret = JsonResponse.ToDictionary(res["ret"]);
+            if (ret == null)
+            {
+                errorString = "Invalid response";
+                break;
+            }
+
+            UnityMainThreadDispatcher.Instance().Enqueue(() =>
+            {
+                SceneManager.LoadScene("Room");
+            });
+            return;
+        } while (false);
+    }
+
+    public void AddRowToTable(string[] rowElements, int index)
+    {
+        TableRow newRow = roomListTable.AddRow();
+        newRow.preferredHeight = 23;
+        for (int i = 0; i < rowElements.Length; i++)
+        {
+            TableScript.AddStringToCell(newRow.Cells[i], convertToTitleCase(rowElements[i].ToString()));
+        }
+        GameObject cellObject = new GameObject("GameObject", typeof(RectTransform));
+        cellObject.transform.SetParent(newRow.Cells[5].transform);
+        cellObject.transform.localScale = Vector3.one;
+
+        GameObject instantiatedButton = Instantiate(joinButtonPrefab, cellObject.transform);
+        instantiatedButton.transform.localScale = Vector3.one;
+
+        Button button = instantiatedButton.GetComponent<Button>();
+        button.onClick.AddListener(() => JoinHandler(index));
+    }
+
+    public void SetRoomsToggler()
+    {
+        
+        GameObject[] rooms = GameObjectHelper.GetChildren(RoomTogglerParent);
+        for(int i = 0; i < 3; i++)
+        {
+            rooms[i].SetActive(false);
+        }
+        int joinedRoomCount = 0;
+        for(int i = 0; i < Globals.rooms.Length; i++)
+        {
+            if (Globals.rooms[i] != null)
+            {
+                rooms[joinedRoomCount].SetActive(true);
+                rooms[joinedRoomCount].transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<TMP_Text>().text = Globals.rooms[i]["name"].ToString();
+                Dictionary<string, object> profile = (Dictionary<string, object>)Globals.profile;
+                
+                int roomId = int.Parse(Globals.rooms[i]["id"].ToString());
+                int roomIndex = i;
+                rooms[joinedRoomCount].transform.GetChild(0).gameObject.GetComponent<Button>().onClick.AddListener(() => ChangeRoom(roomId, roomIndex));
+
+                GameObject avatar = rooms[joinedRoomCount].transform.GetChild(2).gameObject;
+                if (roomId == Globals.currentRoomId)
+                {
+
+                    avatar.GetComponent<SpriteRenderer>().sprite = AvatarHelper.GetAvatar(profile["avatar"].ToString());
+                    avatar.SetActive(true);
+                }
+                else
+                {
+                    avatar.SetActive(false);
+                }
+
+                joinedRoomCount++;
+                
+            }
+        }
+        if (joinedRoomCount > 2)
+        {
+            RoomTogglerParent.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 245);
+            RoomAddButton.SetActive(false);
+        }
+        else
+        {
+            RoomTogglerParent.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, 150);
+            RoomAddButton.SetActive(true);
+        }
+    }
+
+    public void SetRoomsView()
+    {
+        GameObject[] rooms = GameObjectHelper.GetChildren(RoomViewParent);
+        for (int i = 0; i < 3; i++)
+        {
+            rooms[i].SetActive(false);
+        }
+        int joinedRoomCount = 0;
+        for (int i = 0; i < Globals.rooms.Length; i++)
+        {
+            if (Globals.rooms[i] != null)
+            {
+                rooms[joinedRoomCount].SetActive(true);
+                rooms[joinedRoomCount].transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<TMP_Text>().text = Globals.rooms[i]["name"].ToString();
+
+                joinedRoomCount++;
+            }
+        }
+    }
+
+    public void ChangeRoom(int roomId, int roomIndex)
+    {
+        Globals.currentRoomId = roomId;
+        Globals.currentRoomIndex = roomIndex;
+    }
 }
