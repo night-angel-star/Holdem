@@ -36,10 +36,12 @@ public class SocketIoConnection
         socketIoUnity.On("rpc_ret", OnRpcRet);
         socketIoUnity.OnConnected += OnConnected;
         socketIoUnity.Connect();
+        Debug.Log("serverUri is:"+serverUri);
         return true;
     }
     public bool Connect()
     {
+        
         if (socketIoUnity == null)
         {
             var uri = new Uri(serverUri);
@@ -70,6 +72,7 @@ public class SocketIoConnection
     private void OnConnected(object sender, EventArgs e)
     {
         Debug.Log($"Connected: {socketIoUnity.Connected}");
+        Globals.connected = true;
         throw new NotImplementedException();
     }
 
