@@ -203,8 +203,73 @@ public class DealNotifyEvent : RoomEvent
 {
     public class DealEventArgs
     {
-        public JToken[][] deals;
+        public List<List<object>> deals;
         public int delay;
     }
     public new DealEventArgs args;
+}
+
+public class FoldNotifyEvent : RoomEvent
+{
+    public class FoldEventArgs
+    {
+        public string uid;
+        public int seat;
+    }
+    public new FoldEventArgs args;
+}
+
+public class CheckNotifyEvent : RoomEvent
+{
+    public class CheckEventArgs
+    {
+        public string uid;
+        public int call;
+        public int raise;
+        public int seat;
+    }
+    public new CheckEventArgs args;
+}
+
+public class RaiseNotifyEvent : RoomEvent
+{
+    public class RaiseEventArgs
+    {
+        public string uid;
+        public int call;
+        public int raise;
+        public int seat;
+    }
+    public new RaiseEventArgs args;
+}
+
+public class CallNotifyEvent : RoomEvent
+{
+    public class CallEventArgs
+    {
+        public string uid;
+        public int call;
+        public int raise;
+        public int seat;
+    }
+    public new CallEventArgs args;
+}
+
+public class GameoverNotifyEvent : RoomEvent
+{
+    
+}
+
+public class PromptNotifyEvent : RoomEvent
+{
+    public class PromptEventArgs
+    {
+        public bool fold;
+        public bool check;
+        public bool call;
+        public bool raise;
+        public bool takeseat;
+        public bool ready;
+    }
+    public new PromptEventArgs args;
 }
