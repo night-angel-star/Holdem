@@ -171,7 +171,15 @@ public class GameBehavior : MonoBehaviour
                 usersInfo[i].Add("avatar", gamer["avatar"]);
                 usersInfo[i].Add("name", gamer["name"]);
                 usersInfo[i].Add("walletChips", gamer["coins"]);
-                usersInfo[i].Add("chips", gamer["chips"]);
+                if (gamer.ContainsKey("chips"))
+                {
+                    usersInfo[i].Add("chips", gamer["chips"]);
+                }
+                else
+                {
+                    usersInfo[i].Add("chips", "0");
+                }
+                
                 usersInfo[i].Add("uid", gamer["uid"]);
                 if (gamer.ContainsKey("cards"))
                 {
