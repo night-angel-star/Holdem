@@ -22,9 +22,6 @@ public class GameBehavior : MonoBehaviour
     // public GameEngine engine;
     public Room room;
 
-    public GameObject[] roomButtons;
-    public string[] roomIdOfButtons;
-
     public TMP_Text roomNameObject;
     public GameObject myCards;
     public GameObject usersParent;
@@ -54,25 +51,13 @@ public class GameBehavior : MonoBehaviour
     public string roomName;
     public int chipsMinBuy;
     public int chipsMaxBuy;
-    public int[] myCardsNumber;
-    public Dictionary<string, object>[] usersInfo;
-    public int[] openedCards;
 
-    public int sitPosition;
-    private int sitPositionTemp;
-
-    public int currentActiveUser;
-    public int currentTimeout;
-    public int totalTime = 20;
 
     public int minRaise = 0;
     public int maxRaise = 70000;
     public int raiseAmount = 0;
 
     public int actionButtonAreaIndex = -1;
-    public int currentRoomId = -1;
-    public int currentRoomIndex = -1;
-    public bool gameStarted = false;
 
     public bool sitOutNextHandButtonEnabled = false;
     public bool sitOutNextBigBlindButtonEnabled = false;
@@ -81,51 +66,17 @@ public class GameBehavior : MonoBehaviour
 
     void Start()
     {
-        roomIdOfButtons = new string[roomButtons.Length];
-        // engine = new GameEngine(this);
-        // engine.Start();
-        UnityMainThreadDispatcher.Instance();
     }
 
-    public void UpdateRoomButtons()
-    {
-        int i = 0;
-        foreach (string roomId in Globals.gameRooms.Keys)
-        {
-            roomButtons[i].name = roomId;
-            GameObject gameObject = Utils.GetChildGameObject(roomButtons[i], "RoomName");
-            if (gameObject != null)
-            {
-                gameObject.GetComponent<TextMeshProUGUI>().text = Globals.gameRooms[roomId].name;
-            }
-            roomButtons[i].SetActive(true);
-            roomIdOfButtons[i++] = roomId;
-        }
-        while (i < roomButtons.Length)
-        {
-            roomButtons[i++].SetActive(false);
-        }
-    }
-    public void UpdateTable()
-    {
-
-    }
-
-    public void ShowRoom()
-    {
-        UnityMainThreadDispatcher.Instance().Enqueue(() =>
-        {
-            UpdateRoomButtons();
-            UpdateTable();
-        });
-        
-    }
+    
 
     // Update is called once per frame
     void Update()
     {
-        
+
         //read from global
+        UpdateRoomFromGlobal();
+        //set data from room data
         SetRoomData();
         SetActionButtonArea();
         //draw ui
@@ -148,32 +99,18 @@ public class GameBehavior : MonoBehaviour
         SetSharedCards();
     }
 
+    void UpdateRoomFromGlobal()
+    {
+        room = Globals.gameRooms[Globals.currentRoom];
+    }
+
     void SetRoomData()
     {
-        currentRoomId = Globals.currentRoomId;
-
-        currentRoomIndex = NewtonSoftHelper.GetIndexFromJArray(Globals.rooms, "id", Globals.currentRoomId.ToString());
-        //room info
-        try
-        {
-            roomName = Globals.rooms[currentRoomIndex]["name"] as string;
-        }
-        catch (Exception ex)
-        {
-            Debug.Log(ex);
-        }
-        try
-        {
-            Dictionary<string, object> options = NewtonSoftHelper.JObjectToObject<string, object>(Globals.rooms[currentRoomIndex]["options"]);
-            chipsMinBuy = int.Parse(options["min_buy"].ToString());
-        }
-        catch(Exception ex)
-        {
-            Debug.Log(ex);
-        }
+        roomName = room.name;
+        chipsMinBuy = room.options.min_buy;
+        chipsMaxBuy = Globals.userProfile.deposite;
         
         
-        chipsMaxBuy = int.Parse(((Dictionary<string, object>)Globals.profile)["deposite"].ToString());
 
         gameStarted = Globals.roomGameStarted[currentRoomIndex];
 
@@ -181,8 +118,6 @@ public class GameBehavior : MonoBehaviour
         {
             try
             {
-                currentActiveUser = int.Parse(Globals.rooms[currentRoomIndex]["activeUserIndex"].ToString());
-                currentTimeout = int.Parse(Globals.rooms[currentRoomIndex]["countDownSec"].ToString());
                 myCardsNumber = (int[])Globals.rooms[currentRoomIndex]["myCards"];
                 if (sitPosition == currentActiveUser)
                 {
