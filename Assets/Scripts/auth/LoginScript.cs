@@ -7,6 +7,7 @@ using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using Newtonsoft.Json;
+using System;
 
 public class LoginScript : MonoBehaviour
 {
@@ -56,7 +57,13 @@ public class LoginScript : MonoBehaviour
             }
             var profile = ret["profile"];
             var token = ret["token"];
-            Globals.userProfile = JsonConvert.DeserializeObject<Gamer>(profile.ToString());
+            try
+            {
+                Globals.userProfile = JsonConvert.DeserializeObject<Gamer>(profile.ToString());
+            } catch (Exception error)
+            {
+                Debug.LogError(error);
+            }
             Globals.gameToken = JsonConvert.DeserializeObject<Token>(token.ToString());
             Debug.Log(Globals.gameToken);
             UnityMainThreadDispatcher.Instance().Enqueue(() =>

@@ -7,11 +7,9 @@ public class AvatarHelper : MonoBehaviour
     public static Sprite GetAvatar(string index)
     {
         
-        
+        string avatarIndex = index == "" ? "0" : index;
         Sprite[] cardSprite = Resources.LoadAll<Sprite>("Images/avatar");
 
-
-        
-        return cardSprite[int.Parse(index)];
+        return cardSprite[int.Parse(avatarIndex)];
     }
 }

@@ -95,7 +95,7 @@ public class GameEngine
             TakeSeatNotifyEvent json = baseToken.ToObject<TakeSeatNotifyEvent>();
             if (json != null)
             {
-                ProcessTakeSeat(json.args.uid, json.args.roomid.ToString(), json.args.where);
+                ProcessTakeSeat(json.args.uid, json.roomid.ToString(), json.args.where);
             }
 
         } while (false);
@@ -118,7 +118,7 @@ public class GameEngine
             BuyChipNotifyEvent json = baseToken.ToObject<BuyChipNotifyEvent>();
             if (json != null)
             {
-                ProcessBuyChip(json.uid, json.args.roomid.ToString(), json.args.amount);
+                ProcessBuyChip(json.args.uid, json.roomid.ToString(), json.args.amount);
             }
 
         } while (false);
@@ -465,6 +465,7 @@ public class GameEngine
                 break;
             }
             Globals.gameRooms[json.roomid.ToString()].gameStatus = 3;
+
         } while (false);
         if (errorString != "")
         {
@@ -484,7 +485,7 @@ public class GameEngine
             CountdownNotifyEvent json = baseToken.ToObject<CountdownNotifyEvent>();
             if (json != null)
             {
-                ProcessCountdown(json.args.roomid.ToString(), json.args.sec);
+                ProcessCountdown(json.roomid.ToString(), json.args.sec);
             }
 
         } while (false);
