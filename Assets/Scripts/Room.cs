@@ -4,7 +4,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using Unity.VisualScripting;
-using UnityEditor.XR;
 using UnityEngine;
 
 using JsonResponseT = System.Collections.Generic.Dictionary<string, object>;
@@ -28,7 +27,7 @@ public class Room
     public int max_chip = 0;
     public string name = null;
     public int last_raise = 0;
-    public string[] status = null;
+    public string[] status = new string[9];
     public int gameStatus = -1;
     public class Options {
         public int big_blind = 0;
@@ -53,7 +52,6 @@ public class Room
     public int seats_taken = 0;
     public int[] shared_cards = null;
     public string type = null;
-    public int user_seat = -1;
 
     public class Operations {
         public bool fold = false;
@@ -65,6 +63,21 @@ public class Room
     }
     public Operations operations = new Operations();
 
+    public int GetUserSeat()
+    {
+        int user_seat = -1;
+        string uid = Globals.userProfile.uid;
+        for (int i = 0; i< seats.Length; i++)
+        {
+            if (seats[i] == uid)
+            {
+                user_seat = i;
+                break;
+            }
+        }
+        return user_seat;
+
+    }
     public void UpdateCmdsFromJson(JToken baseData)
     {
         JsonResponseT cmdsDictionary = JsonResponse.ToDictionary(baseData);
@@ -82,4 +95,5 @@ public class Room
             }
         }
     }
+
 }

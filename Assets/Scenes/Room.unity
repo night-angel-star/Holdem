@@ -10741,13 +10741,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 23629fc8cd6e9f94088d4192c3b629a5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  roomButtons:
-  - {fileID: 1110193594}
-  - {fileID: 1316087213}
-  - {fileID: 629026120}
-  - {fileID: 856442558}
-  - {fileID: 1301383333}
-  roomIdOfButtons: []
   roomNameObject: {fileID: 46589902}
   myCards: {fileID: 1320116196}
   usersParent: {fileID: 1424365566}
@@ -10769,22 +10762,8 @@ MonoBehaviour:
   RoomTogglerParent: {fileID: 265549839}
   RoomViewParent: {fileID: 1775733626}
   RoomAddButton: {fileID: 2095449976}
-  roomName: ROOM-1
-  chipsMinBuy: 25
-  chipsMaxBuy: 1000
-  myCardsNumber: 0000000000000000
-  openedCards: 
-  sitPosition: -1
-  currentActiveUser: -1
-  currentTimeout: 20
-  totalTime: 20
-  minRaise: 10000
-  maxRaise: 100000
   raiseAmount: 10000
   actionButtonAreaIndex: -1
-  currentRoomId: -1
-  currentRoomIndex: -1
-  gameStarted: 0
   sitOutNextHandButtonEnabled: 0
   sitOutNextBigBlindButtonEnabled: 0
   callAnyButtonEnabled: 0
@@ -13961,7 +13940,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1492736714
 RectTransform:
   m_ObjectHideFlags: 0
