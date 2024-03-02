@@ -74,7 +74,6 @@ public class SocketIoConnection
 
     private void ProcessRpcRet(SocketIOResponse response)
     {
-        Debug.Log(response.ToString());
         IEnumerable e = JsonConvert.DeserializeObject(response.ToString()) as IEnumerable;
         object[] responseArray = e.Cast<object>().ToArray();
         if (responseArray != null)

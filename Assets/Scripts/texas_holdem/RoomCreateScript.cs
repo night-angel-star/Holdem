@@ -60,10 +60,10 @@ public class RoomCreateScript : MonoBehaviour
                 break;
             }
 
-            UnityMainThreadDispatcher.Instance().Enqueue(() =>
+            /* UnityMainThreadDispatcher.Instance().Enqueue(() =>
             {
                 SceneManager.LoadScene("Room");
-            });
+            }); */
             return;
         } while (false);
 
@@ -89,13 +89,11 @@ public class RoomCreateScript : MonoBehaviour
                 pin = pin,
                 args = new
                 {
-                    is_new = "new",
-                    type = "limit",
                     room_name = RoomNameInput.text,
-                    seat = seatSelectManager.GetComponent<SelectManager>().currentActive,
+                    seat = (seatSelectManager.GetComponent<SelectManager>().currentActive + 1) * 3,
                     room_type = roomTypeSelectManager.GetComponent<SelectManager>().currentActive
                 },
-                f = "entergame"
+                f = "mkroom"
             };
 
             Globals.socketIoConnection.SendRpc(data, OnResponse);

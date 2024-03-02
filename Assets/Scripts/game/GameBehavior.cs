@@ -105,6 +105,7 @@ public class GameBehavior : MonoBehaviour
 
     bool UpdateRoomFromGlobal()
     {
+        Debug.Log(Globals.gameRooms);
         if (Globals.gameRooms.ContainsKey(Globals.currentRoom))
         {
             room = Globals.gameRooms[Globals.currentRoom];
