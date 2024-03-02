@@ -50,7 +50,7 @@ public class Room
     public string[] seats = null;
     public int seats_count = 0;
     public int seats_taken = 0;
-    public int[] shared_cards = null;
+    public int[] shared_cards = new int[5];
     public string type = null;
 
     public class Operations {

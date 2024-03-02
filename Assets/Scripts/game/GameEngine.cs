@@ -4,6 +4,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using Unity.Collections.LowLevel.Unsafe;
 using Unity.VisualScripting;
 using UnityEditor;
 using UnityEngine;
@@ -38,7 +39,7 @@ public class GameEngine
             if (baseToken.Type != JTokenType.Object)
                 break;
 
-            TakeSeatNotifyEvent json = baseToken.ToObject<TakeSeatNotifyEvent>();
+            ReloginNotifyEvent json = baseToken.ToObject<ReloginNotifyEvent>();
             if (json != null)
             {
                 ProcessRelogin();
@@ -322,7 +323,7 @@ public class GameEngine
             if (json != null)
             {
                 List<List<object>> deals = json.args.deals;
-                if (deals != null)
+                if (deals == null)
                 {
                     return;
                 }
@@ -331,9 +332,10 @@ public class GameEngine
                     int[] shareCards = JsonConvert.DeserializeObject<int[]>(deals[0][1].ToString());
                     foreach (int card in shareCards)
                     {
-                        int index = Array.IndexOf(Globals.gameRooms[json.roomid.ToString()].shared_cards, 0);
-                        Globals.gameRooms[json.roomid.ToString()].shared_cards[index] = card;
+                        Array.Resize(ref Globals.gameRooms[json.roomid.ToString()].shared_cards, Globals.gameRooms[json.roomid.ToString()].shared_cards.Length + 1);
+                        Globals.gameRooms[json.roomid.ToString()].shared_cards[Globals.gameRooms[json.roomid.ToString()].shared_cards.Length - 1] = card;
                     }
+                    Debug.Log(Globals.gameRooms[json.roomid.ToString()].shared_cards);
                 }
             }
 
@@ -465,7 +467,12 @@ public class GameEngine
                 break;
             }
             Globals.gameRooms[json.roomid.ToString()].gameStatus = 3;
-
+            foreach(Gamer g in json.args)
+            {
+                Globals.gameRooms[json.roomid.ToString()].gamers[g.uid] = g;
+                int index = Array.IndexOf(Globals.gameRooms[json.roomid.ToString()].seats, g.uid);
+                Globals.gameRooms[json.roomid.ToString()].cards[index] = g.cards;
+            }
         } while (false);
         if (errorString != "")
         {
@@ -619,7 +626,10 @@ public class GameEngine
         if (Globals.gameRooms.ContainsKey(roomid))
         {
             Globals.gameRooms[roomid].status[seat] = "ready";
-            Globals.gameRooms[roomid].gameStatus = 1;
+            if(uid == Globals.gameToken.uid)
+            {
+                Globals.gameRooms[roomid].gameStatus = 1;
+            }
         }
     }
 

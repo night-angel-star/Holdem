@@ -60,10 +60,10 @@ public class RoomCreateScript : MonoBehaviour
                 break;
             }
 
-            /* UnityMainThreadDispatcher.Instance().Enqueue(() =>
+            UnityMainThreadDispatcher.Instance().Enqueue(() =>
             {
-                SceneManager.LoadScene("Room");
-            }); */
+                SceneManager.LoadScene("TexasHoldem");
+            });
             return;
         } while (false);
 

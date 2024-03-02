@@ -55,7 +55,7 @@ public class TexasHoldem : MonoBehaviour
         Array.Resize(ref rowElements, 5);
         rowElements[0] = convertToTitleCase(data["type"].ToString());
         rowElements[1] = convertToTitleCase(data["name"].ToString());
-        rowElements[2] = data["seats_taken"].ToString() + "/" + data["gamers_count"].ToString();
+        rowElements[2] = data["seats_taken"].ToString() + "/" + data["seats_count"].ToString();
         rowElements[3] = data["small_blind"].ToString() + "/" + data["big_blind"].ToString();
         rowElements[4] = data["min_buy"].ToString();
         return rowElements;
