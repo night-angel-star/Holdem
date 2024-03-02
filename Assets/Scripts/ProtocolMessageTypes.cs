@@ -121,7 +121,7 @@ public class BuyChipNotifyEvent : RoomEvent
     public class BuyChipEventArgs
     {
         public int amount;
-        public int roomid;
+        public string uid;
     }
     public new BuyChipEventArgs args;
 }
@@ -150,7 +150,6 @@ public class ReadyNotifyEvent : RoomEvent
     public class ReadyEventArgs
     {
         public string uid;
-        public int roomid;
         public int where;
     }
     public new ReadyEventArgs args;
@@ -257,7 +256,7 @@ public class CallNotifyEvent : RoomEvent
 
 public class GameoverNotifyEvent : RoomEvent
 {
-    
+    public Gamer[] args;
 }
 
 public class PromptNotifyEvent : RoomEvent

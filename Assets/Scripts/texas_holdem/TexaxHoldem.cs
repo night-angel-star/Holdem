@@ -26,7 +26,7 @@ public class TexasHoldem : MonoBehaviour
             uid = uid,
             pin = pin,
             f = "rooms",
-            args = "0"
+            args = (object)null,
         };
         Globals.socketIoConnection.SendRpc(data, OnResponse);
     }
@@ -54,8 +54,8 @@ public class TexasHoldem : MonoBehaviour
         string[] rowElements = { };
         Array.Resize(ref rowElements, 5);
         rowElements[0] = convertToTitleCase(data["type"].ToString());
-        rowElements[1] = convertToTitleCase(data["room_name"].ToString());
-        rowElements[2] = data["seats_taken"].ToString() + "/" + data["seat"].ToString();
+        rowElements[1] = convertToTitleCase(data["name"].ToString());
+        rowElements[2] = data["seats_taken"].ToString() + "/" + data["seats_count"].ToString();
         rowElements[3] = data["small_blind"].ToString() + "/" + data["big_blind"].ToString();
         rowElements[4] = data["min_buy"].ToString();
         return rowElements;
@@ -76,11 +76,10 @@ public class TexasHoldem : MonoBehaviour
         {
             uid = uid,
             pin = pin,
-            f = "entergame",
+            f = "enterroom",
             args = new
             {
-                is_new = "old",
-                id = roomIndex
+                roomid = roomIndex
             }
         };
         Globals.socketIoConnection.SendRpc(data, OnJoinResponse);
