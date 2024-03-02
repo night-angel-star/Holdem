@@ -10,6 +10,7 @@ using Newtonsoft.Json.Linq;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using System;
+using EasyUI.Toast;
 
 public class RegisterScript : MonoBehaviour
 {
@@ -17,7 +18,6 @@ public class RegisterScript : MonoBehaviour
     public TMP_InputField EmailInput;
     public TMP_InputField PasswordInput;
     public TMP_InputField Password2Input;
-    public TMP_Text ErrorText;
     public Button RegisterButton;
 
     void Start()
@@ -62,7 +62,7 @@ public class RegisterScript : MonoBehaviour
             }
             UnityMainThreadDispatcher.Instance().Enqueue(() =>
             {
-                SceneManager.LoadScene("Login");
+                Toast.Show("Account created successfully.");
             });
             return;
         } while (false);
@@ -72,7 +72,7 @@ public class RegisterScript : MonoBehaviour
         {
             UnityMainThreadDispatcher.Instance().Enqueue(() =>
             {
-                ErrorText.text = errorString;
+                Toast.Show(errorString, "danger");
             });
         }
     }
@@ -137,7 +137,7 @@ public class RegisterScript : MonoBehaviour
         }
         else
         {
-            ErrorText.text = errorString;
+            Toast.Show(errorString, "danger");
             return false;
         }
     }
