@@ -8,7 +8,6 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Linq;
 using System.Dynamic;
-using static UnityEditor.Progress;
 
 
 public class SocketIoConnection
