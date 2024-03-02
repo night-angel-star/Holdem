@@ -256,7 +256,7 @@ public class CallNotifyEvent : RoomEvent
 
 public class GameoverNotifyEvent : RoomEvent
 {
-    
+    public Gamer[] args;
 }
 
 public class PromptNotifyEvent : RoomEvent
