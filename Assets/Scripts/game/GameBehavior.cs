@@ -59,6 +59,8 @@ public class GameBehavior : MonoBehaviour
     public bool sitOutNextBigBlindButtonEnabled = false;
     public bool callAnyButtonEnabled = false;
 
+    bool receiveFromGlobalResult = false;
+
 
     void Start()
     {
@@ -71,32 +73,44 @@ public class GameBehavior : MonoBehaviour
     {
 
         //read from global
-        UpdateRoomFromGlobal();
-        //set data from room data
-        DisableUnneccessarySeats();
-        SetActionButtonArea();
-        //draw ui
-        if (room.gameStatus != 2)
+        receiveFromGlobalResult=UpdateRoomFromGlobal();
+        if (receiveFromGlobalResult)
         {
-            GetMyCard();
+            //set data from room data
+            DisableUnneccessarySeats();
+            SetActionButtonArea();
+            //draw ui
+            if (room.gameStatus == 2)
+            {
+                GetMyCard();
+            }
+            SetUserInfo();
+            SetRoomName();
+            InitializeAddChipsModal();
+            SetPublicCards();
+            SetTimer();
+            SetActionButtonAreaIndexByGlobal();
+            SetRaiseAmounts();
+            SetRaiseBar();
+            CheckRaiseAmount();
+            SetGamersActionStatus();
+            SetRoomsToggler();
+            SetRoomsView();
         }
-        SetUserInfo();
-        SetRoomName();
-        InitializeAddChipsModal();
-        SetPublicCards();
-        SetTimer();
-        SetActionButtonAreaIndexByGlobal();
-        SetRaiseAmounts();
-        SetRaiseBar();
-        CheckRaiseAmount();
-        SetGamersActionStatus();
-        SetRoomsToggler();
-        SetRoomsView();
+        
     }
 
-    void UpdateRoomFromGlobal()
+    bool UpdateRoomFromGlobal()
     {
-        room = Globals.gameRooms[Globals.currentRoom];
+        if (Globals.gameRooms.ContainsKey(Globals.currentRoom))
+        {
+            room = Globals.gameRooms[Globals.currentRoom];
+            return true;
+        }
+        else
+        {
+            return false;
+        }
     }
 
     void DisableUnneccessarySeats()
@@ -150,17 +164,23 @@ public class GameBehavior : MonoBehaviour
 
     void GetMyCard()
     {
+        if (room.cards.Count > 0)
+        {
+            if (room.cards[room.GetUserSeat()].Length > 0)
+            {
+                myCards.SetActive(true);
+                GameObject card1 = myCards.transform.GetChild(0).gameObject;
+                GameObject card2 = myCards.transform.GetChild(1).gameObject;
+                card1.GetComponent<SpriteRenderer>().sprite = CardHelper.GetCard(room.cards[room.GetUserSeat()][0]);
+                card2.GetComponent<SpriteRenderer>().sprite = CardHelper.GetCard(room.cards[room.GetUserSeat()][1]);
+            }
+        }
         
-        myCards.SetActive(true);
-        GameObject card1 = myCards.transform.GetChild(0).gameObject;
-        GameObject card2 = myCards.transform.GetChild(1).gameObject;
-        card1.GetComponent<SpriteRenderer>().sprite = CardHelper.GetCard(room.cards[room.user_seat][0]);
-        card2.GetComponent<SpriteRenderer>().sprite = CardHelper.GetCard(room.cards[room.user_seat][1]);
     }
 
     void SetUserInfo()
     {
-        if (room.user_seat == -1)
+        if (room.GetUserSeat() == -1)
         {
             GameObject[] usersArray = GameObjectHelper.GetActiveChildren(usersParent);
             GameObject[] sitButtons = GameObjectHelper.GetActiveChildren(sitToSeatArea);
@@ -200,7 +220,7 @@ public class GameBehavior : MonoBehaviour
         {
             GameObject[] usersArray = GameObjectHelper.GetActiveChildren(usersParent);
             GameObject[] sitButtons = GameObjectHelper.GetActiveChildren(sitToSeatArea);
-            string[] rotatedSeats = ArrayHelper.RotateArray(room.seats, room.user_seat);
+            string[] rotatedSeats = ArrayHelper.RotateArray(room.seats, room.GetUserSeat());
             initalizeUsers(usersArray);
             initalizeSitButtons(sitButtons);
             for (int i = 0; i < usersArray.Length; i++)
@@ -241,15 +261,19 @@ public class GameBehavior : MonoBehaviour
                     name.GetComponent<TMP_Text>().text = room.gamers[rotatedSeats[i]].name;
                     GameObject wallet_money = usersArray[i].transform.GetChild(1).gameObject.transform.GetChild(1).gameObject.transform.GetChild(2).gameObject;
                     wallet_money.GetComponent<TMP_Text>().text = room.gamers[rotatedSeats[i]].coins + " ₮";
-                    if (i == 0)
+                    if (room.gameStatus == 2)
                     {
+                        if (i == 0)
+                        {
 
+                        }
+                        else
+                        {
+                            GameObject money = usersArray[i].transform.GetChild(3).gameObject.transform.GetChild(1).gameObject;
+                            money.GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated(long.Parse(room.chips[ArrayHelper.ReRotateNumber(i, room.GetUserSeat(), room.options.max_seats)].ToString()), 1);
+                        }
                     }
-                    else
-                    {
-                        GameObject money = usersArray[i].transform.GetChild(3).gameObject.transform.GetChild(1).gameObject;
-                        money.GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated(long.Parse(room.chips[ArrayHelper.ReRotateNumber(i,room.user_seat,room.options.max_seats)]),1);
-                    }
+                    
                 }
             }
         }
@@ -384,11 +408,11 @@ public class GameBehavior : MonoBehaviour
 
     public void SetTimer()
     {
-        if (room.user_seat != -1)
+        if (room.GetUserSeat() != -1)
         {
-            GameObject[] usersArray = GameObjectHelper.GetChildren(usersParent);
-            string[] rotatedSeats = ArrayHelper.RotateArray(room.seats, room.user_seat);
-            int currentActiveUserRotated = ArrayHelper.RotateNumber(room.activeSeat, room.user_seat, rotatedSeats.Length);
+            GameObject[] usersArray = GameObjectHelper.GetActiveChildren(usersParent);
+            string[] rotatedSeats = ArrayHelper.RotateArray(room.seats, room.GetUserSeat());
+            int currentActiveUserRotated = ArrayHelper.RotateNumber(room.activeSeat, room.GetUserSeat(), rotatedSeats.Length);
             for (int i = 0; i < rotatedSeats.Length; i++)
             {
                 GameObject progressbar = usersArray[i].transform.GetChild(1).transform.GetChild(2).transform.GetChild(0).gameObject;
@@ -406,28 +430,36 @@ public class GameBehavior : MonoBehaviour
 
     public void SetActionButtonAreaIndexByGlobal()
     {
-        switch (room.gameStatus)
+        if (room.GetUserSeat() == -1)
         {
-            case 0:
-                actionButtonAreaIndex = 0;
-                break;
-            case 1:
-                actionButtonAreaIndex = -1;
-                break;
-            case 2:
-                if (room.activeSeat == room.user_seat)
-                {
-                    actionButtonAreaIndex = 1;
-                }
-                else
-                {
-                    actionButtonAreaIndex = 2;
-                }
-                break;
-            default:
-                actionButtonAreaIndex = -1;
-                break;
+            actionButtonAreaIndex = -1;
         }
+        else
+        {
+            switch (room.gameStatus)
+            {
+                case 0:
+                    actionButtonAreaIndex = 0;
+                    break;
+                case 1:
+                    actionButtonAreaIndex = -1;
+                    break;
+                case 2:
+                    if (room.activeSeat == room.GetUserSeat())
+                    {
+                        actionButtonAreaIndex = 1;
+                    }
+                    else
+                    {
+                        actionButtonAreaIndex = 2;
+                    }
+                    break;
+                default:
+                    actionButtonAreaIndex = -1;
+                    break;
+            }
+        }
+        
     }
 
     public void SetActionButtonArea()
@@ -668,7 +700,7 @@ public class GameBehavior : MonoBehaviour
         {
             GameObject[] usersArray = GameObjectHelper.GetChildren(usersParent);
             string[] gamerActionStatus = room.status;
-            string[] rotatedGamerActionStatus = ArrayHelper.RotateArray(gamerActionStatus, room.user_seat);
+            string[] rotatedGamerActionStatus = ArrayHelper.RotateArray(gamerActionStatus, room.GetUserSeat());
 
             for (int i = 1; i < usersArray.Length; i++)
             {
