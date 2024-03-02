@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using EasyUI.Toast;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
 using System.Collections;
@@ -34,6 +35,8 @@ public class GameBehavior : MonoBehaviour
     public GameObject raiseModal;
     public GameObject raiseButton;
     public GameObject raiseConfirmButton;
+
+    public GameObject addChipsModal;
 
     public GameObject raiseBar;
     public GameObject raiseBarGradeParent;
@@ -692,7 +695,47 @@ public class GameBehavior : MonoBehaviour
 
     private void OnAddChipsResponse(JToken jsonResponse)
     {
+        string errorString = "";
+        Dictionary<string, object> res = JsonResponse.ToDictionary(jsonResponse);
 
+        do
+        {
+            if (res == null)
+            {
+                errorString = "Invalid response";
+                Toast.Show(errorString, "danger");
+                break;
+            }
+            int err = res["err"].ConvertTo<int>();
+            if (err != 0)
+            {
+                if (!res.ContainsKey("ret"))
+                {
+                    errorString = "Invalid response";
+                    Toast.Show(errorString, "danger");
+                    break;
+                }
+                errorString = res["ret"].ToString();
+                Toast.Show(errorString, "danger");
+                break;
+            }
+            if (!res.ContainsKey("ret"))
+            {
+                errorString = "Invalid response";
+                Toast.Show(errorString, "danger");
+                break;
+            }
+            Dictionary<string, object> ret = JsonResponse.ToDictionary(res["ret"]);
+            if (ret == null)
+            {
+                errorString = "Invalid response";
+                Toast.Show(errorString, "danger");
+                break;
+            }
+            Toast.Show("Chips added successfully");
+            addChipsModal.SetActive(false);
+            return;
+        } while (false);
     }
 
     public void SetGamersActionStatus()

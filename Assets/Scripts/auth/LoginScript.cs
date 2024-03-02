@@ -8,12 +8,12 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using Newtonsoft.Json;
 using System;
+using EasyUI.Toast;
 
 public class LoginScript : MonoBehaviour
 {
     public TMP_InputField EmailInput;
     public TMP_InputField PasswordInput;
-    public TMP_Text ErrorText;
     public Button LoginButton;
 
     void Start()
@@ -78,7 +78,7 @@ public class LoginScript : MonoBehaviour
         {
             UnityMainThreadDispatcher.Instance().Enqueue(() =>
             {
-                ErrorText.text = errorString;
+                Toast.Show(errorString,"danger");
             });
         }
     }
@@ -116,7 +116,7 @@ public class LoginScript : MonoBehaviour
         errorString = string.IsNullOrEmpty(errorString) && string.IsNullOrEmpty(PasswordInput.text) ? "Please enter your password" : null;
         if (string.IsNullOrEmpty(errorString) && !ValidateEmail(EmailInput.text))
         {
-            ErrorText.text = "Please enter the valid email";
+            Toast.Show("Please enter the valid email","danger");
             return false;
         }
         
@@ -126,7 +126,7 @@ public class LoginScript : MonoBehaviour
         }
         else
         {
-            ErrorText.text = errorString;
+            Toast.Show(errorString, "danger");
             return false;
         }
     }
