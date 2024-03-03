@@ -20,6 +20,25 @@ public class TournamentObject
     public int max_players;
 }
 
+public class TournamentDetailObject
+{
+    public int id;
+    public string status;
+    public string name;
+    public int delay;
+    public int buy_in;
+    public int registered_players;
+    public int max_players;
+    public int count_down;
+    public int end_date;
+    public int first_blind;
+    public int prize;
+    public int rise_count;
+    public int rise_time;
+    public Dictionary<string, object> rule;
+    public int start_date;
+}
+
 enum ViewType { List, Detail }
 
 public class Tournament : MonoBehaviour
@@ -69,6 +88,25 @@ public class Tournament : MonoBehaviour
         
     }
 
+    void GetDetail()
+    {
+        string uid = Globals.gameToken.uid;
+        int pin = Globals.gameToken.pin;
+        var data = new
+        {
+            uid = uid,
+            pin = pin,
+            f = "tournamentInfo",
+            args = new
+            {
+                id = currentDetailId,
+                uid = Globals.gameToken.uid
+            },
+        };
+        Globals.socketIoConnection.SendRpc(data, OnGetListResponse);
+
+    }
+
     void OnGetListResponse(JToken jsonResponse)
     {
         try
@@ -84,7 +122,22 @@ public class Tournament : MonoBehaviour
         {
             Debug.Log(e);
         }
-        
+    }
+
+    void OnGetDetailResponse(JToken jsonResponse)
+    {
+        try
+        {
+            Dictionary<string, object> res = JsonResponse.ToDictionary(jsonResponse);
+            TournamentObject tournamentList = JsonConvert.DeserializeObject<TournamentObject>(res["ret"].ToString());
+            
+
+        }
+        catch (Exception e)
+        {
+            Debug.Log(e);
+        }
+
     }
 
     void UpdateList(TournamentObject[] tournamentList)
