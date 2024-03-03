@@ -1,3 +1,4 @@
+using EasyUI.Toast;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -102,6 +103,7 @@ public class GameEngine
         } while (false);
         if (errorString != "")
         {
+            Toast.Show(errorString);
             Debug.Log(errorString);
         }
     }
