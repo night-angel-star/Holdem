@@ -10146,7 +10146,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1094604428
 RectTransform:
   m_ObjectHideFlags: 0
@@ -11285,9 +11285,6 @@ MonoBehaviour:
   RoomAddButton: {fileID: 2095449976}
   raiseAmount: 10000
   actionButtonAreaIndex: -1
-  sitOutNextHandButtonEnabled: 0
-  sitOutNextBigBlindButtonEnabled: 0
-  callAnyButtonEnabled: 0
 --- !u!4 &1189902639
 Transform:
   m_ObjectHideFlags: 0
@@ -16339,7 +16336,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0.5}
   m_AnchorMax: {x: 0, y: 0.5}
-  m_AnchoredPosition: {x: 203.8, y: 188.2}
+  m_AnchoredPosition: {x: 203.79999, y: 188.2}
   m_SizeDelta: {x: 150, y: 39.61}
   m_Pivot: {x: 0, y: 0.5}
 --- !u!212 &1775733628
