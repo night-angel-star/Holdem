@@ -40,4 +40,44 @@ public class GameObjectHelper : MonoBehaviour
 
         return allChildren;
     }
+
+    public static GameObject[] GetChildrenForRoomSize(GameObject parent,int max_seats)
+    {
+        GameObject[] allChildren = new GameObject[max_seats];
+        int childrenSize = 0;
+        for (int i = 0; i < parent.transform.childCount; i++)
+        {
+            switch (max_seats)
+            {
+                case 3:
+                    if (i == 0 || i == 3 || i == 6)
+                    {
+                        allChildren[childrenSize] = parent.transform.GetChild(i).gameObject;
+                        childrenSize++;
+                    }
+                    break;
+                case 6:
+                    if (i == 1 || i == 4 || i == 8)
+                    {
+                    }
+                    else
+                    {
+                        allChildren[childrenSize] = parent.transform.GetChild(i).gameObject;
+                        childrenSize++;
+                    }
+                    break;
+                case 9:
+                    allChildren[childrenSize] = parent.transform.GetChild(i).gameObject;
+                    childrenSize++;
+                    break;
+                default:
+                    break;
+            }
+            
+        }
+
+
+
+        return allChildren;
+    }
 }
