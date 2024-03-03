@@ -166,26 +166,28 @@ public class GameEngine
             LeaveNotifyEvent json = baseToken.ToObject<LeaveNotifyEvent>();
             if (json != null)
             {
-                string roomid = json.args.where.ToString();
+                string roomid = json.roomid.ToString();
                 string uid = json.args.uid;
-
-                if (Globals.gameRooms.ContainsKey(roomid))
+                if(uid != Globals.gameToken.uid)
                 {
-                    Room room = Globals.gameRooms[roomid];
-                    for (int i = 0; i < room.seats.Length; i++)
+                    if (Globals.gameRooms.ContainsKey(roomid))
                     {
-                        if (room.seats[i] == uid)
+                        Room room = Globals.gameRooms[roomid];
+                        for (int i = 0; i < room.seats.Length; i++)
                         {
-                            Globals.gameRooms[roomid].seats[i] = null;
-                            Globals.gameRooms[roomid].seats_count--;
+                            if (room.seats[i] == uid)
+                            {
+                                Globals.gameRooms[roomid].seats[i] = null;
+                                Globals.gameRooms[roomid].seats_count--;
 
-                            Globals.gameRooms[roomid].cards.Remove(i);
+                                Globals.gameRooms[roomid].cards.Remove(i);
 
-                            Globals.gameRooms[roomid].status[i] = "";
+                                Globals.gameRooms[roomid].status[i] = "";
+                            }
                         }
+                        Globals.gameRooms[roomid].gamers.Remove(uid);
+                        Globals.gameRooms[roomid].gamers_count--;
                     }
-                    Globals.gameRooms[roomid].gamers.Remove(uid);
-                    Globals.gameRooms[roomid].gamers_count--;
                 }
             }
 
@@ -303,6 +305,7 @@ public class GameEngine
                     Globals.gameRooms[roomid] = room;
                     Globals.gameRooms[roomid].gameStatus = 2;
                 }
+                Globals.gameRooms[roomid].status = new string[room.options.max_seats];
             }
 
         } while (false);
@@ -475,6 +478,8 @@ public class GameEngine
                 int index = Array.IndexOf(Globals.gameRooms[json.roomid.ToString()].seats, g.uid);
                 Globals.gameRooms[json.roomid.ToString()].cards[index] = g.cards;
             }
+            Globals.gameRooms[json.roomid.ToString()].shared_cards = new int[5];
+            Globals.gameRooms[json.roomid.ToString()].cards = new Dictionary<int, int[]>();
         } while (false);
         if (errorString != "")
         {
