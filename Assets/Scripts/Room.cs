@@ -27,7 +27,7 @@ public class Room
     public int max_chip = 0;
     public string name = null;
     public int last_raise = 0;
-    public string[] status = new string[9];
+    public string[] status = null;
     public int gameStatus = -1;
     public class Options {
         public int big_blind = 0;

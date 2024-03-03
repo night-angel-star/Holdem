@@ -6,15 +6,12 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
-using System.Reflection;
-using System.Text.RegularExpressions;
 using TMPro;
 using UI.Tables;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using UnityEngine.Windows;
 
 
 public class GameBehavior : MonoBehaviour
@@ -282,7 +279,27 @@ public class GameBehavior : MonoBehaviour
                         }
                         if (room.gameStatus == 3)
                         {
-                            usersArray[i].transform.GetChild(5).gameObject.SetActive(true);
+                            if (i == 0)
+                            {
+                                usersArray[i].transform.GetChild(2).gameObject.SetActive(true);
+                            }
+                            else
+                            {
+                                usersArray[i].transform.GetChild(5).gameObject.SetActive(true);
+                            }
+
+                        }
+                        else
+                        {
+                            if (i == 0)
+                            {
+
+                            }
+                            else
+                            {
+                                usersArray[i].transform.GetChild(5).gameObject.SetActive(false);
+                            }
+
                         }
 
                     }
@@ -292,6 +309,7 @@ public class GameBehavior : MonoBehaviour
                     name.GetComponent<TMP_Text>().text = room.gamers[rotatedSeats[i]].name;
                     GameObject wallet_money = usersArray[i].transform.GetChild(1).gameObject.transform.GetChild(1).gameObject.transform.GetChild(2).gameObject;
                     wallet_money.GetComponent<TMP_Text>().text = room.gamers[rotatedSeats[i]].coins + " ₮";
+
                     if (room.gameStatus == 2)
                     {
                         if (i == 0)
@@ -308,7 +326,7 @@ public class GameBehavior : MonoBehaviour
                     {
                         if (i == 0)
                         {
-                            usersArray[i].transform.GetChild(2).gameObject.SetActive(true);
+
                         }
                         else
                         {
@@ -320,6 +338,7 @@ public class GameBehavior : MonoBehaviour
 
                         }
                     }
+
 
                 }
             }
@@ -498,13 +517,20 @@ public class GameBehavior : MonoBehaviour
                     actionButtonAreaIndex = -1;
                     break;
                 case 2:
-                    if (room.activeSeat == room.GetUserSeat())
+                    if (room.status[room.GetUserSeat()] == "fold")
                     {
-                        actionButtonAreaIndex = 1;
+                        actionButtonAreaIndex = 2;
                     }
                     else
                     {
-                        actionButtonAreaIndex = 2;
+                        if (room.activeSeat == room.GetUserSeat())
+                        {
+                            actionButtonAreaIndex = 1;
+                        }
+                        else
+                        {
+                            actionButtonAreaIndex = 3;
+                        }
                     }
                     break;
                 case 3:
@@ -590,7 +616,7 @@ public class GameBehavior : MonoBehaviour
         }
     }
 
-    
+
     public void Fold()
     {
         string uid = Globals.gameToken.uid;
@@ -816,7 +842,7 @@ public class GameBehavior : MonoBehaviour
                 {
                     Toast.Show(errorString, "danger");
                 });
-                
+
                 break;
             }
             int err = res["err"].ConvertTo<int>();
@@ -858,7 +884,7 @@ public class GameBehavior : MonoBehaviour
                 addChipsModal.SetActive(false);
             });
 
-            
+
             return;
         } while (false);
     }
@@ -867,15 +893,23 @@ public class GameBehavior : MonoBehaviour
     {
         if (room.gameStatus == 2)
         {
-            GameObject[] usersArray = GameObjectHelper.GetChildren(usersParent);
-            string[] gamerActionStatus = room.status;
-            string[] rotatedGamerActionStatus = ArrayHelper.RotateArray(gamerActionStatus, room.GetUserSeat());
-
-            for (int i = 1; i < usersArray.Length; i++)
+            if (room.status != null)
             {
-                if (rotatedGamerActionStatus[i] != null)
+                GameObject[] usersArray = GameObjectHelper.GetChildren(usersParent);
+                string[] gamerActionStatus = room.status;
+                string[] rotatedGamerActionStatus = ArrayHelper.RotateArray(gamerActionStatus, room.GetUserSeat());
+
+                for (int i = 1; i < usersArray.Length; i++)
                 {
-                    usersArray[i].transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.GetComponent<TMP_Text>().text = rotatedGamerActionStatus[i];
+                    if (rotatedGamerActionStatus[i] != null)
+                    {
+                        usersArray[i].transform.GetChild(4).gameObject.SetActive(true);
+                        usersArray[i].transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.GetComponent<TMP_Text>().text = rotatedGamerActionStatus[i];
+                    }
+                    else
+                    {
+                        usersArray[i].transform.GetChild(4).gameObject.SetActive(false);
+                    }
                 }
             }
         }
@@ -916,7 +950,7 @@ public class GameBehavior : MonoBehaviour
                 {
                     rooms[joinedRoomCount].transform.GetChild(1).gameObject.SetActive(true);
                     int currentActiveUserIndex = ArrayHelper.RotateNumber(Globals.gameRooms[joinedRoomIds[i]].activeSeat, Globals.gameRooms[joinedRoomIds[i]].GetUserSeat(), Globals.gameRooms[joinedRoomIds[i]].options.max_seats);
-                    
+
                     timer.GetComponent<Image>().fillAmount = (float)(currentActiveUserIndex + 1) / Globals.gameRooms[joinedRoomIds[i]].options.max_seats;
                     if (Globals.gameRooms[joinedRoomIds[i]].activeSeat == Globals.gameRooms[joinedRoomIds[i]].GetUserSeat())
                     {
