@@ -18,7 +18,8 @@ public class CardHelper:MonoBehaviour
         }
         catch (Exception)
         {
-            return null;
+            Sprite blankCardSprite = Resources.Load<Sprite>("Images/cards/place");
+            return blankCardSprite;
         }
         
     }
