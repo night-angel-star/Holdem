@@ -56,10 +56,6 @@ public class GameBehavior : MonoBehaviour
 
     public int actionButtonAreaIndex = -1;
 
-    public bool sitOutNextHandButtonEnabled = false;
-    public bool sitOutNextBigBlindButtonEnabled = false;
-    public bool callAnyButtonEnabled = false;
-
     bool receiveFromGlobalResult = false;
 
 
@@ -523,6 +519,17 @@ public class GameBehavior : MonoBehaviour
                         {
                             actionButtonAreaIndex = 2;
                         }
+                        else
+                        {
+                            if (room.activeSeat == room.GetUserSeat())
+                            {
+                                actionButtonAreaIndex = 1;
+                            }
+                            else
+                            {
+                                actionButtonAreaIndex = 3;
+                            }
+                        }
                         
                     }
                     else
@@ -711,47 +718,77 @@ public class GameBehavior : MonoBehaviour
 
     public void ToggleSitOutNextHandButton(GameObject button)
     {
-        if (sitOutNextHandButtonEnabled)
+        if (room.sitOutNextHandButtonEnabled)
         {
-            sitOutNextHandButtonEnabled = false;
+            room.sitOutNextHandButtonEnabled = false;
             button.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-inactive");
         }
         else
         {
-            sitOutNextHandButtonEnabled = true;
+            room.sitOutNextHandButtonEnabled = true;
             button.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-active");
         }
     }
 
     public void ToggleSitOutNextBigBlindButton(GameObject button)
     {
-        if (sitOutNextBigBlindButtonEnabled)
+        if (room.sitOutNextBigBlindButtonEnabled)
         {
-            sitOutNextBigBlindButtonEnabled = false;
+            room.sitOutNextBigBlindButtonEnabled = false;
             button.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-inactive");
 
         }
         else
         {
-            sitOutNextBigBlindButtonEnabled = true;
+            room.sitOutNextBigBlindButtonEnabled = true;
             button.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-active");
 
         }
     }
 
-    public void CallAnyButtonEnabled(GameObject button)
+    public void ToggleCallAnyButton(GameObject button)
     {
-        if (callAnyButtonEnabled)
+        if (room.callAnyButtonEnabled)
         {
-            callAnyButtonEnabled = false;
+            room.callAnyButtonEnabled = false;
             button.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-inactive");
 
         }
         else
         {
-            callAnyButtonEnabled = true;
+            room.callAnyButtonEnabled = true;
             button.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-active");
 
+        }
+    }
+
+    public void ToggleFoldAnyButton(GameObject button)
+    {
+        if (room.foldAnyButtonEnabled)
+        {
+            room.foldAnyButtonEnabled = false;
+            button.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-inactive");
+
+        }
+        else
+        {
+            room.foldAnyButtonEnabled = true;
+            button.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-active");
+
+        }
+    }
+
+    public void ToggleCheckFoldButton(GameObject button)
+    {
+        if (room.checkFoldButtonEnabled)
+        {
+            room.checkFoldButtonEnabled = false;
+            button.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-inactive");
+        }
+        else
+        {
+            room.checkFoldButtonEnabled = true;
+            button.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-active");
         }
     }
 
