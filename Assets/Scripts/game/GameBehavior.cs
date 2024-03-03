@@ -6,6 +6,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Reflection;
 using System.Text.RegularExpressions;
 using TMPro;
 using UI.Tables;
@@ -53,7 +54,7 @@ public class GameBehavior : MonoBehaviour
 
 
 
-    
+
     public int raiseAmount = 0;
 
     public int actionButtonAreaIndex = -1;
@@ -69,14 +70,14 @@ public class GameBehavior : MonoBehaviour
     {
     }
 
-    
+
 
     // Update is called once per frame
     void Update()
     {
 
         //read from global
-        receiveFromGlobalResult=UpdateRoomFromGlobal();
+        receiveFromGlobalResult = UpdateRoomFromGlobal();
         if (receiveFromGlobalResult)
         {
             //set data from room data
@@ -100,7 +101,7 @@ public class GameBehavior : MonoBehaviour
             SetRoomsToggler();
             SetRoomsView();
         }
-        
+
     }
 
     bool UpdateRoomFromGlobal()
@@ -120,15 +121,21 @@ public class GameBehavior : MonoBehaviour
     {
         GameObject[] usersArray = GameObjectHelper.GetChildren(usersParent);
         GameObject[] sitButtons = GameObjectHelper.GetChildren(sitToSeatArea);
+        int tempSeatIndex = 0;
         switch (room.options.max_seats)
         {
             case 3:
+
                 for (int i = 0; i < usersArray.Length; i++)
                 {
                     if (i == 0 || i == 3 || i == 6)
                     {
                         usersArray[i].SetActive(true);
                         sitButtons[i].SetActive(true);
+                        int index = tempSeatIndex;
+                        sitButtons[i].GetComponent<Button>().onClick.RemoveAllListeners();
+                        sitButtons[i].GetComponent<Button>().onClick.AddListener(() => sitToRoom(index));
+                        tempSeatIndex++;
                     }
                     else
                     {
@@ -149,19 +156,36 @@ public class GameBehavior : MonoBehaviour
                     {
                         usersArray[i].SetActive(true);
                         sitButtons[i].SetActive(true);
+                        int index = tempSeatIndex;
+                        sitButtons[i].GetComponent<Button>().onClick.RemoveAllListeners();
+                        sitButtons[i].GetComponent<Button>().onClick.AddListener(() => sitToRoom(index));
+                        tempSeatIndex++;
                     }
                 }
                 break;
             case 9:
-                for(int i = 0; i < usersArray.Length; i++)
+                for (int i = 0; i < usersArray.Length; i++)
                 {
                     usersArray[i].SetActive(true);
                     sitButtons[i].SetActive(true);
+                    sitButtons[i].GetComponent<Button>().onClick.RemoveAllListeners();
+                    int index = i;
+                    sitButtons[i].GetComponent<Button>().onClick.AddListener(() => sitToRoom(index));
                 }
                 break;
             default:
                 break;
         }
+        if (room.GetUserSeat() != -1)
+        {
+
+            for (int i = 0; i < sitButtons.Length; i++)
+            {
+                sitButtons[i].SetActive(false);
+            }
+        }
+
+
 
     }
 
@@ -178,21 +202,21 @@ public class GameBehavior : MonoBehaviour
                 card2.GetComponent<SpriteRenderer>().sprite = CardHelper.GetCard(room.cards[room.GetUserSeat()][1]);
             }
         }
-        
+
     }
 
     void SetUserInfo()
     {
         if (room.GetUserSeat() == -1)
         {
-            GameObject[] usersArray = GameObjectHelper.GetActiveChildren(usersParent);
-            GameObject[] sitButtons = GameObjectHelper.GetActiveChildren(sitToSeatArea);
-            
+            GameObject[] usersArray = GameObjectHelper.GetChildrenForRoomSize(usersParent, room.options.max_seats);
+            GameObject[] sitButtons = GameObjectHelper.GetChildrenForRoomSize(sitToSeatArea, room.options.max_seats);
+
             initalizeUsers(usersArray);
             initalizeSitButtons(sitButtons);
             for (int i = 0; i < usersArray.Length; i++)
             {
-                if (room.seats[i]!=null)
+                if (room.seats[i] != null)
                 {
 
                     if (i == 0)
@@ -228,7 +252,7 @@ public class GameBehavior : MonoBehaviour
             initalizeSitButtons(sitButtons);
             for (int i = 0; i < usersArray.Length; i++)
             {
-                if (rotatedSeats[i]!=null)
+                if (rotatedSeats[i] != null)
                 {
 
                     if (i == 0)
@@ -256,6 +280,10 @@ public class GameBehavior : MonoBehaviour
                             usersArray[i].transform.GetChild(2).gameObject.SetActive(false);
                             usersArray[i].transform.GetChild(3).gameObject.SetActive(false);
                         }
+                        if (room.gameStatus == 3)
+                        {
+                            usersArray[i].transform.GetChild(5).gameObject.SetActive(true);
+                        }
 
                     }
                     GameObject avatar = usersArray[i].transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.transform.GetChild(1).gameObject;
@@ -276,14 +304,30 @@ public class GameBehavior : MonoBehaviour
                             money.GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated(long.Parse(room.chips[ArrayHelper.ReRotateNumber(i, room.GetUserSeat(), room.options.max_seats)].ToString()), 1);
                         }
                     }
-                    
+                    else if (room.gameStatus == 3)
+                    {
+                        if (i == 0)
+                        {
+                            usersArray[i].transform.GetChild(2).gameObject.SetActive(true);
+                        }
+                        else
+                        {
+                            GameObject userShowCards1 = usersArray[i].transform.GetChild(5).gameObject.transform.GetChild(0).gameObject;
+                            GameObject userShowCards2 = usersArray[i].transform.GetChild(5).gameObject.transform.GetChild(1).gameObject;
+                            userShowCards1.GetComponent<SpriteRenderer>().sprite = CardHelper.GetCard(room.cards[ArrayHelper.ReRotateNumber(i, room.GetUserSeat(), room.options.max_seats)][0]);
+                            userShowCards2.GetComponent<SpriteRenderer>().sprite = CardHelper.GetCard(room.cards[ArrayHelper.ReRotateNumber(i, room.GetUserSeat(), room.options.max_seats)][1]);
+
+
+                        }
+                    }
+
                 }
             }
         }
 
     }
 
-    
+
 
     void initalizeUsers(GameObject[] usersArray)
     {
@@ -373,6 +417,11 @@ public class GameBehavior : MonoBehaviour
                     break;
                 }
                 errorString = res["ret"].ToString();
+                UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                {
+                    Toast.Show(errorString, "danger");
+                });
+
                 break;
             }
             if (!res.ContainsKey("ret"))
@@ -386,6 +435,7 @@ public class GameBehavior : MonoBehaviour
                 errorString = "Invalid response";
                 break;
             }
+
             actionButtonAreaIndex = 0;
             return;
         } while (false);
@@ -457,12 +507,15 @@ public class GameBehavior : MonoBehaviour
                         actionButtonAreaIndex = 2;
                     }
                     break;
+                case 3:
+                    actionButtonAreaIndex = 0;
+                    break;
                 default:
                     actionButtonAreaIndex = -1;
                     break;
             }
         }
-        
+
     }
 
     public void SetActionButtonArea()
@@ -473,6 +526,62 @@ public class GameBehavior : MonoBehaviour
             if (i == actionButtonAreaIndex)
             {
                 actionButtonGroup[i].SetActive(true);
+                //switch (i)
+                //{
+                //    case 0:
+                //        GameObject readyButton = actionButtonGroup[i].transform.GetChild(0).gameObject;
+                //        if (room.operations.ready)
+                //        {
+                //            readyButton.GetComponent<Button>().interactable = true;
+                //        }
+                //        else
+                //        {
+                //            readyButton.GetComponent<Button>().interactable = false;
+                //        }
+                //        break;
+                //    case 1:
+                //        GameObject foldButton = actionButtonGroup[i].transform.GetChild(0).gameObject;
+                //        if (room.operations.fold)
+                //        {
+                //            foldButton.GetComponent<Button>().interactable = true;
+                //        }
+                //        else
+                //        {
+                //            foldButton.GetComponent<Button>().interactable = false;
+                //        }
+                //        GameObject checkButton = actionButtonGroup[i].transform.GetChild(1).gameObject;
+                //        if (room.operations.check)
+                //        {
+                //            checkButton.GetComponent<Button>().interactable = true;
+                //        }
+                //        else
+                //        {
+                //            checkButton.GetComponent<Button>().interactable = false;
+                //        }
+                //        GameObject callButton = actionButtonGroup[i].transform.GetChild(2).gameObject;
+                //        if (room.operations.call)
+                //        {
+                //            callButton.GetComponent<Button>().interactable = true;
+                //        }
+                //        else
+                //        {
+                //            callButton.GetComponent<Button>().interactable = false;
+                //        }
+                //        GameObject raiseButton = actionButtonGroup[i].transform.GetChild(3).gameObject;
+                //        if (room.operations.raise)
+                //        {
+                //            raiseButton.GetComponent<Button>().interactable = true;
+                //        }
+                //        else
+                //        {
+                //            raiseButton.GetComponent<Button>().interactable = false;
+                //        }
+                //        break;
+                //    case 2:
+                //        break;
+                //    default:
+                //        break;
+                //}
             }
             else
             {
@@ -481,6 +590,7 @@ public class GameBehavior : MonoBehaviour
         }
     }
 
+    
     public void Fold()
     {
         string uid = Globals.gameToken.uid;
@@ -549,7 +659,7 @@ public class GameBehavior : MonoBehaviour
     {
         string uid = Globals.gameToken.uid;
         int pin = Globals.gameToken.pin;
-        
+
         var data = new
         {
             uid = uid,
@@ -566,7 +676,7 @@ public class GameBehavior : MonoBehaviour
     private void OnRaiseResponse(JToken jsonResponse)
     {
         Debug.Log("Raise");
-        
+
     }
 
     public void ToggleSitOutNextHandButton(GameObject button)
@@ -593,7 +703,7 @@ public class GameBehavior : MonoBehaviour
         }
         else
         {
-            sitOutNextBigBlindButtonEnabled= true;
+            sitOutNextBigBlindButtonEnabled = true;
             button.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-active");
 
         }
@@ -617,7 +727,7 @@ public class GameBehavior : MonoBehaviour
 
     void SetRaiseAmounts()
     {
-        if (room.gameStatus==2)
+        if (room.gameStatus == 2)
         {
             raiseBarSlider.GetComponent<Slider>().minValue = room.options.small_blind;
             raiseBarSlider.GetComponent<Slider>().maxValue = room.gamers[Globals.userProfile.uid].coins;
@@ -626,7 +736,7 @@ public class GameBehavior : MonoBehaviour
 
     void SetRaiseBar()
     {
-        if(room.gameStatus==2)
+        if (room.gameStatus == 2)
         {
             GameObject[] raiseBarGrades = GameObjectHelper.GetChildren(raiseBarGradeParent);
             raiseToValue.GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated((long)raiseAmount, 1);
@@ -646,7 +756,7 @@ public class GameBehavior : MonoBehaviour
             float raiseBarScale = (float)(raiseAmount - room.options.small_blind) / (room.gamers[Globals.userProfile.uid].coins - room.options.small_blind);
             raiseBar.transform.localScale = (new Vector3(1, raiseBarScale, 1));
         }
-        
+
     }
 
     void CheckRaiseAmount()
@@ -655,7 +765,7 @@ public class GameBehavior : MonoBehaviour
         {
             raiseAmount = room.gamers[Globals.userProfile.uid].coins;
         }
-        else if( raiseAmount < room.options.small_blind)
+        else if (raiseAmount < room.options.small_blind)
         {
             raiseAmount = room.options.small_blind;
         }
@@ -702,7 +812,11 @@ public class GameBehavior : MonoBehaviour
             if (res == null)
             {
                 errorString = "Invalid response";
-                Toast.Show(errorString, "danger");
+                UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                {
+                    Toast.Show(errorString, "danger");
+                });
+                
                 break;
             }
             int err = res["err"].ConvertTo<int>();
@@ -711,35 +825,47 @@ public class GameBehavior : MonoBehaviour
                 if (!res.ContainsKey("ret"))
                 {
                     errorString = "Invalid response";
-                    Toast.Show(errorString, "danger");
+                    UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                    {
+                        roomListTable.ClearRows();
+                    });
+                    UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                    {
+                        Toast.Show(errorString, "danger");
+                    });
                     break;
                 }
                 errorString = res["ret"].ToString();
-                Toast.Show(errorString, "danger");
+                UnityMainThreadDispatcher.Instance().Enqueue(() => { Toast.Show(errorString, "danger"); });
                 break;
             }
             if (!res.ContainsKey("ret"))
             {
                 errorString = "Invalid response";
-                Toast.Show(errorString, "danger");
+                UnityMainThreadDispatcher.Instance().Enqueue(() => { Toast.Show(errorString, "danger"); });
                 break;
             }
             Dictionary<string, object> ret = JsonResponse.ToDictionary(res["ret"]);
             if (ret == null)
             {
                 errorString = "Invalid response";
-                Toast.Show(errorString, "danger");
+                UnityMainThreadDispatcher.Instance().Enqueue(() => { Toast.Show(errorString, "danger"); });
                 break;
             }
-            Toast.Show("Chips added successfully");
-            addChipsModal.SetActive(false);
+            UnityMainThreadDispatcher.Instance().Enqueue(() =>
+            {
+                Toast.Show("Chips added successfully");
+                addChipsModal.SetActive(false);
+            });
+
+            
             return;
         } while (false);
     }
 
     public void SetGamersActionStatus()
     {
-        if (room.gameStatus==2)
+        if (room.gameStatus == 2)
         {
             GameObject[] usersArray = GameObjectHelper.GetChildren(usersParent);
             string[] gamerActionStatus = room.status;
@@ -755,25 +881,27 @@ public class GameBehavior : MonoBehaviour
         }
     }
 
-    
+
     public void SetRoomsToggler()
     {
-        
+
         GameObject[] rooms = GameObjectHelper.GetChildren(RoomTogglerParent);
-        for(int i = 0; i < 3; i++)
+        for (int i = 0; i < 3; i++)
         {
             rooms[i].SetActive(false);
         }
         int joinedRoomCount = 0;
         string[] joinedRoomIds = Globals.gameRooms.Keys.ToArray();
-        for(int i = 0; i < joinedRoomIds.Length; i++)
+        for (int i = 0; i < joinedRoomIds.Length; i++)
         {
             rooms[joinedRoomCount].SetActive(true);
             rooms[joinedRoomCount].transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<TMP_Text>().text = Globals.gameRooms[joinedRoomIds[i]].name;
-
-            rooms[joinedRoomCount].transform.GetChild(0).gameObject.GetComponent<Button>().onClick.AddListener(() => ChangeRoom(joinedRoomIds[i]));
+            int tempIndex = i;
+            rooms[joinedRoomCount].transform.GetChild(0).gameObject.GetComponent<Button>().onClick.RemoveAllListeners();
+            rooms[joinedRoomCount].transform.GetChild(0).gameObject.GetComponent<Button>().onClick.AddListener(() => ChangeRoom(joinedRoomIds[tempIndex]));
 
             GameObject avatar = rooms[joinedRoomCount].transform.GetChild(2).gameObject;
+            GameObject timer = rooms[joinedRoomCount].transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject;
             if (joinedRoomIds[i] == Globals.currentRoom)
             {
 
@@ -783,6 +911,22 @@ public class GameBehavior : MonoBehaviour
             else
             {
                 avatar.SetActive(false);
+
+                if (Globals.gameRooms[joinedRoomIds[i]].gameStatus == 2)
+                {
+                    rooms[joinedRoomCount].transform.GetChild(1).gameObject.SetActive(true);
+                    int currentActiveUserIndex = ArrayHelper.RotateNumber(Globals.gameRooms[joinedRoomIds[i]].activeSeat, Globals.gameRooms[joinedRoomIds[i]].GetUserSeat(), Globals.gameRooms[joinedRoomIds[i]].options.max_seats);
+                    
+                    timer.GetComponent<Image>().fillAmount = (float)(currentActiveUserIndex + 1) / Globals.gameRooms[joinedRoomIds[i]].options.max_seats;
+                    if (Globals.gameRooms[joinedRoomIds[i]].activeSeat == Globals.gameRooms[joinedRoomIds[i]].GetUserSeat())
+                    {
+                        Toast.Show("It's your turn on " + Globals.gameRooms[joinedRoomIds[i]].name + ".");
+                    }
+                }
+                else
+                {
+                    rooms[joinedRoomCount].transform.GetChild(1).gameObject.SetActive(false);
+                }
             }
 
             joinedRoomCount++;
@@ -821,6 +965,7 @@ public class GameBehavior : MonoBehaviour
             joinedRoomCount++;
         }
     }
+
 
     //For Room Table
     public void getRoomsListData()
