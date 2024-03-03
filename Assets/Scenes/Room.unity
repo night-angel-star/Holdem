@@ -7926,7 +7926,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 840692434}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1189902637}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &840692434
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -10134,7 +10146,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &1094604428
 RectTransform:
   m_ObjectHideFlags: 0
@@ -14893,7 +14905,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1635926673}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1189902638}
+        m_TargetAssemblyTypeName: GameBehavior, Assembly-CSharp
+        m_MethodName: ToggleCallAnyButton
+        m_Mode: 2
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1635926673
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -15752,7 +15776,7 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 1189902638}
         m_TargetAssemblyTypeName: GameBehavior, Assembly-CSharp
-        m_MethodName: CallAnyButtonEnabled
+        m_MethodName: ToggleCallAnyButton
         m_Mode: 2
         m_Arguments:
           m_ObjectArgument: {fileID: 1695128709}
@@ -17779,7 +17803,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1919424540}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1189902637}
+        m_TargetAssemblyTypeName: 
+        m_MethodName: 
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: 
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &1919424540
 MonoBehaviour:
   m_ObjectHideFlags: 0
