@@ -1,3 +1,4 @@
+using EasyUI.Toast;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System;
@@ -30,7 +31,7 @@ public class TournamentDetailObject
     public int registered_players;
     public int max_players;
     public int count_down;
-    public int end_date;
+    //public int end_date;
     public int first_blind;
     public int prize;
     public int rise_count;
@@ -47,6 +48,14 @@ public class Tournament : MonoBehaviour
     public GameObject tournamentListRowPrefab;
     public GameObject listContainer;
     public GameObject detailContainer;
+
+    public GameObject tournamentDetailName;
+    public GameObject tournamentDetailStatus;
+    public GameObject tournamentDetailDelay;
+    public GameObject tournamentDetailBuyIn;
+    public GameObject registerButton;
+    public GameObject watchButton;
+
 
     ViewType currentView = ViewType.List;
     int currentDetailId = -1;
@@ -69,6 +78,7 @@ public class Tournament : MonoBehaviour
         {
             listContainer.SetActive(false);
             detailContainer.SetActive(true);
+            GetDetail();
         }
 
     }
@@ -85,7 +95,7 @@ public class Tournament : MonoBehaviour
             args = "0",
         };
         Globals.socketIoConnection.SendRpc(data, OnGetListResponse);
-        
+
     }
 
     void GetDetail()
@@ -99,12 +109,11 @@ public class Tournament : MonoBehaviour
             f = "tournamentInfo",
             args = new
             {
-                id = currentDetailId,
+                tid = currentDetailId,
                 uid = Globals.gameToken.uid
             },
         };
-        Globals.socketIoConnection.SendRpc(data, OnGetListResponse);
-
+        Globals.socketIoConnection.SendRpc(data, OnGetDetailResponse);
     }
 
     void OnGetListResponse(JToken jsonResponse)
@@ -117,9 +126,14 @@ public class Tournament : MonoBehaviour
             {
                 UpdateList(tournamentList);
             });
-            
-        } catch(Exception e)
+
+        }
+        catch (Exception e)
         {
+            UnityMainThreadDispatcher.Instance().Enqueue(() =>
+            {
+                Toast.Show("Error occured", "danger");
+            });
             Debug.Log(e);
         }
     }
@@ -129,12 +143,19 @@ public class Tournament : MonoBehaviour
         try
         {
             Dictionary<string, object> res = JsonResponse.ToDictionary(jsonResponse);
-            TournamentObject tournamentList = JsonConvert.DeserializeObject<TournamentObject>(res["ret"].ToString());
+            TournamentDetailObject tournamentDetailObject = JsonConvert.DeserializeObject<TournamentDetailObject>(res["ret"].ToString());
+            UnityMainThreadDispatcher.Instance().Enqueue(() =>
+            {
+                UpdateDetail(tournamentDetailObject);
+            });
             
-
         }
         catch (Exception e)
         {
+            UnityMainThreadDispatcher.Instance().Enqueue(() =>
+            {
+                Toast.Show("Error occured", "danger");
+            });
             Debug.Log(e);
         }
 
@@ -156,8 +177,8 @@ public class Tournament : MonoBehaviour
         newRow.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<TMP_Text>().text = tournamentListItem.status;
         newRow.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<TMP_Text>().text = tournamentListItem.name;
         newRow.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.transform.GetChild(1).gameObject.GetComponent<TMP_Text>().text = tournamentListItem.delay.ToString();
-        newRow.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated(tournamentListItem.buy_in,0);
-        newRow.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<TMP_Text>().text = tournamentListItem.registered_players+"/"+tournamentListItem.max_players;
+        newRow.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated(tournamentListItem.buy_in, 0);
+        newRow.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<TMP_Text>().text = tournamentListItem.registered_players + "/" + tournamentListItem.max_players;
         newRow.GetComponent<Button>().onClick.AddListener(() => OpenDetail(tournamentListItem.id));
         newRow.transform.SetParent(tournamentListTable.transform);
     }
@@ -168,5 +189,73 @@ public class Tournament : MonoBehaviour
 
         currentDetailId = id;
         currentView = ViewType.Detail;
+    }
+
+    void UpdateDetail(TournamentDetailObject tournamentDetailObject)
+    {
+        tournamentDetailName.GetComponent<TMP_Text>().text = tournamentDetailObject.name;
+        tournamentDetailStatus.GetComponent<TMP_Text>().text = tournamentDetailObject.status;
+        tournamentDetailDelay.GetComponent<TMP_Text>().text = tournamentDetailObject.delay.ToString();
+        tournamentDetailBuyIn.GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated(tournamentDetailObject.buy_in, 0);
+    }
+
+    public void OnRegister()
+    {
+        string uid = Globals.gameToken.uid;
+        int pin = Globals.gameToken.pin;
+        var data = new
+        {
+            uid = uid,
+            pin = pin,
+            f = "registerOne",
+            args = new
+            {
+                tid = currentDetailId,
+                uid = Globals.gameToken.uid
+            },
+        };
+        Globals.socketIoConnection.SendRpc(data, OnRegisterResponse);
+    }
+
+    void OnRegisterResponse(JToken jsonResponse)
+    {
+        try
+        {
+            Dictionary<string, object> res = JsonResponse.ToDictionary(jsonResponse);
+            Dictionary<string, object> ret = NewtonSoftHelper.JObjectToObject<string, object>(res["ret"]);
+            if (ret.ContainsKey("reg"))
+            {
+                if (ret["reg"].ToString() == "True")
+                {
+                    UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                    {
+                        Toast.Show("Register success");
+                    });
+                }
+                else
+                {
+                    UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                    {
+                        Toast.Show("Register fail", "danger");
+                    });
+                }
+            }
+            else
+            {
+                UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                {
+                    Toast.Show("Register fail", "danger");
+                });
+            }
+
+        }
+        catch (Exception e)
+        {
+            UnityMainThreadDispatcher.Instance().Enqueue(() =>
+            {
+                Toast.Show("Error occured", "danger");
+            });
+            Debug.Log(e);
+        }
     }
 }
