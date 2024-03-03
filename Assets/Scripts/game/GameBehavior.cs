@@ -517,9 +517,13 @@ public class GameBehavior : MonoBehaviour
                     actionButtonAreaIndex = -1;
                     break;
                 case 2:
-                    if (room.status[room.GetUserSeat()] == "fold")
+                    if (room.status!=null)
                     {
-                        actionButtonAreaIndex = 2;
+                        if(room.status[room.GetUserSeat()] == "fold")
+                        {
+                            actionButtonAreaIndex = 2;
+                        }
+                        
                     }
                     else
                     {
