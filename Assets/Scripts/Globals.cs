@@ -19,6 +19,7 @@ public class Token
 public static class Globals
 {
     public static SocketIoConnection socketIoConnection = new SocketIoConnection();
+    public static GlobalNotification notification = new GlobalNotification();
     public static bool connected = false;
     public static Token gameToken = new Token();
     public static Gamer userProfile = new Gamer();
