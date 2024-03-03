@@ -53,6 +53,13 @@ public class Room
     public int[] shared_cards = new int[5];
     public string type = null;
 
+    public bool sitOutNextHandButtonEnabled = false;
+    public bool sitOutNextBigBlindButtonEnabled = false;
+    public bool callAnyButtonEnabled = false;
+
+    public bool foldAnyButtonEnabled = false;
+    public bool checkFoldButtonEnabled = false;
+
     public class Operations {
         public bool fold = false;
         public bool check = false;
