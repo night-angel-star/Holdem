@@ -2378,8 +2378,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: GameBehavior, Assembly-CSharp
+      - m_Target: {fileID: 1189902640}
+        m_TargetAssemblyTypeName: TournamentBehavior, Assembly-CSharp
         m_MethodName: ChangeRaiseAmount
         m_Mode: 3
         m_Arguments:
@@ -7044,8 +7044,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: GameBehavior, Assembly-CSharp
+      - m_Target: {fileID: 1189902640}
+        m_TargetAssemblyTypeName: TournamentBehavior, Assembly-CSharp
         m_MethodName: Check
         m_Mode: 1
         m_Arguments:
@@ -8757,8 +8757,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: GameBehavior, Assembly-CSharp
+      - m_Target: {fileID: 1189902640}
+        m_TargetAssemblyTypeName: TournamentBehavior, Assembly-CSharp
         m_MethodName: RaiseConfirm
         m_Mode: 1
         m_Arguments:
@@ -9461,13 +9461,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1189902637}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: 
-        m_Mode: 1
+      - m_Target: {fileID: 1189902640}
+        m_TargetAssemblyTypeName: TournamentBehavior, Assembly-CSharp
+        m_MethodName: ToggleFoldAnyButton
+        m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
+          m_ObjectArgument: {fileID: 840692431}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -9767,8 +9767,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: GameBehavior, Assembly-CSharp
+      - m_Target: {fileID: 1189902640}
+        m_TargetAssemblyTypeName: TournamentBehavior, Assembly-CSharp
         m_MethodName: Call
         m_Mode: 1
         m_Arguments:
@@ -11423,8 +11423,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: GameBehavior, Assembly-CSharp
+      - m_Target: {fileID: 1189902640}
+        m_TargetAssemblyTypeName: TournamentBehavior, Assembly-CSharp
         m_MethodName: ChangeRaiseAmount
         m_Mode: 3
         m_Arguments:
@@ -12500,8 +12500,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: GameBehavior, Assembly-CSharp
+      - m_Target: {fileID: 1189902640}
+        m_TargetAssemblyTypeName: TournamentBehavior, Assembly-CSharp
         m_MethodName: readyForGame
         m_Mode: 1
         m_Arguments:
@@ -14299,8 +14299,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: GameBehavior, Assembly-CSharp
+      - m_Target: {fileID: 1189902640}
+        m_TargetAssemblyTypeName: TournamentBehavior, Assembly-CSharp
         m_MethodName: ToggleSitOutNextHandButton
         m_Mode: 2
         m_Arguments:
@@ -15074,8 +15074,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: GameBehavior, Assembly-CSharp
+      - m_Target: {fileID: 1189902640}
+        m_TargetAssemblyTypeName: TournamentBehavior, Assembly-CSharp
         m_MethodName: Raise
         m_Mode: 1
         m_Arguments:
@@ -15424,8 +15424,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: GameBehavior, Assembly-CSharp
+      - m_Target: {fileID: 1189902640}
+        m_TargetAssemblyTypeName: TournamentBehavior, Assembly-CSharp
         m_MethodName: Fold
         m_Mode: 1
         m_Arguments:
@@ -17591,12 +17591,12 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: GameBehavior, Assembly-CSharp
+      - m_Target: {fileID: 1189902640}
+        m_TargetAssemblyTypeName: TournamentBehavior, Assembly-CSharp
         m_MethodName: ToggleCallAnyButton
         m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgument: {fileID: 1635926670}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
@@ -18627,8 +18627,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: GameBehavior, Assembly-CSharp
+      - m_Target: {fileID: 1189902640}
+        m_TargetAssemblyTypeName: TournamentBehavior, Assembly-CSharp
         m_MethodName: ToggleCallAnyButton
         m_Mode: 2
         m_Arguments:
@@ -20848,13 +20848,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1189902637}
-        m_TargetAssemblyTypeName: 
-        m_MethodName: 
-        m_Mode: 1
+      - m_Target: {fileID: 1189902640}
+        m_TargetAssemblyTypeName: TournamentBehavior, Assembly-CSharp
+        m_MethodName: ToggleCheckFoldButton
+        m_Mode: 2
         m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: 
+          m_ObjectArgument: {fileID: 1919424537}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -21493,8 +21493,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: GameBehavior, Assembly-CSharp
+      - m_Target: {fileID: 1189902640}
+        m_TargetAssemblyTypeName: TournamentBehavior, Assembly-CSharp
         m_MethodName: ToggleSitOutNextBigBlindButton
         m_Mode: 2
         m_Arguments:
