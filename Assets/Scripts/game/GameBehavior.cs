@@ -68,32 +68,39 @@ public class GameBehavior : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
-        //read from global
-        receiveFromGlobalResult = UpdateRoomFromGlobal();
-        if (receiveFromGlobalResult)
+        try
         {
-            //set data from room data
-            DisableUnneccessarySeats();
-            SetActionButtonArea();
-            //draw ui
-            if (room.gameStatus == 2)
+            //read from global
+            receiveFromGlobalResult = UpdateRoomFromGlobal();
+            if (receiveFromGlobalResult)
             {
-                GetMyCard();
+                //set data from room data
+                DisableUnneccessarySeats();
+                SetActionButtonArea();
+                //draw ui
+                if (room.gameStatus == 2)
+                {
+                    GetMyCard();
+                }
+                SetUserInfo();
+                SetRoomName();
+                InitializeAddChipsModal();
+                SetPublicCards();
+                SetTimer();
+                SetActionButtonAreaIndexByGlobal();
+                SetRaiseAmounts();
+                SetRaiseBar();
+                CheckRaiseAmount();
+                SetGamersActionStatus();
+                SetRoomsToggler();
+                SetRoomsView();
             }
-            SetUserInfo();
-            SetRoomName();
-            InitializeAddChipsModal();
-            SetPublicCards();
-            SetTimer();
-            SetActionButtonAreaIndexByGlobal();
-            SetRaiseAmounts();
-            SetRaiseBar();
-            CheckRaiseAmount();
-            SetGamersActionStatus();
-            SetRoomsToggler();
-            SetRoomsView();
+        }catch(Exception ex)
+        {
+            LogHelper.AppLog("Multiroom");
+            LogHelper.AppLog(ex.ToString());
         }
+        
 
     }
 
