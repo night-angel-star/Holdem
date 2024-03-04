@@ -15,6 +15,7 @@ public class Gamer
     public int exp;
     public int deposite;
     public int[] cards;
+    public int prize;
 
     public static Gamer FromToken(JToken baseData)
     {

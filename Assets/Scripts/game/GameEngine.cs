@@ -477,9 +477,17 @@ public class GameEngine
                 Globals.gameRooms[json.roomid.ToString()].gamers[g.uid] = g;
                 int index = Array.IndexOf(Globals.gameRooms[json.roomid.ToString()].seats, g.uid);
                 Globals.gameRooms[json.roomid.ToString()].cards[index] = g.cards;
+                if(g.prize > 0)
+                {
+                    UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                    {
+                        Toast.Show("Winner: " + g.name);
+                    });
+                }
             }
             Globals.gameRooms[json.roomid.ToString()].shared_cards = new int[5];
             Globals.gameRooms[json.roomid.ToString()].cards = new Dictionary<int, int[]>();
+            Globals.gameRooms[json.roomid.ToString()].countdown = -1;
         } while (false);
         if (errorString != "")
         {
