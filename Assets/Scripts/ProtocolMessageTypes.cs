@@ -272,3 +272,14 @@ public class PromptNotifyEvent : RoomEvent
     }
     public new PromptEventArgs args;
 }
+
+public class TournamentStatusNotifyEvent : RoomEvent
+{
+    public class TournamentStatusEventArgs
+    {
+        public int timeleft;
+        public string status;
+        public int tid;
+    }
+    public new TournamentStatusEventArgs args;
+}
