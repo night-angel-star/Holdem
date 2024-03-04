@@ -573,10 +573,10 @@ public class GameEngine
 
     private void ProcessRelogin()
     {
-        UnityMainThreadDispatcher.Instance().Enqueue(() =>
+        /* UnityMainThreadDispatcher.Instance().Enqueue(() =>
         {
             SceneManager.LoadScene("Room");
-        });
+        }); */
     }
 
     private void ProcessSeeCard(string uid, string roomid, int seat, int[] cards)
