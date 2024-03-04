@@ -275,14 +275,29 @@ public class GameBehavior : MonoBehaviour
                         }
                         if (room.gameStatus == 3)
                         {
-                            if (i == 0)
+                            if (room.status[ArrayHelper.ReRotateNumber(i, room.GetUserSeat(), room.options.max_seats)] != "fold")
                             {
-                                usersArray[i].transform.GetChild(2).gameObject.SetActive(true);
+                                if (i == 0)
+                                {
+                                    usersArray[i].transform.GetChild(2).gameObject.SetActive(true);
+                                }
+                                else
+                                {
+                                    usersArray[i].transform.GetChild(5).gameObject.SetActive(true);
+                                }
                             }
                             else
                             {
-                                usersArray[i].transform.GetChild(5).gameObject.SetActive(true);
+                                if (i == 0)
+                                {
+
+                                }
+                                else
+                                {
+                                    usersArray[i].transform.GetChild(5).gameObject.SetActive(false);
+                                }
                             }
+
 
                         }
                         else
@@ -320,19 +335,21 @@ public class GameBehavior : MonoBehaviour
                     }
                     else if (room.gameStatus == 3)
                     {
-                        if (i == 0)
+                        if (room.status[ArrayHelper.ReRotateNumber(i, room.GetUserSeat(), room.options.max_seats)] != "fold")
                         {
+                            if (i == 0)
+                            {
 
+                            }
+                            else
+                            {
+                                GameObject userShowCards1 = usersArray[i].transform.GetChild(5).gameObject.transform.GetChild(0).gameObject;
+                                GameObject userShowCards2 = usersArray[i].transform.GetChild(5).gameObject.transform.GetChild(1).gameObject;
+                                userShowCards1.GetComponent<SpriteRenderer>().sprite = CardHelper.GetCard(room.cards[ArrayHelper.ReRotateNumber(i, room.GetUserSeat(), room.options.max_seats)][0]);
+                                userShowCards2.GetComponent<SpriteRenderer>().sprite = CardHelper.GetCard(room.cards[ArrayHelper.ReRotateNumber(i, room.GetUserSeat(), room.options.max_seats)][1]);
+                            }
                         }
-                        else
-                        {
-                            GameObject userShowCards1 = usersArray[i].transform.GetChild(5).gameObject.transform.GetChild(0).gameObject;
-                            GameObject userShowCards2 = usersArray[i].transform.GetChild(5).gameObject.transform.GetChild(1).gameObject;
-                            userShowCards1.GetComponent<SpriteRenderer>().sprite = CardHelper.GetCard(room.cards[ArrayHelper.ReRotateNumber(i, room.GetUserSeat(), room.options.max_seats)][0]);
-                            userShowCards2.GetComponent<SpriteRenderer>().sprite = CardHelper.GetCard(room.cards[ArrayHelper.ReRotateNumber(i, room.GetUserSeat(), room.options.max_seats)][1]);
 
-
-                        }
                     }
 
 
@@ -513,9 +530,9 @@ public class GameBehavior : MonoBehaviour
                     actionButtonAreaIndex = -1;
                     break;
                 case 2:
-                    if (room.status!=null)
+                    if (room.status != null)
                     {
-                        if(room.status[room.GetUserSeat()] == "fold")
+                        if (room.status[room.GetUserSeat()] == "fold")
                         {
                             actionButtonAreaIndex = 2;
                         }
@@ -530,7 +547,7 @@ public class GameBehavior : MonoBehaviour
                                 actionButtonAreaIndex = 3;
                             }
                         }
-                        
+
                     }
                     else
                     {
