@@ -306,6 +306,8 @@ public class GameEngine
                     Globals.gameRooms[roomid].gameStatus = 2;
                 }
                 Globals.gameRooms[roomid].status = new string[room.options.max_seats];
+                Globals.gameRooms[json.roomid.ToString()].shared_cards = new int[5];
+                Globals.gameRooms[json.roomid.ToString()].cards = new Dictionary<int, int[]>();
             }
 
         } while (false);
@@ -485,9 +487,7 @@ public class GameEngine
                     });
                 }
             }
-            Globals.gameRooms[json.roomid.ToString()].shared_cards = new int[5];
-            Globals.gameRooms[json.roomid.ToString()].cards = new Dictionary<int, int[]>();
-            Globals.gameRooms[json.roomid.ToString()].countdown = -1;
+            Globals.gameRooms[json.roomid.ToString()].countdown = 20;
         } while (false);
         if (errorString != "")
         {
