@@ -251,7 +251,7 @@ public class GameBehavior : MonoBehaviour
                     if (i == 0)
                     {
                         usersArray[i].transform.GetChild(1).gameObject.SetActive(true);
-                        if (room.gameStatus == 2)
+                        if (room.gameStatus == 2||room.gameStatus==3)
                         {
                             usersArray[i].transform.GetChild(2).gameObject.SetActive(true);
                         }
@@ -290,7 +290,7 @@ public class GameBehavior : MonoBehaviour
                             {
                                 if (i == 0)
                                 {
-
+                                    usersArray[i].transform.GetChild(2).gameObject.SetActive(true);
                                 }
                                 else
                                 {
