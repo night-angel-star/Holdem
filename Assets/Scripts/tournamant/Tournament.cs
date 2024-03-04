@@ -166,8 +166,6 @@ public class Tournament : MonoBehaviour
 
     void OpenDetail(int id)
     {
-        Debug.Log(id);
-
         currentDetailId = id;
         currentView = ViewType.Detail;
     }
