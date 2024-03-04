@@ -58639,9 +58639,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 65778e4b5aa939745b602df2167a6b59, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  UsernameText: {fileID: 0}
-  CoinText: {fileID: 0}
-  Avatar: {fileID: 0}
+  UsernameText: {fileID: 1608963424}
+  CoinText: {fileID: 2062359641}
+  Avatar: {fileID: 1684815717}
 --- !u!1 &1709291668
 GameObject:
   m_ObjectHideFlags: 0
@@ -59604,7 +59604,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1439694977}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.9664148
+  m_Size: 0.96641475
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
