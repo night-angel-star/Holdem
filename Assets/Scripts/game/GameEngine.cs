@@ -339,8 +339,10 @@ public class GameEngine
                     int[] shareCards = JsonConvert.DeserializeObject<int[]>(deals[0][1].ToString());
                     foreach (int card in shareCards)
                     {
-                        Array.Resize(ref Globals.gameRooms[json.roomid.ToString()].shared_cards, Globals.gameRooms[json.roomid.ToString()].shared_cards.Length + 1);
-                        Globals.gameRooms[json.roomid.ToString()].shared_cards[Globals.gameRooms[json.roomid.ToString()].shared_cards.Length - 1] = card;
+                        int index = Array.IndexOf(Globals.gameRooms[json.roomid.ToString()].shared_cards, 0);
+                        // Array.Resize(ref Globals.gameRooms[json.roomid.ToString()].shared_cards, Globals.gameRooms[json.roomid.ToString()].shared_cards.Length + 1);
+                        // Globals.gameRooms[json.roomid.ToString()].shared_cards[Globals.gameRooms[json.roomid.ToString()].shared_cards.Length - 1] = card;
+                        Globals.gameRooms[json.roomid.ToString()].shared_cards[index] = card;
                     }
                     Debug.Log(Globals.gameRooms[json.roomid.ToString()].shared_cards);
                 }
