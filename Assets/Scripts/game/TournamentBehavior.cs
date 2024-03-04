@@ -69,30 +69,37 @@ public class TournamentBehavior : MonoBehaviour
     void Update()
     {
 
-        //read from global
-        receiveFromGlobalResult = UpdateRoomFromGlobal();
-        if (receiveFromGlobalResult)
+        try
         {
-            //set data from room data
-            DisableUnneccessarySeats();
-            SetActionButtonArea();
-            //draw ui
-            if (room.gameStatus == 2)
+            //read from global
+            receiveFromGlobalResult = UpdateRoomFromGlobal();
+            if (receiveFromGlobalResult)
             {
-                GetMyCard();
+                //set data from room data
+                DisableUnneccessarySeats();
+                SetActionButtonArea();
+                //draw ui
+                if (room.gameStatus == 2)
+                {
+                    GetMyCard();
+                }
+                SetUserInfo();
+                SetRoomName();
+                InitializeAddChipsModal();
+                SetPublicCards();
+                SetTimer();
+                SetActionButtonAreaIndexByGlobal();
+                SetRaiseAmounts();
+                SetRaiseBar();
+                CheckRaiseAmount();
+                SetGamersActionStatus();
+                SetRoomsToggler();
+                SetRoomsView();
             }
-            SetUserInfo();
-            SetRoomName();
-            InitializeAddChipsModal();
-            SetPublicCards();
-            SetTimer();
-            SetActionButtonAreaIndexByGlobal();
-            SetRaiseAmounts();
-            SetRaiseBar();
-            CheckRaiseAmount();
-            SetGamersActionStatus();
-            SetRoomsToggler();
-            SetRoomsView();
+        }catch(Exception ex)
+        {
+            LogHelper.AppLog("Tournament");
+            LogHelper.AppLog(ex.ToString());
         }
 
     }
@@ -338,6 +345,7 @@ public class TournamentBehavior : MonoBehaviour
                             }
                             catch (Exception ex)
                             {
+                                Toast.Show(ex.ToString());
                                 Debug.Log(ex);
                             }
                         }
