@@ -275,7 +275,7 @@ public class GameBehavior : MonoBehaviour
                         }
                         if (room.gameStatus == 3)
                         {
-                            if (room.status[ArrayHelper.ReRotateNumber(i, room.GetUserSeat(), room.options.max_seats)] != "fold")
+                            if (room.status[ArrayHelper.ReRotateNumber(i, room.GetUserSeat(), room.options.max_seats)] != "fold" && room.status[room.GetUserSeat()] != "fold")
                             {
                                 if (i == 0)
                                 {
