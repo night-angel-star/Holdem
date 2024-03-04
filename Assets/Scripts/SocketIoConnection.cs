@@ -160,6 +160,13 @@ public class SocketIoConnection
         }
         _notifyEventTimes.Add(e, oneTime);
     }
+    public void RemoveNotifyHandler(string e)
+    {
+        if (_notifyEventHandlers.ContainsKey(e))
+        {
+            _notifyEventHandlers.Remove(e);
+        }
+    }
 
     public void SendRpc(object data, Action<JToken> callback, bool oneTime = true)
     {
