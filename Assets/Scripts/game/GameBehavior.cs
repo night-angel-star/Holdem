@@ -953,7 +953,7 @@ public class GameBehavior : MonoBehaviour
         {
             if (room.status != null)
             {
-                GameObject[] usersArray = GameObjectHelper.GetChildren(usersParent);
+                GameObject[] usersArray = GameObjectHelper.GetChildrenForRoomSize(usersParent,room.options.max_seats);
                 string[] gamerActionStatus = room.status;
                 string[] rotatedGamerActionStatus = ArrayHelper.RotateArray(gamerActionStatus, room.GetUserSeat());
 
