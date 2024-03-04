@@ -4,6 +4,7 @@ using UnityEngine;
 using SocketIOClient;
 using SocketIOClient.Newtonsoft.Json;
 using System;
+using System.IO;
 using System.Net.Sockets;
 using SocketIOClient.Transport;
 using Newtonsoft.Json;
@@ -26,4 +27,6 @@ public static class Globals
     public static GameRoomsT gameRooms = new GameRoomsT();
     public static string currentRoom = null;
     public static string strUri = "http://192.168.148.182:3000";
+
+    
 }
