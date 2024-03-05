@@ -137,13 +137,14 @@ public class SocketIoConnection
     }
     private void OnRpcRet(SocketIOResponse response)
     {
-        Debug.Log("rpc_ret");
-        Debug.Log(response);
+        LogHelper.NetworkLog("rpc_ret : " + response);
+        Debug.Log("rpc_ret : " + response);
         ProcessRpcRet(response);
 
     }
     private void OnNotify(SocketIOResponse data)
     {
+        LogHelper.NetworkLog("notify : " + data);
         Debug.Log("notify : " + data);
         ProcessNotify(data);
     }
