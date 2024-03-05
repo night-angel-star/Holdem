@@ -66,6 +66,7 @@ public class SocketIoConnection
     private void OnConnected(object sender, EventArgs e)
     {
         Debug.Log($"Connected: {socketIoUnity.Connected}");
+        LogHelper.AppLog("App is connected to server");
         Globals.connected = true;
         engine = new GameEngine();
         engine.Start();
