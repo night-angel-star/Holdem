@@ -12,6 +12,10 @@ public class LogHelper : MonoBehaviour
 
     public static void NetworkLog(string text)
     {
+#if UNITY_WEBGL
+        string timestamp = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
+        Debug.Log("[" + timestamp + "]          " + text);
+#else
         using (StreamWriter writer = File.AppendText(appDir + "/" + networkLogFileName))
         {
             // Get the current timestamp
@@ -20,10 +24,15 @@ public class LogHelper : MonoBehaviour
             // Write the timestamp and text to the file
             writer.WriteLine("[" + timestamp + "]          " + text);
         }
+#endif
     }
 
     public static void AppLog(string text)
     {
+#if UNITY_WEBGL
+        string timestamp = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
+        Debug.Log("[" + timestamp + "]          " + text);
+#else
         using (StreamWriter writer = File.AppendText(appDir + "/" + appLogFileName))
         {
             // Get the current timestamp
@@ -32,5 +41,6 @@ public class LogHelper : MonoBehaviour
             // Write the timestamp and text to the file
             writer.WriteLine("[" + timestamp + "]          " + text);
         }
+#endif
     }
 }

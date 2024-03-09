@@ -106,10 +106,17 @@ public class TournamentBehavior : MonoBehaviour
 
     bool UpdateRoomFromGlobal()
     {
-        if (Globals.gameRooms.ContainsKey(Globals.currentRoom))
+        if (Globals.currentRoom != null)
         {
-            room = Globals.gameRooms[Globals.currentRoom];
-            return true;
+            if (Globals.gameRooms.ContainsKey(Globals.currentRoom))
+            {
+                room = Globals.gameRooms[Globals.currentRoom];
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
         else
         {
