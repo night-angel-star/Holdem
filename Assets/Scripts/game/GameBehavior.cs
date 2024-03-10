@@ -364,8 +364,8 @@ public class GameBehavior : MonoBehaviour
     void GetActionButtonsInteractable()
     {
         GameObject callButton = ActionButtonsArea.transform.GetChild(1).gameObject.transform.GetChild(2).gameObject;
-        GameObject checkButton= ActionButtonsArea.transform.GetChild(1).gameObject.transform.GetChild(1).gameObject;
-        if (room.operations.call)
+        GameObject checkButton = ActionButtonsArea.transform.GetChild(1).gameObject.transform.GetChild(1).gameObject;
+        if (Boolean.Parse(room.operations.call.ToString()))
         {
             callButton.GetComponent<Button>().interactable = true;
         }
@@ -374,7 +374,7 @@ public class GameBehavior : MonoBehaviour
             callButton.GetComponent<Button>().interactable = false;
         }
 
-        if (room.operations.check)
+        if (Boolean.Parse(room.operations.check.ToString()))
         {
             checkButton.GetComponent<Button>().interactable = true;
         }

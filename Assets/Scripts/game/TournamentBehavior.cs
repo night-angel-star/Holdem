@@ -220,7 +220,7 @@ public class TournamentBehavior : MonoBehaviour
     {
         GameObject callButton = ActionButtonsArea.transform.GetChild(1).gameObject.transform.GetChild(2).gameObject;
         GameObject checkButton = ActionButtonsArea.transform.GetChild(1).gameObject.transform.GetChild(1).gameObject;
-        if (room.operations.call)
+        if (Boolean.Parse(room.operations.call.ToString()))
         {
             callButton.GetComponent<Button>().interactable = true;
         }
@@ -229,7 +229,7 @@ public class TournamentBehavior : MonoBehaviour
             callButton.GetComponent<Button>().interactable = false;
         }
 
-        if (room.operations.check)
+        if (Boolean.Parse(room.operations.check.ToString()))
         {
             checkButton.GetComponent<Button>().interactable = true;
         }
