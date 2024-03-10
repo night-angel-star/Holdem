@@ -630,6 +630,11 @@ public class GameEngine
                             Toast.Show("Winner: " + g.name);
                         });
                     }
+                    if (Globals.gameRooms[json.roomid.ToString()].gamers[g.uid].coins == 0)
+                    {
+                        SleepForGameover();
+                        Globals.gameRooms[json.roomid.ToString()].seats[index] = null;
+                    }
                 }
                 Globals.gameRooms[json.roomid.ToString()].countdown = 20;
             } while (false);
@@ -644,6 +649,11 @@ public class GameEngine
             LogHelper.AppLog(ex.ToString());
         }
         
+    }
+
+    IEnumerator SleepForGameover()
+    {
+        yield return new WaitForSeconds(3);
     }
     private void OnCountDown(JToken baseToken)
     {
