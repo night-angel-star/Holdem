@@ -65,8 +65,6 @@ public class Room
         public bool check = false;
         public bool call = false;
         public bool raise = false;
-        public bool takeseat = false;
-        public bool ready = false;
     }
     public Operations operations = new Operations();
 

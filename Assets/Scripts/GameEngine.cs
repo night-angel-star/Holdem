@@ -76,23 +76,12 @@ public class GameEngine
                 PromptNotifyEvent json = baseToken.ToObject<PromptNotifyEvent>();
                 if (json != null)
                 {
-                    foreach (var field in typeof(PromptNotifyEvent).GetFields())
-                    {
-                        if (field.FieldType == typeof(bool))
-                        {
-                            bool temp = (bool)field.GetValue(json.args);
-                            if (temp == true)
-                            {
-                                field.SetValue(Globals.gameRooms[json.roomid.ToString()].operations, field.GetValue(json.args));
-                            }
-                        }
-                    }
+                    Globals.gameRooms[json.roomid.ToString()].operations = json.args;
                 }
-
             } while (false);
             if (errorString != "")
             {
-                Debug.Log(errorString);
+                // Debug.Log(errorString);
             }
         }
         catch(Exception ex)
@@ -293,8 +282,6 @@ public class GameEngine
     {
         try
         {
-            Debug.Log("onlook base token");
-            Debug.Log(baseToken);
             string errorString = "";
             do
             {
@@ -603,6 +590,18 @@ public class GameEngine
             LogHelper.AppLog(ex.ToString());
         }
     }
+    private void OnAllIn(JToken baseToken)
+    {
+        try
+        {
+            
+        }
+        catch (Exception ex)
+        {
+            LogHelper.AppLog("OnAllIn");
+            LogHelper.AppLog(ex.ToString());
+        }
+    }
     private void OnGameOver(JToken baseToken)
     {
         try
@@ -729,7 +728,7 @@ public class GameEngine
             Globals.socketIoConnection.AddNotifyHandler("check", OnCheck);
             Globals.socketIoConnection.AddNotifyHandler("call", OnCall);
             Globals.socketIoConnection.AddNotifyHandler("raise", OnRaise);
-            // Globals.socketIoConnection.AddNotifyHandler("all_in", OnMoveTurn);
+            Globals.socketIoConnection.AddNotifyHandler("all_in", OnAllIn);
             Globals.socketIoConnection.AddNotifyHandler("countdown", OnCountDown);
             // Globals.socketIoConnection.AddNotifyHandler("shout", OnPrompt);
             // Globals.socketIoConnection.AddNotifyHandler("exit", OnPrompt);
