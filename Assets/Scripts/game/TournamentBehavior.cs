@@ -869,7 +869,7 @@ public class TournamentBehavior : MonoBehaviour
             {
                 if (room.seats[i] != null)
                 {
-                    gamersCoinArray[i] = room.gamers[room.seats[i]].coins;
+                    gamersCoinArray[i] = room.chips[i];
                 }
                 else
                 {
