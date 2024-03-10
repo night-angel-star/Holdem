@@ -61,10 +61,10 @@ public class Room
     public bool checkFoldButtonEnabled = false;
 
     public class Operations {
-        public bool fold = false;
-        public bool check = false;
-        public bool call = false;
-        public bool raise = false;
+        public object fold = null;
+        public object check = null;
+        public object call = null;
+        public object raise = null;
     }
     public Operations operations = new Operations();
 
