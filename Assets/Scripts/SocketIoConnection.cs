@@ -136,34 +136,26 @@ public class SocketIoConnection
         try
         {
             JToken[] jToken = JsonConvert.DeserializeObject<JToken[]>(response.ToString());
-            Debug.Log("step 1");
-            Debug.Log(jToken);
             if (jToken != null)
             {
                 for (int i = 0; i < jToken.Length; i++)
                 {
                     NotifyEvent notifyEvent = jToken[i].ToObject<NotifyEvent>();
-                    Debug.Log("step 2");
                     Debug.Log(notifyEvent);
                     if (notifyEvent != null)
                     {
                         if (notifyEvent.e != null)
                         {
                             string eventName = notifyEvent.e;
-                            Debug.Log("step 3");
                             Debug.Log(eventName);
                             //Debug.Log(_notifyEventHandlers[eventName]);
-                            Debug.Log("step 3.1");
                             if (_notifyEventHandlers.ContainsKey(eventName))
                             {
-                                Debug.Log("step 4");
                                 _notifyEventHandlers[eventName](jToken[i]);
-                                Debug.Log("step 5");
                                 if (_notifyEventTimes.ContainsKey(eventName) && _notifyEventTimes[eventName] == true)
                                 {
                                     _notifyEventHandlers.Remove(eventName);
                                     _notifyEventTimes.Remove(eventName);
-                                    Debug.Log("step 6");
                                 }
                             }
                         }
@@ -181,7 +173,7 @@ public class SocketIoConnection
     private void OnRpcRet(SocketIOResponse response)
     {
         LogHelper.NetworkLog("rpc_ret : " + response);
-        Debug.Log("rpc_ret : " + response);
+        // Debug.Log("rpc_ret : " + response);
         ProcessRpcRet(response);
 
     }
@@ -197,7 +189,6 @@ public class SocketIoConnection
     {
         try
         {
-            Debug.Log("adding notify handler" + e);
             if (_notifyEventHandlers.ContainsKey(e))
             {
                 _notifyEventHandlers.Remove(e);
@@ -252,7 +243,7 @@ public class SocketIoConnection
 
         _rpcEventHandlers.Add(seq, callback);
         _rpcEventTimes.Add(seq, oneTime);
-        Debug.Log("rpc : " + req.ToString());
+        // Debug.Log("rpc : " + req.ToString());
         socketIoUnity.Emit("rpc", req);
     }
 

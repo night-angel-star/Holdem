@@ -111,6 +111,7 @@ public class TakeSeatNotifyEvent : RoomEvent
     {
         public string uid;
         public int where;
+        public int coins;
         public int roomid;
     }
     public new TakeSeatEventArgs args;

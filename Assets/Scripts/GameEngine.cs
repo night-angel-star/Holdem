@@ -116,7 +116,7 @@ public class GameEngine
                 TakeSeatNotifyEvent json = baseToken.ToObject<TakeSeatNotifyEvent>();
                 if (json != null)
                 {
-                    ProcessTakeSeat(json.args.uid, json.roomid.ToString(), json.args.where);
+                    ProcessTakeSeat(json.args.uid, json.roomid.ToString(), json.args.where, json.args.coins);
                 }
 
             } while (false);
@@ -381,6 +381,16 @@ public class GameEngine
                     {
                         Globals.gameRooms[roomid] = room;
                         Globals.gameRooms[roomid].gameStatus = 2;
+                    }
+                    for (int i = 0 ; i < room.seats.Length; i++)
+                    {
+                        if(room.seats[i] != null)
+                        {
+                            if (!Globals.gameRooms[json.roomid.ToString()].chips.ContainsKey(i))
+                            {
+                                Globals.gameRooms[json.roomid.ToString()].chips[i] = 0;
+                            }
+                        }
                     }
                     Globals.gameRooms[roomid].status = new string[room.options.max_seats];
                     Globals.gameRooms[json.roomid.ToString()].shared_cards = new int[5];
@@ -807,7 +817,7 @@ public class GameEngine
         
     }
 
-    private void ProcessTakeSeat(string uid, string roomid, int seat)
+    private void ProcessTakeSeat(string uid, string roomid, int seat, int coins)
     {
         try
         {
@@ -815,6 +825,7 @@ public class GameEngine
             {
 
                 Globals.gameRooms[roomid].seats[seat] = uid;
+                Globals.gameRooms[roomid].gamers[uid].coins = coins;
                 Globals.gameRooms[roomid].seats_taken++;
                 Globals.gameRooms[roomid].gameStatus = 0;
             }
