@@ -368,7 +368,18 @@ public class TournamentBehavior : MonoBehaviour
                     {
                         if (i == 0)
                         {
+                            GameObject money = usersArray[i].transform.GetChild(4).gameObject.transform.GetChild(1).gameObject;
+                            try
+                            {
+                                int rotatedI = ArrayHelper.ReRotateNumber(i, room.GetUserSeat(), room.options.max_seats);
+                                money.GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated(long.Parse(room.chips[rotatedI].ToString()), 1);
 
+                            }
+                            catch (Exception ex)
+                            {
+                                Toast.Show(ex.ToString());
+                                Debug.Log(ex);
+                            }
                         }
                         else
                         {
