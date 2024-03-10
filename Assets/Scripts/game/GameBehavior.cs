@@ -1016,7 +1016,7 @@ public class GameBehavior : MonoBehaviour
 
             minRaiseAmount = gamersCoinArray.Max();
             maxRaiseAmount = room.gamers[Globals.userProfile.uid].coins;
-            if (maxRaiseAmount <= minRaiseAmount)
+            if (maxRaiseAmount < minRaiseAmount)
             {
                 raiseButton.GetComponent<Button>().interactable = false;
             }
