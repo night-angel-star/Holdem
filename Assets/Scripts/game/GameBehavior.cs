@@ -439,10 +439,12 @@ public class GameBehavior : MonoBehaviour
                         if (room.gameStatus == 2||room.gameStatus==3)
                         {
                             usersArray[i].transform.GetChild(2).gameObject.SetActive(true);
+                            usersArray[i].transform.GetChild(4).gameObject.SetActive(true);
                         }
                         else
                         {
                             usersArray[i].transform.GetChild(2).gameObject.SetActive(false);
+                            usersArray[i].transform.GetChild(4).gameObject.SetActive(false);
                         }
                     }
                     else
