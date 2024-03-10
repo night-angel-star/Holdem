@@ -262,16 +262,7 @@ public class GameoverNotifyEvent : RoomEvent
 
 public class PromptNotifyEvent : RoomEvent
 {
-    public class PromptEventArgs
-    {
-        public bool fold;
-        public bool check;
-        public bool call;
-        public bool raise;
-        public bool takeseat;
-        public bool ready;
-    }
-    public new PromptEventArgs args;
+    public new Room.Operations args;
 }
 
 public class TournamentStatusNotifyEvent : RoomEvent
