@@ -26,7 +26,7 @@ public class TexasHoldem : MonoBehaviour
             uid = uid,
             pin = pin,
             f = "rooms",
-            args = (object)null,
+            args = "0",
         };
         Globals.socketIoConnection.SendRpc(data, OnResponse);
     }
