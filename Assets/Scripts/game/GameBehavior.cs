@@ -53,6 +53,8 @@ public class GameBehavior : MonoBehaviour
 
 
     public int raiseAmount = 0;
+    public int minRaiseAmount = 0;
+    public int maxRaiseAmount = 0;
 
     public int actionButtonAreaIndex = -1;
 
@@ -101,6 +103,8 @@ public class GameBehavior : MonoBehaviour
                     LogHelper.AppLog("SetActionButtonArea");
                     LogHelper.AppLog(ex.ToString());
                 }
+
+                
                 //draw ui
                 if (room.gameStatus == 2)
                 {
@@ -111,6 +115,16 @@ public class GameBehavior : MonoBehaviour
                     catch(Exception ex)
                     {
                         LogHelper.AppLog("GetMyCard");
+                        LogHelper.AppLog(ex.ToString());
+                    }
+
+                    try
+                    {
+                        GetActionButtonsInteractable();
+                    }
+                    catch(Exception ex)
+                    {
+                        LogHelper.AppLog("GetActionButtonsInteractable");
                         LogHelper.AppLog(ex.ToString());
                     }
                 }
@@ -347,6 +361,28 @@ public class GameBehavior : MonoBehaviour
 
     }
 
+    void GetActionButtonsInteractable()
+    {
+        GameObject callButton = ActionButtonsArea.transform.GetChild(1).gameObject.transform.GetChild(2).gameObject;
+        GameObject checkButton= ActionButtonsArea.transform.GetChild(1).gameObject.transform.GetChild(1).gameObject;
+        if (room.operations.call)
+        {
+            callButton.GetComponent<Button>().interactable = true;
+        }
+        else
+        {
+            callButton.GetComponent<Button>().interactable = false;
+        }
+
+        if (room.operations.check)
+        {
+            checkButton.GetComponent<Button>().interactable = true;
+        }
+        else
+        {
+            checkButton.GetComponent<Button>().interactable = false;
+        }
+    }
     void SetUserInfo()
     {
         if (room.GetUserSeat() == -1)
@@ -962,8 +998,34 @@ public class GameBehavior : MonoBehaviour
     {
         if (room.gameStatus == 2)
         {
-            raiseBarSlider.GetComponent<Slider>().minValue = room.options.small_blind;
-            raiseBarSlider.GetComponent<Slider>().maxValue = room.gamers[Globals.userProfile.uid].coins;
+            int[] gamersCoinArray = new int[room.options.max_seats];
+            for (int i = 0; i < gamersCoinArray.Length; i++)
+            {
+                if (room.seats[i] != null)
+                {
+                    gamersCoinArray[i] = room.gamers[room.seats[i]].coins;
+                }
+                else
+                {
+                    gamersCoinArray[i] = 0;
+                }
+            }
+            
+
+            minRaiseAmount = gamersCoinArray.Max();
+            maxRaiseAmount = room.gamers[Globals.userProfile.uid].coins;
+            if (maxRaiseAmount <= minRaiseAmount)
+            {
+                raiseButton.GetComponent<Button>().interactable = false;
+            }
+            else
+            {
+                raiseButton.GetComponent<Button>().interactable = true;
+                raiseBarSlider.GetComponent<Slider>().minValue = minRaiseAmount;
+                raiseBarSlider.GetComponent<Slider>().maxValue = maxRaiseAmount;
+            }
+            
+            
         }
     }
 
@@ -973,20 +1035,20 @@ public class GameBehavior : MonoBehaviour
         {
             GameObject[] raiseBarGrades = GameObjectHelper.GetChildren(raiseBarGradeParent);
             raiseToValue.GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated((long)raiseAmount, 1);
-            int raiseBarStep = (room.gamers[Globals.userProfile.uid].coins - room.options.small_blind) / raiseBarGrades.Length;
+            int raiseBarStep = (maxRaiseAmount - minRaiseAmount) / raiseBarGrades.Length;
             for (int i = 0; i < raiseBarGrades.Length; i++)
             {
                 if (i != raiseBarGrades.Length - 1)
                 {
-                    raiseBarGrades[i].GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated((long)(room.options.small_blind + raiseBarStep * i), 0);
+                    raiseBarGrades[i].GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated((long)(minRaiseAmount + raiseBarStep * i), 0);
                 }
                 else
                 {
-                    raiseBarGrades[i].GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated((long)room.gamers[Globals.userProfile.uid].coins, 0);
+                    raiseBarGrades[i].GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated((long)maxRaiseAmount, 0);
                 }
             }
 
-            float raiseBarScale = (float)(raiseAmount - room.options.small_blind) / (room.gamers[Globals.userProfile.uid].coins - room.options.small_blind);
+            float raiseBarScale = (float)(raiseAmount - minRaiseAmount) / (maxRaiseAmount - minRaiseAmount);
             raiseBar.transform.localScale = (new Vector3(1, raiseBarScale, 1));
         }
 
@@ -994,13 +1056,13 @@ public class GameBehavior : MonoBehaviour
 
     void CheckRaiseAmount()
     {
-        if (raiseAmount > room.gamers[Globals.userProfile.uid].coins)
+        if (raiseAmount > maxRaiseAmount)
         {
-            raiseAmount = room.gamers[Globals.userProfile.uid].coins;
+            raiseAmount = maxRaiseAmount;
         }
-        else if (raiseAmount < room.options.small_blind)
+        else if (raiseAmount < minRaiseAmount)
         {
-            raiseAmount = room.options.small_blind;
+            raiseAmount = minRaiseAmount;
         }
     }
 
