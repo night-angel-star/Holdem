@@ -9,10 +9,16 @@ using Newtonsoft.Json.Linq;
 using System.Linq;
 using System.Dynamic;
 
-
+#if UNITY_WEBGL
+using SocketIOResponse = System.String;
+#endif
 public class SocketIoConnection
 {
+#if UNITY_WEBGL
+    public static SocketIoWrapper socketIoUnity;
+#else
     public static SocketIOUnity socketIoUnity;
+#endif
     public string serverUri;
     Dictionary<string, Action<JToken>> _rpcEventHandlers = new Dictionary<string, Action<JToken>>();
     Dictionary<string, Action<JToken>> _notifyEventHandlers = new Dictionary<string, Action<JToken>>();
@@ -25,12 +31,17 @@ public class SocketIoConnection
     {
         // Hello Handshack
         socketIoUnity.On("hello", (data) => {
+            Globals.connected = true;
+            engine = new GameEngine();
+            engine.Start();
             Debug.Log("Hello");
             socketIoUnity.Emit("hello");
         });
         socketIoUnity.On("notify", OnNotify);
         socketIoUnity.On("rpc_ret", OnRpcRet);
+#if !UNITY_WEBGL
         socketIoUnity.OnConnected += OnConnected;
+#endif
         socketIoUnity.Connect();
         return true;
     }
@@ -44,10 +55,15 @@ public class SocketIoConnection
                 EIO = 3,
                 Transport = SocketIOClient.Transport.TransportProtocol.Polling
             };
+#if UNITY_WEBGL
+            socketIoUnity = new SocketIoWrapper();
+#else
             socketIoUnity = new SocketIOUnity(uri, options);
             socketIoUnity.JsonSerializer = new NewtonsoftJsonSerializer();
+#endif
             SafeConnect();
         }
+#if !UNITY_WEBGL
         else
         {
             if (!socketIoUnity.Connected)
@@ -59,10 +75,10 @@ public class SocketIoConnection
                 return true;
             }
         }
-
+#endif
         return true;
     }
-
+#if !UNITY_WEBGL
     private void OnConnected(object sender, EventArgs e)
     {
         Debug.Log($"Connected: {socketIoUnity.Connected}");
@@ -72,68 +88,95 @@ public class SocketIoConnection
         engine.Start();
         throw new NotImplementedException();
     }
-
+#endif
     private void ProcessRpcRet(SocketIOResponse response)
     {
-        IEnumerable e = JsonConvert.DeserializeObject(response.ToString()) as IEnumerable;
-        object[] responseArray = e.Cast<object>().ToArray();
-        if (responseArray != null)
+        try
         {
-            for (int i = 0; i < responseArray.Length; i++)
+            IEnumerable e = JsonConvert.DeserializeObject(response.ToString()) as IEnumerable;
+            object[] responseArray = e.Cast<object>().ToArray();
+            if (responseArray != null)
             {
-                JContainer jContainer = (JContainer)responseArray[i];
-                if (jContainer == null)
+                for (int i = 0; i < responseArray.Length; i++)
                 {
-                    Debug.Log("Invalid rpc response (JContainer): " + responseArray[i].ToString());
-                    continue;
-                }
-
-                JToken jToken = jContainer.SelectToken("seq");
-                if (jToken == null)
-                {
-                    Debug.Log("Invalid rpc response (jToken): " + jContainer.ToString());
-                    continue;
-                }
-                string seq = jToken.Value<string>();
-                if (_rpcEventHandlers.ContainsKey(seq))
-                {
-
-                    _rpcEventHandlers[seq](jContainer);
-                    if (_rpcEventTimes.ContainsKey(seq) && _rpcEventTimes[seq] == true)
+                    JContainer jContainer = (JContainer)responseArray[i];
+                    if (jContainer == null)
                     {
-                        _rpcEventHandlers.Remove(seq);
-                        _rpcEventTimes.Remove(seq);
+                        Debug.Log("Invalid rpc response (JContainer): " + responseArray[i].ToString());
+                        continue;
+                    }
+
+                    JToken jToken = jContainer.SelectToken("seq");
+                    if (jToken == null)
+                    {
+                        Debug.Log("Invalid rpc response (jToken): " + jContainer.ToString());
+                        continue;
+                    }
+                    string seq = jToken.Value<string>();
+                    if (_rpcEventHandlers.ContainsKey(seq))
+                    {
+
+                        _rpcEventHandlers[seq](jContainer);
+                        if (_rpcEventTimes.ContainsKey(seq) && _rpcEventTimes[seq] == true)
+                        {
+                            _rpcEventHandlers.Remove(seq);
+                            _rpcEventTimes.Remove(seq);
+                        }
                     }
                 }
             }
+        } catch (Exception ex)
+        {
+            Debug.LogException(ex);
         }
+        
     }
     private void ProcessNotify(SocketIOResponse response)
     {
-        JToken[] jToken = JsonConvert.DeserializeObject<JToken[]>(response.ToString());
-        if (jToken != null)
+        try
         {
-            for (int i = 0; i < jToken.Length; i++)
+            JToken[] jToken = JsonConvert.DeserializeObject<JToken[]>(response.ToString());
+            Debug.Log("step 1");
+            Debug.Log(jToken);
+            if (jToken != null)
             {
-                NotifyEvent notifyEvent = jToken[i].ToObject<NotifyEvent>();
-                if (notifyEvent != null)
+                for (int i = 0; i < jToken.Length; i++)
                 {
-                    if (notifyEvent.e != null)
+                    NotifyEvent notifyEvent = jToken[i].ToObject<NotifyEvent>();
+                    Debug.Log("step 2");
+                    Debug.Log(notifyEvent);
+                    if (notifyEvent != null)
                     {
-                        string eventName = notifyEvent.e;
-                        if (_notifyEventHandlers.ContainsKey(eventName))
+                        if (notifyEvent.e != null)
                         {
-                            _notifyEventHandlers[eventName](jToken[i]);
-                            if (_notifyEventTimes.ContainsKey(eventName) && _notifyEventTimes[eventName] == true)
+                            string eventName = notifyEvent.e;
+                            Debug.Log("step 3");
+                            Debug.Log(eventName);
+                            //Debug.Log(_notifyEventHandlers[eventName]);
+                            Debug.Log("step 3.1");
+                            if (_notifyEventHandlers.ContainsKey(eventName))
                             {
-                                _notifyEventHandlers.Remove(eventName);
-                                _notifyEventTimes.Remove(eventName);
+                                Debug.Log("step 4");
+                                _notifyEventHandlers[eventName](jToken[i]);
+                                Debug.Log("step 5");
+                                if (_notifyEventTimes.ContainsKey(eventName) && _notifyEventTimes[eventName] == true)
+                                {
+                                    _notifyEventHandlers.Remove(eventName);
+                                    _notifyEventTimes.Remove(eventName);
+                                    Debug.Log("step 6");
+                                }
                             }
                         }
                     }
                 }
             }
         }
+        catch(Exception ex)
+        {
+            LogHelper.AppLog("Process notify");
+            LogHelper.AppLog(ex.ToString());
+        }
+        
     }
     private void OnRpcRet(SocketIOResponse response)
     {
@@ -142,6 +185,7 @@ public class SocketIoConnection
         ProcessRpcRet(response);
 
     }
+
     private void OnNotify(SocketIOResponse data)
     {
         LogHelper.NetworkLog("notify : " + data);
@@ -151,16 +195,26 @@ public class SocketIoConnection
 
     public void AddNotifyHandler(string e, Action<JToken> callback, bool oneTime = false)
     {
-        if (_notifyEventHandlers.ContainsKey(e))
+        try
         {
-            _notifyEventHandlers.Remove(e);
+            Debug.Log("adding notify handler" + e);
+            if (_notifyEventHandlers.ContainsKey(e))
+            {
+                _notifyEventHandlers.Remove(e);
+            }
+            _notifyEventHandlers.Add(e, callback);
+            if (_notifyEventTimes.ContainsKey(e))
+            {
+                _notifyEventTimes.Remove(e);
+            }
+            _notifyEventTimes.Add(e, oneTime);
         }
-        _notifyEventHandlers.Add(e, callback);
-        if (_notifyEventTimes.ContainsKey(e))
+        catch(Exception ex)
         {
-            _notifyEventTimes.Remove(e);
+            LogHelper.AppLog("AddNotifyHandler");
+            LogHelper.AppLog(ex.ToString());
         }
-        _notifyEventTimes.Add(e, oneTime);
+        
     }
     public void RemoveNotifyHandler(string e)
     {
@@ -172,6 +226,17 @@ public class SocketIoConnection
 
     public void SendRpc(object data, Action<JToken> callback, bool oneTime = true)
     {
+#if UNITY_WEBGL
+        var req = new JObject();
+        var props = data.GetType().GetProperties();
+        foreach (var property in props)
+        {
+            if (property.CanRead)
+            {
+                req[property.Name] = JToken.FromObject(property.GetValue(data));
+            }
+        }
+#else
         var req = new ExpandoObject() as IDictionary<string, System.Object>;
         var props = data.GetType().GetProperties();
         foreach (var property in props)
@@ -181,6 +246,7 @@ public class SocketIoConnection
                 req[property.Name] = property.GetValue(data);
             }
         }
+#endif
         string seq = rnd.Next().ToString();
         req["seq"] = seq;
 

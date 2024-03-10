@@ -71,29 +71,163 @@ public class GameBehavior : MonoBehaviour
         try
         {
             //read from global
-            receiveFromGlobalResult = UpdateRoomFromGlobal();
+            try
+            {
+                receiveFromGlobalResult = UpdateRoomFromGlobal();
+            }
+            catch(Exception ex)
+            {
+                LogHelper.AppLog("UpdateRoomFromGlobal");
+                LogHelper.AppLog(ex.ToString());
+            }
             if (receiveFromGlobalResult)
             {
                 //set data from room data
-                DisableUnneccessarySeats();
-                SetActionButtonArea();
+                try
+                {
+                    DisableUnneccessarySeats();
+                }
+                catch(Exception ex)
+                {
+                    LogHelper.AppLog("DisableUnneccessarySeats");
+                    LogHelper.AppLog(ex.ToString());
+                }
+                try
+                {
+                    SetActionButtonArea();
+                }
+                catch(Exception ex)
+                {
+                    LogHelper.AppLog("SetActionButtonArea");
+                    LogHelper.AppLog(ex.ToString());
+                }
                 //draw ui
                 if (room.gameStatus == 2)
                 {
-                    GetMyCard();
+                    try
+                    {
+                        GetMyCard();
+                    }
+                    catch(Exception ex)
+                    {
+                        LogHelper.AppLog("GetMyCard");
+                        LogHelper.AppLog(ex.ToString());
+                    }
                 }
-                SetUserInfo();
-                SetRoomName();
-                InitializeAddChipsModal();
-                SetPublicCards();
-                SetTimer();
-                SetActionButtonAreaIndexByGlobal();
-                SetRaiseAmounts();
-                SetRaiseBar();
-                CheckRaiseAmount();
-                SetGamersActionStatus();
-                SetRoomsToggler();
-                SetRoomsView();
+                try
+                {
+                    SetUserInfo();
+                }
+                catch(Exception ex)
+                {
+                    LogHelper.AppLog("SetUserInfo");
+                    LogHelper.AppLog(ex.ToString());
+                }
+                try
+                {
+                    SetRoomName();
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.AppLog("SetRoomName");
+                    LogHelper.AppLog(ex.ToString());
+                }
+
+                try
+                {
+                    InitializeAddChipsModal();
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.AppLog("InitializeAddChipsModal");
+                    LogHelper.AppLog(ex.ToString());
+                }
+
+                try
+                {
+                    SetPublicCards();
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.AppLog("SetPublicCards");
+                    LogHelper.AppLog(ex.ToString());
+                }
+
+                try
+                {
+                    SetTimer();
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.AppLog("SetTimer");
+                    LogHelper.AppLog(ex.ToString());
+                }
+                try
+                {
+                    SetActionButtonAreaIndexByGlobal();
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.AppLog("SetActionButtonAreaIndexByGlobal");
+                    LogHelper.AppLog(ex.ToString());
+                }
+
+                try
+                {
+                    SetRaiseAmounts();
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.AppLog("SetRaiseAmounts");
+                    LogHelper.AppLog(ex.ToString());
+                }
+                try
+                {
+                    SetRaiseBar();
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.AppLog("SetRaiseBar");
+                    LogHelper.AppLog(ex.ToString());
+                }
+                try
+                {
+                    CheckRaiseAmount();
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.AppLog("CheckRaiseAmount");
+                    LogHelper.AppLog(ex.ToString());
+                }
+                try
+                {
+                    SetGamersActionStatus();
+                }
+                catch(Exception ex)
+                {
+                    LogHelper.AppLog("SetGamersActionStatus");
+                    LogHelper.AppLog(ex.ToString());
+                }
+
+                try
+                {
+                    SetRoomsToggler();
+                }
+                catch (Exception ex)
+                {
+                    LogHelper.AppLog("SetRoomsToggler");
+                    LogHelper.AppLog(ex.ToString());
+                }
+
+                try
+                {
+                    SetRoomsView();
+                }
+                catch(Exception ex)
+                {
+                    LogHelper.AppLog("SetRoomsView");
+                    LogHelper.AppLog(ex.ToString());
+                }
             }
         }catch(Exception ex)
         {
@@ -106,15 +240,23 @@ public class GameBehavior : MonoBehaviour
 
     bool UpdateRoomFromGlobal()
     {
-        if (Globals.gameRooms.ContainsKey(Globals.currentRoom))
+        if (Globals.currentRoom != null)
         {
-            room = Globals.gameRooms[Globals.currentRoom];
-            return true;
+            if (Globals.gameRooms.ContainsKey(Globals.currentRoom))
+            {
+                room = Globals.gameRooms[Globals.currentRoom];
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
         else
         {
             return false;
         }
+        
     }
 
     void DisableUnneccessarySeats()

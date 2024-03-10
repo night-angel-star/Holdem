@@ -32,542 +32,708 @@ public class GameEngine
     }
     private void OnRelogin(JToken baseToken)
     {
-        string errorString = "";
-        do
+        try
         {
-            if (baseToken == null)
-                break;
-            if (baseToken.Type != JTokenType.Object)
-                break;
-
-            ReloginNotifyEvent json = baseToken.ToObject<ReloginNotifyEvent>();
-            if (json != null)
+            string errorString = "";
+            do
             {
-                ProcessRelogin();
-            }
+                if (baseToken == null)
+                    break;
+                if (baseToken.Type != JTokenType.Object)
+                    break;
 
-        } while (false);
-        if (errorString != "")
-        {
-            Debug.Log(errorString);
+                ReloginNotifyEvent json = baseToken.ToObject<ReloginNotifyEvent>();
+                if (json != null)
+                {
+                    ProcessRelogin();
+                }
+
+            } while (false);
+            if (errorString != "")
+            {
+                Debug.Log(errorString);
+            }
         }
+        catch(Exception ex)
+        {
+            LogHelper.AppLog("OnRelogin");
+            LogHelper.AppLog(ex.ToString());
+        }
+        
     }
     private void OnPrompt(JToken baseToken)
     {
-        string errorString = "";
-        do
+        try
         {
-            if (baseToken == null)
-                break;
-            if (baseToken.Type != JTokenType.Object)
-                break;
-
-            PromptNotifyEvent json = baseToken.ToObject<PromptNotifyEvent>();
-            if (json != null)
+            string errorString = "";
+            do
             {
-                foreach (var field in typeof(PromptNotifyEvent).GetFields())
+                if (baseToken == null)
+                    break;
+                if (baseToken.Type != JTokenType.Object)
+                    break;
+
+                PromptNotifyEvent json = baseToken.ToObject<PromptNotifyEvent>();
+                if (json != null)
                 {
-                    if (field.FieldType == typeof(bool))
+                    foreach (var field in typeof(PromptNotifyEvent).GetFields())
                     {
-                        bool temp = (bool)field.GetValue(json.args);
-                        if(temp == true)
+                        if (field.FieldType == typeof(bool))
                         {
-                            field.SetValue(Globals.gameRooms[json.roomid.ToString()].operations, field.GetValue(json.args)); 
+                            bool temp = (bool)field.GetValue(json.args);
+                            if (temp == true)
+                            {
+                                field.SetValue(Globals.gameRooms[json.roomid.ToString()].operations, field.GetValue(json.args));
+                            }
                         }
                     }
                 }
-            }
 
-        } while (false);
-        if (errorString != "")
+            } while (false);
+            if (errorString != "")
+            {
+                Debug.Log(errorString);
+            }
+        }
+        catch(Exception ex)
         {
-            Debug.Log(errorString);
+            LogHelper.AppLog("OnPrompt");
+            LogHelper.AppLog(ex.ToString());
         }
     }
     private void OnTakeSeat(JToken baseToken)
     {
-        string errorString = "";
-        do
+        try
         {
-            if (baseToken == null)
-                break;
-            if (baseToken.Type != JTokenType.Object)
-                break;
-
-            TakeSeatNotifyEvent json = baseToken.ToObject<TakeSeatNotifyEvent>();
-            if (json != null)
+            string errorString = "";
+            do
             {
-                ProcessTakeSeat(json.args.uid, json.roomid.ToString(), json.args.where);
-            }
+                if (baseToken == null)
+                    break;
+                if (baseToken.Type != JTokenType.Object)
+                    break;
 
-        } while (false);
-        if (errorString != "")
+                TakeSeatNotifyEvent json = baseToken.ToObject<TakeSeatNotifyEvent>();
+                if (json != null)
+                {
+                    ProcessTakeSeat(json.args.uid, json.roomid.ToString(), json.args.where);
+                }
+
+            } while (false);
+            if (errorString != "")
+            {
+                Toast.Show(errorString);
+                Debug.Log(errorString);
+            }
+        }
+        catch(Exception ex)
         {
-            Toast.Show(errorString);
-            Debug.Log(errorString);
+            LogHelper.AppLog("OnTakeSeat");
+            LogHelper.AppLog(ex.ToString());
         }
     }
 
     private void OnBuyChip(JToken baseToken)
     {
-        string errorString = "";
-        do
+        try
         {
-            if (baseToken == null)
-                break;
-            if (baseToken.Type != JTokenType.Object)
-                break;
-
-            BuyChipNotifyEvent json = baseToken.ToObject<BuyChipNotifyEvent>();
-            if (json != null)
+            string errorString = "";
+            do
             {
-                ProcessBuyChip(json.args.uid, json.roomid.ToString(), json.args.amount);
-            }
+                if (baseToken == null)
+                    break;
+                if (baseToken.Type != JTokenType.Object)
+                    break;
 
-        } while (false);
-        if (errorString != "")
+                BuyChipNotifyEvent json = baseToken.ToObject<BuyChipNotifyEvent>();
+                if (json != null)
+                {
+                    ProcessBuyChip(json.args.uid, json.roomid.ToString(), json.args.amount);
+                }
+
+            } while (false);
+            if (errorString != "")
+            {
+                Debug.Log(errorString);
+            }
+        }
+        catch(Exception ex)
         {
-            Debug.Log(errorString);
+            LogHelper.AppLog("OnBuyChip");
+            LogHelper.AppLog(ex.ToString());
         }
     }
     private void OnUnseat(JToken baseToken)
     {
-        string errorString = "";
-        do
+        try
         {
-            if (baseToken == null)
-                break;
-            if (baseToken.Type != JTokenType.Object)
-                break;
-
-            UnSeatNotifyEvent json = baseToken.ToObject<UnSeatNotifyEvent>();
-            if (json != null)
+            string errorString = "";
+            do
             {
-                ProcessUnseat(json.args.uid, json.roomid.ToString(), json.args.where);
-            }
+                if (baseToken == null)
+                    break;
+                if (baseToken.Type != JTokenType.Object)
+                    break;
 
-        } while (false);
-        if (errorString != "")
+                UnSeatNotifyEvent json = baseToken.ToObject<UnSeatNotifyEvent>();
+                if (json != null)
+                {
+                    ProcessUnseat(json.args.uid, json.roomid.ToString(), json.args.where);
+                }
+
+            } while (false);
+            if (errorString != "")
+            {
+                Debug.Log(errorString);
+            }
+        }
+        catch(Exception ex)
         {
-            Debug.Log(errorString);
+            LogHelper.AppLog("OnUnseat");
+            LogHelper.AppLog(ex.ToString());
         }
     }
 
     private void OnLeave(JToken baseToken)
     {
-        string errorString = "";
-        do
+        try
         {
-            if (baseToken == null)
-                break;
-            if (baseToken.Type != JTokenType.Object)
-                break;
-
-            LeaveNotifyEvent json = baseToken.ToObject<LeaveNotifyEvent>();
-            if (json != null)
+            string errorString = "";
+            do
             {
-                string roomid = json.roomid.ToString();
-                string uid = json.args.uid;
-                if(uid != Globals.gameToken.uid)
+                if (baseToken == null)
+                    break;
+                if (baseToken.Type != JTokenType.Object)
+                    break;
+
+                LeaveNotifyEvent json = baseToken.ToObject<LeaveNotifyEvent>();
+                if (json != null)
                 {
-                    if (Globals.gameRooms.ContainsKey(roomid))
+                    string roomid = json.roomid.ToString();
+                    string uid = json.args.uid;
+                    if (uid != Globals.gameToken.uid)
                     {
-                        Room room = Globals.gameRooms[roomid];
-                        for (int i = 0; i < room.seats.Length; i++)
+                        if (Globals.gameRooms.ContainsKey(roomid))
                         {
-                            if (room.seats[i] == uid)
+                            Room room = Globals.gameRooms[roomid];
+                            for (int i = 0; i < room.seats.Length; i++)
                             {
-                                Globals.gameRooms[roomid].seats[i] = null;
-                                Globals.gameRooms[roomid].seats_count--;
+                                if (room.seats[i] == uid)
+                                {
+                                    Globals.gameRooms[roomid].seats[i] = null;
+                                    Globals.gameRooms[roomid].seats_count--;
 
-                                Globals.gameRooms[roomid].cards.Remove(i);
+                                    Globals.gameRooms[roomid].cards.Remove(i);
 
-                                Globals.gameRooms[roomid].status[i] = "";
+                                    Globals.gameRooms[roomid].status[i] = "";
+                                }
                             }
+                            Globals.gameRooms[roomid].gamers.Remove(uid);
+                            Globals.gameRooms[roomid].gamers_count--;
                         }
-                        Globals.gameRooms[roomid].gamers.Remove(uid);
-                        Globals.gameRooms[roomid].gamers_count--;
                     }
                 }
-            }
 
-        } while (false);
-        if (errorString != "")
+            } while (false);
+            if (errorString != "")
+            {
+                Debug.Log(errorString);
+            }
+        }
+        catch(Exception ex)
         {
-            Debug.Log(errorString);
+            LogHelper.AppLog("OnLeave");
+            LogHelper.AppLog(ex.ToString());
         }
     }
     private void OnEnter(JToken baseToken)
     {
-        string errorString = "";
-        do
+        try
         {
-            if (baseToken == null)
-                break;
-            if (baseToken.Type != JTokenType.Object)
-                break;
-
-            EnterNotifyEvent json = baseToken.ToObject<EnterNotifyEvent>();
-            if (json != null)
+            string errorString = "";
+            do
             {
-                string roomid = json.args.where.ToString();
-                Gamer g = json.args.who;
-                if (Globals.gameRooms.ContainsKey(roomid))
+                if (baseToken == null)
+                    break;
+                if (baseToken.Type != JTokenType.Object)
+                    break;
+
+                EnterNotifyEvent json = baseToken.ToObject<EnterNotifyEvent>();
+                if (json != null)
                 {
-                    if (Globals.gameRooms[roomid].gamers.ContainsKey(g.uid))
+                    string roomid = json.args.where.ToString();
+                    Gamer g = json.args.who;
+                    if (Globals.gameRooms.ContainsKey(roomid))
                     {
-                        Globals.gameRooms[roomid].gamers[g.uid] = g;
-                    }
-                    else
-                    {
-                        Globals.gameRooms[roomid].gamers.Add(g.uid, g);
-                        Globals.gameRooms[roomid].gamers_count++;
+                        if (Globals.gameRooms[roomid].gamers.ContainsKey(g.uid))
+                        {
+                            Globals.gameRooms[roomid].gamers[g.uid] = g;
+                        }
+                        else
+                        {
+                            Globals.gameRooms[roomid].gamers.Add(g.uid, g);
+                            Globals.gameRooms[roomid].gamers_count++;
+                        }
                     }
                 }
-            }
 
-        } while (false);
-        if (errorString != "")
+            } while (false);
+            if (errorString != "")
+            {
+                Debug.Log(errorString);
+            }
+        }
+        catch(Exception ex)
         {
-            Debug.Log(errorString);
+            LogHelper.AppLog("OnEnter");
+            LogHelper.AppLog(ex.ToString());
         }
     }
     private void OnLook(JToken baseToken)
     {
-        string errorString = "";
-        do
+        try
         {
-            if (baseToken == null)
-                break;
-            LookNotifyEvent lookNotifyEvent = baseToken.ToObject<LookNotifyEvent>();
+            Debug.Log("onlook base token");
+            Debug.Log(baseToken);
+            string errorString = "";
+            do
+            {
+                if (baseToken == null)
+                    break;
+                LookNotifyEvent lookNotifyEvent = baseToken.ToObject<LookNotifyEvent>();
 
-            if (lookNotifyEvent == null)
+                if (lookNotifyEvent == null)
+                {
+                    break;
+                }
+                Room r = lookNotifyEvent.args;
+                if (Globals.gameRooms.ContainsKey(r.id))
+                {
+                    Globals.gameRooms[r.id] = r;
+                }
+                else
+                {
+                    Globals.gameRooms.Add(r.id, r);
+                }
+                Globals.currentRoom = r.id;
+                Globals.gameRooms[r.id].status = new string[r.options.max_seats];
+                Globals.gameRooms[r.id].shared_cards = new int[5];
+            } while (false);
+            if (errorString != "")
             {
-                break;
+                Debug.Log(errorString);
             }
-            Room r = lookNotifyEvent.args;
-            if (Globals.gameRooms.ContainsKey(r.id))
-            {
-                Globals.gameRooms[r.id] = r;
-            }
-            else
-            {
-                Globals.gameRooms.Add(r.id, r);
-            }
-            Globals.currentRoom = r.id;
-            Globals.gameRooms[r.id].status = new string[r.options.max_seats];
-            Globals.gameRooms[r.id].shared_cards = new int[5];
-        } while (false);
-        if (errorString != "")
+        }
+        catch(Exception ex)
         {
-            Debug.Log(errorString);
+            LogHelper.AppLog("OnLook");
+            LogHelper.AppLog(ex.ToString());
         }
     }
     private void OnReady(JToken baseToken)
     {
-        string errorString = "";
-        do
+        try
         {
-            if (baseToken == null)
-                break;
-            if (baseToken.Type != JTokenType.Object)
-                break;
-
-            ReadyNotifyEvent json = baseToken.ToObject<ReadyNotifyEvent>();
-            if (json != null)
+            string errorString = "";
+            do
             {
-                ProcessReady(json.args.uid, json.roomid.ToString(), json.args.where);
-            }
+                if (baseToken == null)
+                    break;
+                if (baseToken.Type != JTokenType.Object)
+                    break;
 
-        } while (false);
-        if (errorString != "")
+                ReadyNotifyEvent json = baseToken.ToObject<ReadyNotifyEvent>();
+                if (json != null)
+                {
+                    ProcessReady(json.args.uid, json.roomid.ToString(), json.args.where);
+                }
+
+            } while (false);
+            if (errorString != "")
+            {
+                Debug.Log(errorString);
+            }
+        }
+        catch(Exception ex)
         {
-            Debug.Log(errorString);
+            LogHelper.AppLog("OnReady");
+            LogHelper.AppLog(ex.ToString());
         }
     }
     private void OnGameStart(JToken baseToken)
     {
-        string errorString = "";
-        do
+        try
         {
-            if (baseToken == null)
-                break;
-            if (baseToken.Type != JTokenType.Object)
-                break;
-
-            GameStartNotifyEvent json = baseToken.ToObject<GameStartNotifyEvent>();
-            if (json != null)
+            string errorString = "";
+            do
             {
-                Room room = json.args.room;
-                string roomid = room.id;
-                if (Globals.gameRooms.ContainsKey(roomid))
-                {
-                    Globals.gameRooms[roomid] = room;
-                    Globals.gameRooms[roomid].gameStatus = 2;
-                }
-                Globals.gameRooms[roomid].status = new string[room.options.max_seats];
-                Globals.gameRooms[json.roomid.ToString()].shared_cards = new int[5];
-                Globals.gameRooms[json.roomid.ToString()].cards = new Dictionary<int, int[]>();
-            }
+                if (baseToken == null)
+                    break;
+                if (baseToken.Type != JTokenType.Object)
+                    break;
 
-        } while (false);
-        if (errorString != "")
+                GameStartNotifyEvent json = baseToken.ToObject<GameStartNotifyEvent>();
+                if (json != null)
+                {
+                    Room room = json.args.room;
+                    string roomid = room.id;
+                    if (Globals.gameRooms.ContainsKey(roomid))
+                    {
+                        Globals.gameRooms[roomid] = room;
+                        Globals.gameRooms[roomid].gameStatus = 2;
+                    }
+                    Globals.gameRooms[roomid].status = new string[room.options.max_seats];
+                    Globals.gameRooms[json.roomid.ToString()].shared_cards = new int[5];
+                    Globals.gameRooms[json.roomid.ToString()].cards = new Dictionary<int, int[]>();
+                }
+
+            } while (false);
+            if (errorString != "")
+            {
+                Debug.Log(errorString);
+            }
+        }
+        catch(Exception ex)
         {
-            Debug.Log(errorString);
+            LogHelper.AppLog("OnGameStart");
+            LogHelper.AppLog(ex.ToString());
         }
     }
     private void OnDeal(JToken baseToken)
     {
-        string errorString = "";
-        do
+        try
         {
-            if (baseToken == null)
-                break;
-            if (baseToken.Type != JTokenType.Object)
-                break;
-
-            DealNotifyEvent json = baseToken.ToObject<DealNotifyEvent>();
-            if (json != null)
+            string errorString = "";
+            do
             {
-                List<List<object>> deals = json.args.deals;
-                if (deals == null)
-                {
-                    return;
-                }
-                if (json.args.delay == 1)
-                {
-                    int[] shareCards = JsonConvert.DeserializeObject<int[]>(deals[0][1].ToString());
-                    foreach (int card in shareCards)
-                    {
-                        int index = Array.IndexOf(Globals.gameRooms[json.roomid.ToString()].shared_cards, 0);
-                        // Array.Resize(ref Globals.gameRooms[json.roomid.ToString()].shared_cards, Globals.gameRooms[json.roomid.ToString()].shared_cards.Length + 1);
-                        // Globals.gameRooms[json.roomid.ToString()].shared_cards[Globals.gameRooms[json.roomid.ToString()].shared_cards.Length - 1] = card;
-                        Globals.gameRooms[json.roomid.ToString()].shared_cards[index] = card;
-                    }
-                    Debug.Log(Globals.gameRooms[json.roomid.ToString()].shared_cards);
-                }
-            }
+                if (baseToken == null)
+                    break;
+                if (baseToken.Type != JTokenType.Object)
+                    break;
 
-        } while (false);
-        if (errorString != "")
+                DealNotifyEvent json = baseToken.ToObject<DealNotifyEvent>();
+                if (json != null)
+                {
+                    List<List<object>> deals = json.args.deals;
+                    if (deals == null)
+                    {
+                        return;
+                    }
+                    if (json.args.delay == 1)
+                    {
+                        int[] shareCards = JsonConvert.DeserializeObject<int[]>(deals[0][1].ToString());
+                        foreach (int card in shareCards)
+                        {
+                            int index = Array.IndexOf(Globals.gameRooms[json.roomid.ToString()].shared_cards, 0);
+                            // Array.Resize(ref Globals.gameRooms[json.roomid.ToString()].shared_cards, Globals.gameRooms[json.roomid.ToString()].shared_cards.Length + 1);
+                            // Globals.gameRooms[json.roomid.ToString()].shared_cards[Globals.gameRooms[json.roomid.ToString()].shared_cards.Length - 1] = card;
+                            Globals.gameRooms[json.roomid.ToString()].shared_cards[index] = card;
+                        }
+                        Debug.Log(Globals.gameRooms[json.roomid.ToString()].shared_cards);
+                    }
+                }
+
+            } while (false);
+            if (errorString != "")
+            {
+                Debug.Log(errorString);
+            }
+        }
+        catch(Exception ex)
         {
-            Debug.Log(errorString);
+            LogHelper.AppLog("OnDeal");
+            LogHelper.AppLog(ex.ToString());
         }
     }
     private void OnMoveTurn(JToken baseToken)
     {
-        string errorString = "";
-        do
+        try
         {
-            if (baseToken == null)
-                break;
-            if (baseToken.Type != JTokenType.Object)
-                break;
-
-            MoveturnNotifyEvent json = baseToken.ToObject<MoveturnNotifyEvent>();
-            if (json != null)
+            string errorString = "";
+            do
             {
-                ProcessMoveturn(json.roomid.ToString(), json.args.seat, json.args.countdown);
-            }
+                if (baseToken == null)
+                    break;
+                if (baseToken.Type != JTokenType.Object)
+                    break;
 
-        } while (false);
-        if (errorString != "")
+                MoveturnNotifyEvent json = baseToken.ToObject<MoveturnNotifyEvent>();
+                if (json != null)
+                {
+                    ProcessMoveturn(json.roomid.ToString(), json.args.seat, json.args.countdown);
+                }
+
+            } while (false);
+            if (errorString != "")
+            {
+                Debug.Log(errorString);
+            }
+        }
+        catch(Exception ex)
         {
-            Debug.Log(errorString);
+            LogHelper.AppLog("OnMoveTurn");
+            LogHelper.AppLog(ex.ToString());
         }
     }
     private void OnFold(JToken baseToken)
     {
-        string errorString = "";
-        do
+        try
         {
-            if (baseToken == null)
-                break;
-            FoldNotifyEvent json = baseToken.ToObject<FoldNotifyEvent>();
-
-            if (json == null)
+            string errorString = "";
+            do
             {
-                break;
+                if (baseToken == null)
+                    break;
+                FoldNotifyEvent json = baseToken.ToObject<FoldNotifyEvent>();
+
+                if (json == null)
+                {
+                    break;
+                }
+                Globals.gameRooms[json.roomid.ToString()].status[json.args.seat] = "fold";
+            } while (false);
+            if (errorString != "")
+            {
+                Debug.Log(errorString);
             }
-            Globals.gameRooms[json.roomid.ToString()].status[json.args.seat] = "fold";
-        } while (false);
-        if (errorString != "")
+        }
+        catch(Exception ex)
         {
-            Debug.Log(errorString);
+            LogHelper.AppLog("OnFold");
+            LogHelper.AppLog(ex.ToString());
         }
     }
     private void OnCheck(JToken baseToken)
     {
-        string errorString = "";
-        do
+        try
         {
-            if (baseToken == null)
-                break;
-            CheckNotifyEvent json = baseToken.ToObject<CheckNotifyEvent>();
-
-            if (json == null)
+            string errorString = "";
+            do
             {
-                break;
+                if (baseToken == null)
+                    break;
+                CheckNotifyEvent json = baseToken.ToObject<CheckNotifyEvent>();
+
+                if (json == null)
+                {
+                    break;
+                }
+                Globals.gameRooms[json.roomid.ToString()].status[json.args.seat] = "check";
+            } while (false);
+            if (errorString != "")
+            {
+                Debug.Log(errorString);
             }
-            Globals.gameRooms[json.roomid.ToString()].status[json.args.seat] = "check";
-        } while (false);
-        if (errorString != "")
+        }
+        catch(Exception ex)
         {
-            Debug.Log(errorString);
+            LogHelper.AppLog("OnCheck");
+            LogHelper.AppLog(ex.ToString());
         }
     }
     private void OnCall(JToken baseToken)
     {
-        string errorString = "";
-        do
+        try
         {
-            if (baseToken == null)
-                break;
-            CallNotifyEvent json = baseToken.ToObject<CallNotifyEvent>();
-
-            if (json == null)
+            string errorString = "";
+            do
             {
-                break;
+                if (baseToken == null)
+                    break;
+                CallNotifyEvent json = baseToken.ToObject<CallNotifyEvent>();
+
+                if (json == null)
+                {
+                    break;
+                }
+                Globals.gameRooms[json.roomid.ToString()].status[json.args.seat] = "call";
+                Globals.gameRooms[json.roomid.ToString()].pot += json.args.call;
+                Globals.gameRooms[json.roomid.ToString()].chips[json.args.seat] += json.args.call;
+                Globals.gameRooms[json.roomid.ToString()].gamers[json.args.uid].coins -= json.args.call;
+            } while (false);
+            if (errorString != "")
+            {
+                Debug.Log(errorString);
             }
-            Globals.gameRooms[json.roomid.ToString()].status[json.args.seat] = "call";
-            Globals.gameRooms[json.roomid.ToString()].pot += json.args.call;
-            Globals.gameRooms[json.roomid.ToString()].chips[json.args.seat] += json.args.call;
-            Globals.gameRooms[json.roomid.ToString()].gamers[json.args.uid].coins -= json.args.call;
-        } while (false);
-        if (errorString != "")
+        }
+        catch(Exception ex)
         {
-            Debug.Log(errorString);
+            LogHelper.AppLog("OnCall");
+            LogHelper.AppLog(ex.ToString());
         }
     }
     private void OnRaise(JToken baseToken)
     {
-        string errorString = "";
-        do
+        try
         {
-            if (baseToken == null)
-                break;
-            RaiseNotifyEvent json = baseToken.ToObject<RaiseNotifyEvent>();
-
-            if (json == null)
+            string errorString = "";
+            do
             {
-                break;
+                if (baseToken == null)
+                    break;
+                RaiseNotifyEvent json = baseToken.ToObject<RaiseNotifyEvent>();
+
+                if (json == null)
+                {
+                    break;
+                }
+                Globals.gameRooms[json.roomid.ToString()].status[json.args.seat] = "raise";
+                Globals.gameRooms[json.roomid.ToString()].pot += json.args.call + json.args.raise;
+                Globals.gameRooms[json.roomid.ToString()].chips[json.args.seat] += json.args.call + json.args.raise;
+                Globals.gameRooms[json.roomid.ToString()].gamers[json.args.uid].coins -= json.args.call + json.args.raise;
+            } while (false);
+            if (errorString != "")
+            {
+                Debug.Log(errorString);
             }
-            Globals.gameRooms[json.roomid.ToString()].status[json.args.seat] = "raise";
-            Globals.gameRooms[json.roomid.ToString()].pot += json.args.call + json.args.raise;
-            Globals.gameRooms[json.roomid.ToString()].chips[json.args.seat] += json.args.call + json.args.raise;
-            Globals.gameRooms[json.roomid.ToString()].gamers[json.args.uid].coins -= json.args.call + json.args.raise;
-        } while (false);
-        if (errorString != "")
+        }
+        catch(Exception ex)
         {
-            Debug.Log(errorString);
+            LogHelper.AppLog("OnRaise");
+            LogHelper.AppLog(ex.ToString());
         }
     }
     private void OnGameOver(JToken baseToken)
     {
-        string errorString = "";
-        do
+        try
         {
-            if (baseToken == null)
-                break;
-            GameoverNotifyEvent json = baseToken.ToObject<GameoverNotifyEvent>();
+            string errorString = "";
+            do
+            {
+                if (baseToken == null)
+                    break;
+                GameoverNotifyEvent json = baseToken.ToObject<GameoverNotifyEvent>();
 
-            if (json == null)
-            {
-                break;
-            }
-            Globals.gameRooms[json.roomid.ToString()].gameStatus = 3;
-            foreach(Gamer g in json.args)
-            {
-                Globals.gameRooms[json.roomid.ToString()].gamers[g.uid] = g;
-                int index = Array.IndexOf(Globals.gameRooms[json.roomid.ToString()].seats, g.uid);
-                Globals.gameRooms[json.roomid.ToString()].cards[index] = g.cards;
-                if(g.prize > 0)
+                if (json == null)
                 {
-                    UnityMainThreadDispatcher.Instance().Enqueue(() =>
-                    {
-                        Toast.Show("Winner: " + g.name);
-                    });
+                    break;
                 }
+                Globals.gameRooms[json.roomid.ToString()].gameStatus = 3;
+                foreach (Gamer g in json.args)
+                {
+                    Globals.gameRooms[json.roomid.ToString()].gamers[g.uid] = g;
+                    int index = Array.IndexOf(Globals.gameRooms[json.roomid.ToString()].seats, g.uid);
+                    Globals.gameRooms[json.roomid.ToString()].cards[index] = g.cards;
+                    if (g.prize > 0)
+                    {
+                        UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                        {
+                            Toast.Show("Winner: " + g.name);
+                        });
+                    }
+                }
+                Globals.gameRooms[json.roomid.ToString()].countdown = 20;
+            } while (false);
+            if (errorString != "")
+            {
+                Debug.Log(errorString);
             }
-            Globals.gameRooms[json.roomid.ToString()].countdown = 20;
-        } while (false);
-        if (errorString != "")
-        {
-            Debug.Log(errorString);
         }
+        catch(Exception ex)
+        {
+            LogHelper.AppLog("OnGameOver");
+            LogHelper.AppLog(ex.ToString());
+        }
+        
     }
     private void OnCountDown(JToken baseToken)
     {
-        string errorString = "";
-        do
+        try
         {
-            if (baseToken == null)
-                break;
-            if (baseToken.Type != JTokenType.Object)
-                break;
-
-            CountdownNotifyEvent json = baseToken.ToObject<CountdownNotifyEvent>();
-            if (json != null)
+            string errorString = "";
+            do
             {
-                ProcessCountdown(json.roomid.ToString(), json.args.sec);
-            }
+                if (baseToken == null)
+                    break;
+                if (baseToken.Type != JTokenType.Object)
+                    break;
 
-        } while (false);
-        if (errorString != "")
+                CountdownNotifyEvent json = baseToken.ToObject<CountdownNotifyEvent>();
+                if (json != null)
+                {
+                    ProcessCountdown(json.roomid.ToString(), json.args.sec);
+                }
+
+            } while (false);
+            if (errorString != "")
+            {
+                Debug.Log(errorString);
+            }
+        }
+        catch(Exception ex)
         {
-            Debug.Log(errorString);
+            LogHelper.AppLog("OnCountDown");
+            LogHelper.AppLog(ex.ToString());
         }
     }
     private void OnSeecard(JToken baseToken)
     {
-        string errorString = "";
-        do
+        try
         {
-            if (baseToken == null)
-                break;
-            if (baseToken.Type != JTokenType.Object)
-                break;
-
-            SeeCardNotifyEvent json = baseToken.ToObject<SeeCardNotifyEvent>();
-            if (json != null)
+            string errorString = "";
+            do
             {
-                if(json.args.cards != null) ProcessSeeCard(json.args.uid, json.roomid.ToString(), json.args.seat, json.args.cards);
-            }
+                if (baseToken == null)
+                    break;
+                if (baseToken.Type != JTokenType.Object)
+                    break;
 
-        } while (false);
-        if (errorString != "")
+                SeeCardNotifyEvent json = baseToken.ToObject<SeeCardNotifyEvent>();
+                if (json != null)
+                {
+                    if (json.args.cards != null) ProcessSeeCard(json.args.uid, json.roomid.ToString(), json.args.seat, json.args.cards);
+                }
+
+            } while (false);
+            if (errorString != "")
+            {
+                Debug.Log(errorString);
+            }
+        }
+        catch(Exception ex)
         {
-            Debug.Log(errorString);
+            LogHelper.AppLog("OnSeeCard");
+            LogHelper.AppLog(ex.ToString());
         }
     }
     public void RegisterGameEvents()
     {
-        Globals.socketIoConnection.AddNotifyHandler("relogin", OnRelogin);
-        Globals.socketIoConnection.AddNotifyHandler("seecard", OnSeecard);
-        // Globals.socketIoConnection.AddNotifyHandler("unseat", OnUnseat);
-        Globals.socketIoConnection.AddNotifyHandler("leave", OnLeave);
-        Globals.socketIoConnection.AddNotifyHandler("look", OnLook);
-        Globals.socketIoConnection.AddNotifyHandler("enter", OnEnter);
-        Globals.socketIoConnection.AddNotifyHandler("buychip", OnBuyChip);
-        Globals.socketIoConnection.AddNotifyHandler("takeseat", OnTakeSeat);
-        Globals.socketIoConnection.AddNotifyHandler("ready", OnReady);
-        Globals.socketIoConnection.AddNotifyHandler("gamestart", OnGameStart);
-        Globals.socketIoConnection.AddNotifyHandler("gameover", OnGameOver);
-        Globals.socketIoConnection.AddNotifyHandler("deal", OnDeal);
-        Globals.socketIoConnection.AddNotifyHandler("moveturn", OnMoveTurn);
-        Globals.socketIoConnection.AddNotifyHandler("fold", OnFold);
-        Globals.socketIoConnection.AddNotifyHandler("check", OnCheck);
-        Globals.socketIoConnection.AddNotifyHandler("call", OnCall);
-        Globals.socketIoConnection.AddNotifyHandler("raise", OnRaise);
-        // Globals.socketIoConnection.AddNotifyHandler("all_in", OnMoveTurn);
-        Globals.socketIoConnection.AddNotifyHandler("countdown", OnCountDown);
-        // Globals.socketIoConnection.AddNotifyHandler("shout", OnPrompt);
-        // Globals.socketIoConnection.AddNotifyHandler("exit", OnPrompt);
-        // Globals.socketIoConnection.AddNotifyHandler("pk", OnPrompt);
-        // Globals.socketIoConnection.AddNotifyHandler("showcard", OnPrompt);
-        // Globals.socketIoConnection.AddNotifyHandler("bue", OnPrompt);
-        // Globals.socketIoConnection.AddNotifyHandler("say", OnPrompt);
-        Globals.socketIoConnection.AddNotifyHandler("prompt", OnPrompt);
+
+        try
+        {
+            Debug.Log("registering game events");
+            Globals.socketIoConnection.AddNotifyHandler("relogin", OnRelogin);
+            Globals.socketIoConnection.AddNotifyHandler("seecard", OnSeecard);
+            // Globals.socketIoConnection.AddNotifyHandler("unseat", OnUnseat);
+            Globals.socketIoConnection.AddNotifyHandler("leave", OnLeave);
+            Globals.socketIoConnection.AddNotifyHandler("look", OnLook);
+            Globals.socketIoConnection.AddNotifyHandler("enter", OnEnter);
+            Globals.socketIoConnection.AddNotifyHandler("buychip", OnBuyChip);
+            Globals.socketIoConnection.AddNotifyHandler("takeseat", OnTakeSeat);
+            Globals.socketIoConnection.AddNotifyHandler("ready", OnReady);
+            Globals.socketIoConnection.AddNotifyHandler("gamestart", OnGameStart);
+            Globals.socketIoConnection.AddNotifyHandler("gameover", OnGameOver);
+            Globals.socketIoConnection.AddNotifyHandler("deal", OnDeal);
+            Globals.socketIoConnection.AddNotifyHandler("moveturn", OnMoveTurn);
+            Globals.socketIoConnection.AddNotifyHandler("fold", OnFold);
+            Globals.socketIoConnection.AddNotifyHandler("check", OnCheck);
+            Globals.socketIoConnection.AddNotifyHandler("call", OnCall);
+            Globals.socketIoConnection.AddNotifyHandler("raise", OnRaise);
+            // Globals.socketIoConnection.AddNotifyHandler("all_in", OnMoveTurn);
+            Globals.socketIoConnection.AddNotifyHandler("countdown", OnCountDown);
+            // Globals.socketIoConnection.AddNotifyHandler("shout", OnPrompt);
+            // Globals.socketIoConnection.AddNotifyHandler("exit", OnPrompt);
+            // Globals.socketIoConnection.AddNotifyHandler("pk", OnPrompt);
+            // Globals.socketIoConnection.AddNotifyHandler("showcard", OnPrompt);
+            // Globals.socketIoConnection.AddNotifyHandler("bue", OnPrompt);
+            // Globals.socketIoConnection.AddNotifyHandler("say", OnPrompt);
+            Globals.socketIoConnection.AddNotifyHandler("prompt", OnPrompt);
+        }
+        catch(Exception ex)
+        {
+            LogHelper.AppLog("RegisterGameEvents");
+            LogHelper.AppLog(ex.ToString());
+        }
 
     }
 
@@ -581,72 +747,135 @@ public class GameEngine
 
     private void ProcessSeeCard(string uid, string roomid, int seat, int[] cards)
     {
-        if (Globals.gameRooms.ContainsKey(roomid))
+        try
         {
-            if (Globals.gameRooms[roomid].cards.ContainsKey(seat))
+            if (Globals.gameRooms.ContainsKey(roomid))
             {
-                Globals.gameRooms[roomid].cards[seat] = cards;
-            } else
-            {
-                Globals.gameRooms[roomid].cards[seat] = cards;
+                if (Globals.gameRooms[roomid].cards.ContainsKey(seat))
+                {
+                    Globals.gameRooms[roomid].cards[seat] = cards;
+                }
+                else
+                {
+                    Globals.gameRooms[roomid].cards[seat] = cards;
+                }
             }
         }
+        catch(Exception ex)
+        {
+            LogHelper.AppLog("ProcessSeeCard");
+            LogHelper.AppLog(ex.ToString());
+        }
+        
     }
     private void ProcessCountdown(string roomid, int sec)
     {
-        if (Globals.gameRooms.ContainsKey(roomid))
+        try
         {
-             Globals.gameRooms[roomid].countdown = sec;
+            if (Globals.gameRooms.ContainsKey(roomid))
+            {
+                Globals.gameRooms[roomid].countdown = sec;
+            }
         }
+        catch (Exception ex)
+        {
+            LogHelper.AppLog("ProcessCountdown");
+            LogHelper.AppLog(ex.ToString());
+        }
+
     }
 
     private void ProcessMoveturn(string roomid, int seat, int countdown)
     {
-        if (Globals.gameRooms.ContainsKey(roomid))
+        try
         {
-            if (Globals.gameRooms[roomid].totalCount == -1)
+            if (Globals.gameRooms.ContainsKey(roomid))
             {
-                Globals.gameRooms[roomid].totalCount = countdown;
+                if (Globals.gameRooms[roomid].totalCount == -1)
+                {
+                    Globals.gameRooms[roomid].totalCount = countdown;
+                }
+                Globals.gameRooms[roomid].activeSeat = seat;
+                Globals.gameRooms[roomid].countdown = countdown;
             }
-            Globals.gameRooms[roomid].activeSeat = seat;
-            Globals.gameRooms[roomid].countdown = countdown;
         }
+        catch(Exception ex)
+        {
+            LogHelper.AppLog("ProcessMoveturn");
+            LogHelper.AppLog(ex.ToString());
+        }
+        
     }
 
     private void ProcessTakeSeat(string uid, string roomid, int seat)
     {
-        if (Globals.gameRooms.ContainsKey(roomid))
+        try
         {
-            
-            Globals.gameRooms[roomid].seats[seat] = uid;
-            Globals.gameRooms[roomid].seats_taken++;
-            Globals.gameRooms[roomid].gameStatus = 0;
+            if (Globals.gameRooms.ContainsKey(roomid))
+            {
+
+                Globals.gameRooms[roomid].seats[seat] = uid;
+                Globals.gameRooms[roomid].seats_taken++;
+                Globals.gameRooms[roomid].gameStatus = 0;
+            }
         }
+        catch (Exception ex)
+        {
+            LogHelper.AppLog("ProcessTakeSeat");
+            LogHelper.AppLog(ex.ToString());
+        }
+
     }
     private void ProcessBuyChip(string uid, string roomid, int amount)
     {
-        if (Globals.gameRooms.ContainsKey(roomid))
+        try
         {
-            Globals.gameRooms[roomid].gamers[uid].coins = amount;
+            if (Globals.gameRooms.ContainsKey(roomid))
+            {
+                Globals.gameRooms[roomid].gamers[uid].coins = amount;
+            }
         }
+        catch(Exception ex)
+        {
+            LogHelper.AppLog("ProcessBuyChip");
+            LogHelper.AppLog(ex.ToString());
+        }
+        
     }
     private void ProcessUnseat(string uid, string roomid, int seat)
     {
-        if (Globals.gameRooms.ContainsKey(roomid))
+        try
         {
-            Globals.gameRooms[roomid].seats[seat] = null;
-            Globals.gameRooms[roomid].seats_count--;
+            if (Globals.gameRooms.ContainsKey(roomid))
+            {
+                Globals.gameRooms[roomid].seats[seat] = null;
+                Globals.gameRooms[roomid].seats_count--;
+            }
         }
+        catch (Exception ex)
+        {
+            LogHelper.AppLog("ProcessUnseat");
+            LogHelper.AppLog(ex.ToString());
+        }
+
     }
     private void ProcessReady(string uid, string roomid, int seat)
     {
-        if (Globals.gameRooms.ContainsKey(roomid))
+        try
         {
-            Globals.gameRooms[roomid].status[seat] = "ready";
-            if(uid == Globals.gameToken.uid)
+            if (Globals.gameRooms.ContainsKey(roomid))
             {
-                Globals.gameRooms[roomid].gameStatus = 1;
+                Globals.gameRooms[roomid].status[seat] = "ready";
+                if (uid == Globals.gameToken.uid)
+                {
+                    Globals.gameRooms[roomid].gameStatus = 1;
+                }
             }
+        }
+        catch (Exception ex)
+        {
+            LogHelper.AppLog("ProcessReady");
+            LogHelper.AppLog(ex.ToString());
         }
     }
 
