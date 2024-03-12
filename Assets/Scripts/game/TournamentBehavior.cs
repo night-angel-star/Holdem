@@ -49,6 +49,13 @@ public class TournamentBehavior : MonoBehaviour
     public GameObject RoomViewParent;
     public GameObject RoomAddButton;
 
+    public GameObject sitOutNextHandButton;
+    public GameObject sitOutNextBigBlindButton;
+    public GameObject[] callAnyButton;
+
+    public GameObject foldAnyButton;
+    public GameObject checkFoldButton;
+
 
 
 
@@ -95,6 +102,7 @@ public class TournamentBehavior : MonoBehaviour
                 SetActionButtonAreaIndexByGlobal();
                 SetRaiseAmounts();
                 SetRaiseBar();
+                SetAutoButtons();
                 CheckRaiseAmount();
                 SetGamersActionStatus();
                 SetRoomsToggler();
@@ -797,79 +805,128 @@ public class TournamentBehavior : MonoBehaviour
 
     }
 
-    public void ToggleSitOutNextHandButton(GameObject button)
+    public void RaiseModalDismiss()
     {
-        if (room.sitOutNextHandButtonEnabled)
+        raiseModal.SetActive(false);
+        raiseButton.SetActive(true);
+        raiseConfirmButton.SetActive(false);
+    }
+
+    public void ToggleSitOutNextHandButton()
+    {
+        if (room.autoOperation.sitOutNextHandButton)
         {
-            room.sitOutNextHandButtonEnabled = false;
-            button.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-inactive");
+            Globals.gameRooms[Globals.currentRoom].autoOperation.sitOutNextHandButton = false;
         }
         else
         {
-            room.sitOutNextHandButtonEnabled = true;
-            button.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-active");
+            Globals.gameRooms[Globals.currentRoom].autoOperation.sitOutNextHandButton = true;
         }
     }
 
-    public void ToggleSitOutNextBigBlindButton(GameObject button)
+    public void ToggleSitOutNextBigBlindButton()
     {
-        if (room.sitOutNextBigBlindButtonEnabled)
+        if (room.autoOperation.sitOutNextBigBlindButton)
         {
-            room.sitOutNextBigBlindButtonEnabled = false;
-            button.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-inactive");
-
+            Globals.gameRooms[Globals.currentRoom].autoOperation.sitOutNextBigBlindButton = false;
         }
         else
         {
-            room.sitOutNextBigBlindButtonEnabled = true;
-            button.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-active");
-
+            Globals.gameRooms[Globals.currentRoom].autoOperation.sitOutNextBigBlindButton = true;
         }
     }
 
-    public void ToggleCallAnyButton(GameObject button)
+    public void ToggleCallAnyButton()
     {
-        if (room.callAnyButtonEnabled)
+        if (room.autoOperation.callAnyButton)
         {
-            room.callAnyButtonEnabled = false;
-            button.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-inactive");
-
+            Globals.gameRooms[Globals.currentRoom].autoOperation.callAnyButton = false;
         }
         else
         {
-            room.callAnyButtonEnabled = true;
-            button.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-active");
-
+            Globals.gameRooms[Globals.currentRoom].autoOperation.callAnyButton = true;
         }
     }
 
-    public void ToggleFoldAnyButton(GameObject button)
+    public void ToggleFoldAnyButton()
     {
-        if (room.foldAnyButtonEnabled)
+        if (room.autoOperation.foldAnyButton)
         {
-            room.foldAnyButtonEnabled = false;
-            button.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-inactive");
+            Globals.gameRooms[Globals.currentRoom].autoOperation.foldAnyButton = false;
 
         }
         else
         {
-            room.foldAnyButtonEnabled = true;
-            button.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-active");
+            Globals.gameRooms[Globals.currentRoom].autoOperation.foldAnyButton = true;
 
         }
     }
 
-    public void ToggleCheckFoldButton(GameObject button)
+    public void ToggleCheckFoldButton()
     {
-        if (room.checkFoldButtonEnabled)
+        if (room.autoOperation.checkFoldButton)
         {
-            room.checkFoldButtonEnabled = false;
-            button.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-inactive");
+            Globals.gameRooms[Globals.currentRoom].autoOperation.checkFoldButton = false;
         }
         else
         {
-            room.checkFoldButtonEnabled = true;
-            button.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-active");
+            Globals.gameRooms[Globals.currentRoom].autoOperation.checkFoldButton = true;
+        }
+    }
+
+    void SetAutoButtons()
+    {
+        if (room.autoOperation.sitOutNextHandButton)
+        {
+            sitOutNextHandButton.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-active");
+        }
+        else
+        {
+            sitOutNextHandButton.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-inactive");
+        }
+
+        if (room.autoOperation.sitOutNextBigBlindButton)
+        {
+            sitOutNextBigBlindButton.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-active");
+
+        }
+        else
+        {
+            sitOutNextBigBlindButton.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-inactive");
+
+        }
+
+        if (room.autoOperation.callAnyButton)
+        {
+            callAnyButton[0].GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-active");
+            callAnyButton[1].GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-active");
+
+        }
+        else
+        {
+            callAnyButton[0].GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-inactive");
+            callAnyButton[1].GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-inactive");
+
+        }
+
+        if (room.autoOperation.foldAnyButton)
+        {
+            foldAnyButton.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-active");
+
+        }
+        else
+        {
+            foldAnyButton.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-inactive");
+
+        }
+
+        if (room.autoOperation.checkFoldButton)
+        {
+            checkFoldButton.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-active");
+        }
+        else
+        {
+            checkFoldButton.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-inactive");
         }
     }
 

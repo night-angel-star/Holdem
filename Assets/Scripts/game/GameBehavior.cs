@@ -49,6 +49,13 @@ public class GameBehavior : MonoBehaviour
     public GameObject RoomViewParent;
     public GameObject RoomAddButton;
 
+    public GameObject sitOutNextHandButton;
+    public GameObject sitOutNextBigBlindButton;
+    public GameObject[] callAnyButton;
+
+    public GameObject foldAnyButton;
+    public GameObject checkFoldButton;
+
 
 
 
@@ -73,182 +80,41 @@ public class GameBehavior : MonoBehaviour
         try
         {
             //read from global
-            try
-            {
-                receiveFromGlobalResult = UpdateRoomFromGlobal();
-            }
-            catch(Exception ex)
-            {
-                LogHelper.AppLog("UpdateRoomFromGlobal");
-                LogHelper.AppLog(ex.ToString());
-            }
+            receiveFromGlobalResult = UpdateRoomFromGlobal();
             if (receiveFromGlobalResult)
             {
                 //set data from room data
-                try
-                {
-                    DisableUnneccessarySeats();
-                }
-                catch(Exception ex)
-                {
-                    LogHelper.AppLog("DisableUnneccessarySeats");
-                    LogHelper.AppLog(ex.ToString());
-                }
-                try
-                {
-                    SetActionButtonArea();
-                }
-                catch(Exception ex)
-                {
-                    LogHelper.AppLog("SetActionButtonArea");
-                    LogHelper.AppLog(ex.ToString());
-                }
+                DisableUnneccessarySeats();
+                SetActionButtonArea();
 
-                
                 //draw ui
                 if (room.gameStatus == 2)
                 {
-                    try
-                    {
-                        GetMyCard();
-                    }
-                    catch(Exception ex)
-                    {
-                        LogHelper.AppLog("GetMyCard");
-                        LogHelper.AppLog(ex.ToString());
-                    }
+                    GetMyCard();
 
-                    try
-                    {
-                        GetActionButtonsInteractable();
-                    }
-                    catch(Exception ex)
-                    {
-                        LogHelper.AppLog("GetActionButtonsInteractable");
-                        LogHelper.AppLog(ex.ToString());
-                    }
+                    GetActionButtonsInteractable();
                 }
-                try
-                {
-                    SetUserInfo();
-                }
-                catch(Exception ex)
-                {
-                    LogHelper.AppLog("SetUserInfo");
-                    LogHelper.AppLog(ex.ToString());
-                }
-                try
-                {
-                    SetRoomName();
-                }
-                catch (Exception ex)
-                {
-                    LogHelper.AppLog("SetRoomName");
-                    LogHelper.AppLog(ex.ToString());
-                }
-
-                try
-                {
-                    InitializeAddChipsModal();
-                }
-                catch (Exception ex)
-                {
-                    LogHelper.AppLog("InitializeAddChipsModal");
-                    LogHelper.AppLog(ex.ToString());
-                }
-
-                try
-                {
-                    SetPublicCards();
-                }
-                catch (Exception ex)
-                {
-                    LogHelper.AppLog("SetPublicCards");
-                    LogHelper.AppLog(ex.ToString());
-                }
-
-                try
-                {
-                    SetTimer();
-                }
-                catch (Exception ex)
-                {
-                    LogHelper.AppLog("SetTimer");
-                    LogHelper.AppLog(ex.ToString());
-                }
-                try
-                {
-                    SetActionButtonAreaIndexByGlobal();
-                }
-                catch (Exception ex)
-                {
-                    LogHelper.AppLog("SetActionButtonAreaIndexByGlobal");
-                    LogHelper.AppLog(ex.ToString());
-                }
-
-                try
-                {
-                    SetRaiseAmounts();
-                }
-                catch (Exception ex)
-                {
-                    LogHelper.AppLog("SetRaiseAmounts");
-                    LogHelper.AppLog(ex.ToString());
-                }
-                try
-                {
-                    SetRaiseBar();
-                }
-                catch (Exception ex)
-                {
-                    LogHelper.AppLog("SetRaiseBar");
-                    LogHelper.AppLog(ex.ToString());
-                }
-                try
-                {
-                    CheckRaiseAmount();
-                }
-                catch (Exception ex)
-                {
-                    LogHelper.AppLog("CheckRaiseAmount");
-                    LogHelper.AppLog(ex.ToString());
-                }
-                try
-                {
-                    SetGamersActionStatus();
-                }
-                catch(Exception ex)
-                {
-                    LogHelper.AppLog("SetGamersActionStatus");
-                    LogHelper.AppLog(ex.ToString());
-                }
-
-                try
-                {
-                    SetRoomsToggler();
-                }
-                catch (Exception ex)
-                {
-                    LogHelper.AppLog("SetRoomsToggler");
-                    LogHelper.AppLog(ex.ToString());
-                }
-
-                try
-                {
-                    SetRoomsView();
-                }
-                catch(Exception ex)
-                {
-                    LogHelper.AppLog("SetRoomsView");
-                    LogHelper.AppLog(ex.ToString());
-                }
+                SetUserInfo();
+                SetRoomName();
+                InitializeAddChipsModal();
+                SetPublicCards();
+                SetTimer();
+                SetActionButtonAreaIndexByGlobal();
+                SetRaiseAmounts();
+                SetRaiseBar();
+                SetAutoButtons();
+                CheckRaiseAmount();
+                SetGamersActionStatus();
+                SetRoomsToggler();
+                SetRoomsView();
             }
-        }catch(Exception ex)
+        }
+        catch (Exception ex)
         {
             LogHelper.AppLog("Multiroom");
             LogHelper.AppLog(ex.ToString());
         }
-        
+
 
     }
 
@@ -270,7 +136,7 @@ public class GameBehavior : MonoBehaviour
         {
             return false;
         }
-        
+
     }
 
     void DisableUnneccessarySeats()
@@ -365,7 +231,7 @@ public class GameBehavior : MonoBehaviour
     {
         GameObject callButton = ActionButtonsArea.transform.GetChild(1).gameObject.transform.GetChild(2).gameObject;
         GameObject checkButton = ActionButtonsArea.transform.GetChild(1).gameObject.transform.GetChild(1).gameObject;
-        if (room.operations.call!=null)
+        if (room.operations.call != null)
         {
             callButton.GetComponent<Button>().interactable = true;
         }
@@ -436,7 +302,7 @@ public class GameBehavior : MonoBehaviour
                     if (i == 0)
                     {
                         usersArray[i].transform.GetChild(1).gameObject.SetActive(true);
-                        if (room.gameStatus == 2||room.gameStatus==3)
+                        if (room.gameStatus == 2 || room.gameStatus == 3)
                         {
                             usersArray[i].transform.GetChild(2).gameObject.SetActive(true);
                             usersArray[i].transform.GetChild(4).gameObject.SetActive(true);
@@ -533,7 +399,7 @@ public class GameBehavior : MonoBehaviour
                     }
                     else if (room.gameStatus == 3)
                     {
-                        if (room.status[ArrayHelper.ReRotateNumber(i, room.GetUserSeat(), room.options.max_seats)] != "fold" && room.status[room.GetUserSeat()]!="fold")
+                        if (room.status[ArrayHelper.ReRotateNumber(i, room.GetUserSeat(), room.options.max_seats)] != "fold" && room.status[room.GetUserSeat()] != "fold")
                         {
                             if (i == 0)
                             {
@@ -925,85 +791,136 @@ public class GameBehavior : MonoBehaviour
         raiseConfirmButton.SetActive(false);
     }
 
+
+
     private void OnRaiseResponse(JToken jsonResponse)
     {
         Debug.Log("Raise");
 
     }
 
-    public void ToggleSitOutNextHandButton(GameObject button)
+    public void RaiseModalDismiss()
     {
-        if (room.sitOutNextHandButtonEnabled)
+        raiseModal.SetActive(false);
+        raiseButton.SetActive(true);
+        raiseConfirmButton.SetActive(false);
+    }
+
+    public void ToggleSitOutNextHandButton()
+    {
+        if (room.autoOperation.sitOutNextHandButton)
         {
-            room.sitOutNextHandButtonEnabled = false;
-            button.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-inactive");
+            Globals.gameRooms[Globals.currentRoom].autoOperation.sitOutNextHandButton = false;
         }
         else
         {
-            room.sitOutNextHandButtonEnabled = true;
-            button.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-active");
+            Globals.gameRooms[Globals.currentRoom].autoOperation.sitOutNextHandButton = true;
         }
     }
 
-    public void ToggleSitOutNextBigBlindButton(GameObject button)
+    public void ToggleSitOutNextBigBlindButton()
     {
-        if (room.sitOutNextBigBlindButtonEnabled)
+        if (room.autoOperation.sitOutNextBigBlindButton)
         {
-            room.sitOutNextBigBlindButtonEnabled = false;
-            button.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-inactive");
-
+            Globals.gameRooms[Globals.currentRoom].autoOperation.sitOutNextBigBlindButton = false;
         }
         else
         {
-            room.sitOutNextBigBlindButtonEnabled = true;
-            button.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-active");
-
+            Globals.gameRooms[Globals.currentRoom].autoOperation.sitOutNextBigBlindButton = true;
         }
     }
 
-    public void ToggleCallAnyButton(GameObject button)
+    public void ToggleCallAnyButton()
     {
-        if (room.callAnyButtonEnabled)
+        if (room.autoOperation.callAnyButton)
         {
-            room.callAnyButtonEnabled = false;
-            button.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-inactive");
-
+            Globals.gameRooms[Globals.currentRoom].autoOperation.callAnyButton = false;
         }
         else
         {
-            room.callAnyButtonEnabled = true;
-            button.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-active");
-
+            Globals.gameRooms[Globals.currentRoom].autoOperation.callAnyButton = true;
         }
     }
 
-    public void ToggleFoldAnyButton(GameObject button)
+    public void ToggleFoldAnyButton()
     {
-        if (room.foldAnyButtonEnabled)
+        if (room.autoOperation.foldAnyButton)
         {
-            room.foldAnyButtonEnabled = false;
-            button.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-inactive");
+            Globals.gameRooms[Globals.currentRoom].autoOperation.foldAnyButton = false;
 
         }
         else
         {
-            room.foldAnyButtonEnabled = true;
-            button.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-active");
+            Globals.gameRooms[Globals.currentRoom].autoOperation.foldAnyButton = true;
 
         }
     }
 
-    public void ToggleCheckFoldButton(GameObject button)
+    public void ToggleCheckFoldButton()
     {
-        if (room.checkFoldButtonEnabled)
+        if (room.autoOperation.checkFoldButton)
         {
-            room.checkFoldButtonEnabled = false;
-            button.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-inactive");
+            Globals.gameRooms[Globals.currentRoom].autoOperation.checkFoldButton = false;
         }
         else
         {
-            room.checkFoldButtonEnabled = true;
-            button.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-active");
+            Globals.gameRooms[Globals.currentRoom].autoOperation.checkFoldButton = true;
+        }
+    }
+
+    void SetAutoButtons()
+    {
+        if (room.autoOperation.sitOutNextHandButton)
+        {
+            sitOutNextHandButton.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-active");
+        }
+        else
+        {
+            sitOutNextHandButton.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-inactive");
+        }
+
+        if (room.autoOperation.sitOutNextBigBlindButton)
+        {
+            sitOutNextBigBlindButton.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-active");
+
+        }
+        else
+        {
+            sitOutNextBigBlindButton.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-inactive");
+
+        }
+
+        if (room.autoOperation.callAnyButton)
+        {
+            callAnyButton[0].GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-active");
+            callAnyButton[1].GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-active");
+
+        }
+        else
+        {
+            callAnyButton[0].GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-inactive");
+            callAnyButton[1].GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-inactive");
+
+        }
+
+        if (room.autoOperation.foldAnyButton)
+        {
+            foldAnyButton.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-active");
+
+        }
+        else
+        {
+            foldAnyButton.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-inactive");
+
+        }
+
+        if (room.autoOperation.checkFoldButton)
+        {
+            checkFoldButton.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-active");
+        }
+        else
+        {
+            checkFoldButton.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-inactive");
         }
     }
 
@@ -1023,7 +940,7 @@ public class GameBehavior : MonoBehaviour
                     gamersCoinArray[i] = 0;
                 }
             }
-            
+
 
             minRaiseAmount = gamersCoinArray.Max();
             maxRaiseAmount = room.gamers[Globals.userProfile.uid].coins;
@@ -1037,8 +954,8 @@ public class GameBehavior : MonoBehaviour
                 raiseBarSlider.GetComponent<Slider>().minValue = minRaiseAmount;
                 raiseBarSlider.GetComponent<Slider>().maxValue = maxRaiseAmount;
             }
-            
-            
+
+
         }
     }
 
@@ -1177,7 +1094,7 @@ public class GameBehavior : MonoBehaviour
         {
             if (room.status != null)
             {
-                GameObject[] usersArray = GameObjectHelper.GetChildrenForRoomSize(usersParent,room.options.max_seats);
+                GameObject[] usersArray = GameObjectHelper.GetChildrenForRoomSize(usersParent, room.options.max_seats);
                 string[] gamerActionStatus = room.status;
                 string[] rotatedGamerActionStatus = ArrayHelper.RotateArray(gamerActionStatus, room.GetUserSeat());
 

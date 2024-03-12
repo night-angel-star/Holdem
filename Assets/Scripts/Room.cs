@@ -53,12 +53,7 @@ public class Room
     public int[] shared_cards = new int[5];
     public string type = null;
 
-    public bool sitOutNextHandButtonEnabled = false;
-    public bool sitOutNextBigBlindButtonEnabled = false;
-    public bool callAnyButtonEnabled = false;
-
-    public bool foldAnyButtonEnabled = false;
-    public bool checkFoldButtonEnabled = false;
+    
 
     public class Operations {
         public object fold = null;
@@ -67,6 +62,18 @@ public class Room
         public object raise = null;
     }
     public Operations operations = new Operations();
+
+    public class AutoOperation
+    {
+        public bool sitOutNextHandButton = false;
+        public bool sitOutNextBigBlindButton = false;
+        
+
+        public bool foldAnyButton = false;
+        public bool checkFoldButton = false;
+        public bool callAnyButton = false;
+    }
+    public AutoOperation autoOperation = new AutoOperation();
 
     public int GetUserSeat()
     {

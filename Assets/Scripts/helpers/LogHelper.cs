@@ -12,7 +12,7 @@ public class LogHelper : MonoBehaviour
 
     public static void NetworkLog(string text)
     {
-#if UNITY_WEBGL
+#if UNITY_WEBGL||UNITY_ANDROID
         string timestamp = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
         Debug.Log("[" + timestamp + "]          " + text);
 #else
@@ -29,7 +29,7 @@ public class LogHelper : MonoBehaviour
 
     public static void AppLog(string text)
     {
-#if UNITY_WEBGL
+#if UNITY_WEBGL||UNITY_ANDROID
         string timestamp = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
         Debug.Log("[" + timestamp + "]          " + text);
 #else
