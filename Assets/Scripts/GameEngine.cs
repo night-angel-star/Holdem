@@ -837,6 +837,7 @@ public class GameEngine
                 Globals.gameRooms[roomid].gamers[uid].coins = coins;
                 Globals.gameRooms[roomid].seats_taken++;
                 Globals.gameRooms[roomid].gameStatus = 0;
+                Debug.Log(Globals.gameRooms);
             }
         }
         catch (Exception ex)

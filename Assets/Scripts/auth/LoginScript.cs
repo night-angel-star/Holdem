@@ -15,9 +15,12 @@ public class LoginScript : MonoBehaviour
     public TMP_InputField EmailInput;
     public TMP_InputField PasswordInput;
     public Button LoginButton;
+    public Selectable[] inputFields = new Selectable[2];
 
     void Start()
     {
+        inputFields[0] = EmailInput;
+        inputFields[1] = PasswordInput;
         // Attach a listener to the login button
         LoginButton.onClick.AddListener(Login);
     }
@@ -129,5 +132,10 @@ public class LoginScript : MonoBehaviour
             Toast.Show(errorString, "danger");
             return false;
         }
+    }
+
+    private void Update()
+    {
+        TabSelect.TabKeyDown(inputFields);
     }
 }
