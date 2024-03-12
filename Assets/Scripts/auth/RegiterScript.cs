@@ -19,9 +19,14 @@ public class RegisterScript : MonoBehaviour
     public TMP_InputField PasswordInput;
     public TMP_InputField Password2Input;
     public Button RegisterButton;
+    public Selectable[] inputFields = new Selectable[4];
 
     void Start()
     {
+        inputFields[0] = NameInput;
+        inputFields[1] = EmailInput;
+        inputFields[2] = PasswordInput;
+        inputFields[3] = Password2Input;
         // Attach a listener to the login button
         RegisterButton.onClick.AddListener(Register);
     }
@@ -63,6 +68,7 @@ public class RegisterScript : MonoBehaviour
             UnityMainThreadDispatcher.Instance().Enqueue(() =>
             {
                 Toast.Show("Account created successfully.");
+                SceneManager.LoadScene("Login");
             });
             return;
         } while (false);
@@ -116,7 +122,7 @@ public class RegisterScript : MonoBehaviour
         }
         if (string.IsNullOrEmpty(errorString) && string.IsNullOrEmpty(EmailInput.text))
         {
-            errorString =  string.IsNullOrEmpty(EmailInput.text) ? "Please enter your email" : null;
+            errorString = string.IsNullOrEmpty(EmailInput.text) ? "Please enter your email" : null;
         }
         if (string.IsNullOrEmpty(errorString) && string.IsNullOrEmpty(PasswordInput.text))
         {
@@ -130,7 +136,7 @@ public class RegisterScript : MonoBehaviour
         {
             errorString = "Password is not match";
         }
-        
+
         if (string.IsNullOrEmpty(errorString))
         {
             return true;
@@ -141,4 +147,10 @@ public class RegisterScript : MonoBehaviour
             return false;
         }
     }
+
+    private void Update()
+    {
+        TabSelect.TabKeyDown(inputFields);
+    }
 }
+

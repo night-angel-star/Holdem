@@ -474,8 +474,8 @@ MonoBehaviour:
   - {fileID: 4392417168706717387}
   - {fileID: 2993148811640360803}
   - {fileID: 1289858018569038271}
-  defaultActive: 1
-  currentActive: 1
+  defaultActive: 0
+  currentActive: 0
 --- !u!1 &405606164144069108
 GameObject:
   m_ObjectHideFlags: 0
@@ -11192,8 +11192,8 @@ MonoBehaviour:
   - {fileID: 821983659718597794}
   - {fileID: 7084527922172887049}
   - {fileID: 5548716319172941827}
-  defaultActive: 2
-  currentActive: 2
+  defaultActive: 0
+  currentActive: 0
 --- !u!1 &7200108868837062358
 GameObject:
   m_ObjectHideFlags: 0
