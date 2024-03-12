@@ -94,6 +94,7 @@ public class TournamentBehavior : MonoBehaviour
                     GetMyCard();
                     GetActionButtonsInteractable();
                 }
+                AutoAction();
                 SetUserInfo();
                 SetRoomName();
                 InitializeAddChipsModal();
@@ -845,6 +846,8 @@ public class TournamentBehavior : MonoBehaviour
         else
         {
             Globals.gameRooms[Globals.currentRoom].autoOperation.callAnyButton = true;
+            Globals.gameRooms[Globals.currentRoom].autoOperation.foldAnyButton = false;
+            Globals.gameRooms[Globals.currentRoom].autoOperation.checkFoldButton = false;
         }
     }
 
@@ -858,6 +861,8 @@ public class TournamentBehavior : MonoBehaviour
         else
         {
             Globals.gameRooms[Globals.currentRoom].autoOperation.foldAnyButton = true;
+            Globals.gameRooms[Globals.currentRoom].autoOperation.callAnyButton = false;
+            Globals.gameRooms[Globals.currentRoom].autoOperation.checkFoldButton = false;
 
         }
     }
@@ -871,6 +876,8 @@ public class TournamentBehavior : MonoBehaviour
         else
         {
             Globals.gameRooms[Globals.currentRoom].autoOperation.checkFoldButton = true;
+            Globals.gameRooms[Globals.currentRoom].autoOperation.callAnyButton = false;
+            Globals.gameRooms[Globals.currentRoom].autoOperation.foldAnyButton = false;
         }
     }
 
@@ -927,6 +934,39 @@ public class TournamentBehavior : MonoBehaviour
         else
         {
             checkFoldButton.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-inactive");
+        }
+    }
+
+    void AutoAction()
+    {
+        if (room.gameStatus == 2 && room.activeSeat == room.GetUserSeat())
+        {
+            if (room.autoOperation.foldAnyButton)
+            {
+                Fold();
+            }
+            if (room.autoOperation.checkFoldButton)
+            {
+                if (room.operations.check != null)
+                {
+                    Check();
+                }
+                else
+                {
+                    Fold();
+                }
+            }
+            if (room.autoOperation.callAnyButton)
+            {
+                if (room.operations.check != null)
+                {
+                    Check();
+                }
+                else if (room.operations.call != null)
+                {
+                    Call();
+                }
+            }
         }
     }
 
