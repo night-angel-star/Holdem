@@ -853,7 +853,7 @@ public class GameEngine
         {
             if (Globals.gameRooms.ContainsKey(roomid))
             {
-                Globals.gameRooms[roomid].gamers[uid].coins = amount;
+                Globals.gameRooms[roomid].gamers[uid].coins += amount;
             }
         }
         catch(Exception ex)

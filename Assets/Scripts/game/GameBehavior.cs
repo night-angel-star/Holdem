@@ -26,6 +26,7 @@ public class GameBehavior : MonoBehaviour
     public GameObject usersParent;
     public GameObject chipMinBuyLimitObject;
     public GameObject chipMaxBuyLimitObject;
+    public GameObject totalChipsValue;
     public Slider chipsSliderObject;
     public GameObject publicCardArea;
     public GameObject sitToSeatArea;
@@ -461,6 +462,7 @@ public class GameBehavior : MonoBehaviour
     {
         chipMinBuyLimitObject.GetComponent<TMP_Text>().text = room.options.min_buy.ToString();
         chipMaxBuyLimitObject.GetComponent<TMP_Text>().text = Globals.userProfile.deposite.ToString();
+        totalChipsValue.GetComponent<TMP_Text>().text = Globals.userProfile.deposite.ToString();
         chipsSliderObject.minValue = room.options.min_buy;
         chipsSliderObject.maxValue = Globals.userProfile.deposite;
 
@@ -489,6 +491,7 @@ public class GameBehavior : MonoBehaviour
             pin = pin,
             f = "takeseat",
             args = index.ToString(),
+            roomid = Globals.currentRoom
         };
         Globals.socketIoConnection.SendRpc(data, OnTakeSeatResponse);
     }

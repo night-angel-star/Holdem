@@ -147,8 +147,6 @@ public class SocketIoConnection
                         if (notifyEvent.e != null)
                         {
                             string eventName = notifyEvent.e;
-                            Debug.Log(eventName);
-                            //Debug.Log(_notifyEventHandlers[eventName]);
                             if (_notifyEventHandlers.ContainsKey(eventName))
                             {
                                 _notifyEventHandlers[eventName](jToken[i]);

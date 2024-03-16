@@ -12193,6 +12193,7 @@ MonoBehaviour:
   usersParent: {fileID: 1424365566}
   chipMinBuyLimitObject: {fileID: 689534251}
   chipMaxBuyLimitObject: {fileID: 119146527}
+  totalChipsValue: {fileID: 523117338}
   chipsSliderObject: {fileID: 2098966995}
   publicCardArea: {fileID: 385525405}
   sitToSeatArea: {fileID: 1398504375}
