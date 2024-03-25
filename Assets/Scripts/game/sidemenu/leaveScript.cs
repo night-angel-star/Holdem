@@ -19,6 +19,7 @@ public class leaveScript : MonoBehaviour
             f = "leave",
             pin = pin,
             uid = uid,
+            roomid = Globals.currentRoom
         };
         Globals.socketIoConnection.SendRpc(data, OnResponse);
     }

@@ -28,7 +28,6 @@ public class GameBehavior : MonoBehaviour
     public GameObject chipMaxBuyLimitObject;
     public GameObject totalChipsValueObject;
     public GameObject chipAddButton;
-
     public Slider chipsSliderObject;
     public GameObject publicCardArea;
     public GameObject sitToSeatArea;
@@ -505,6 +504,7 @@ public class GameBehavior : MonoBehaviour
             f = "takeseat",
             roomid=Globals.currentRoom,
             args = index.ToString(),
+            roomid = Globals.currentRoom
         };
         Globals.socketIoConnection.SendRpc(data, OnTakeSeatResponse);
     }
