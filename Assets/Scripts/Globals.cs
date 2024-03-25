@@ -22,11 +22,13 @@ public static class Globals
     public static SocketIoConnection socketIoConnection = new SocketIoConnection();
     public static GlobalNotification notification = new GlobalNotification();
     public static bool connected = false;
+    public static string username = null;
+    public static string password = null;
     public static Token gameToken = new Token();
     public static Gamer userProfile = new Gamer();
     public static GameRoomsT gameRooms = new GameRoomsT();
     public static string currentRoom = null;
-    public static string strUri = "http://124.158.120.246:80/";
+    public static string strUri = "http://124.158.120.246/";
 
     
 }

@@ -28,7 +28,7 @@ public class Room
     public string name = null;
     public int last_raise = 0;
     public string[] status = null;
-    public int gameStatus = -1;
+    public int gameStatus = 0;
     public class Options {
         public int big_blind = 0;
         public int small_blind = 0;

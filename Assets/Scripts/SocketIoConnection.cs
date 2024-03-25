@@ -31,11 +31,26 @@ public class SocketIoConnection
     {
         // Hello Handshack
         socketIoUnity.On("hello", (data) => {
-            Globals.connected = true;
-            engine = new GameEngine();
-            engine.Start();
+
             Debug.Log("Hello");
-            socketIoUnity.Emit("hello");
+            if (Globals.username != null && Globals.password != null)
+            {
+                var reloginData = new
+                {
+                    username = Globals.username,
+                    password = Globals.password
+                };
+                Globals.socketIoConnection.SendRelogin(reloginData);
+            }
+            else
+            {
+#if UNITY_WEBGL
+                Globals.connected = true;
+                engine = new GameEngine();
+                engine.Start();
+#endif
+                socketIoUnity.Emit("hello");
+            }
         });
         socketIoUnity.On("notify", OnNotify);
         socketIoUnity.On("rpc_ret", OnRpcRet);
@@ -245,6 +260,35 @@ public class SocketIoConnection
         _rpcEventTimes.Add(seq, oneTime);
         // Debug.Log("rpc : " + req.ToString());
         socketIoUnity.Emit("rpc", req);
+    }
+
+    public void SendRelogin(object data)
+    {
+#if UNITY_WEBGL
+        var req = new JObject();
+        var props = data.GetType().GetProperties();
+        foreach (var property in props)
+        {
+            if (property.CanRead)
+            {
+                req[property.Name] = JToken.FromObject(property.GetValue(data));
+            }
+        }
+#else
+        var req = new ExpandoObject() as IDictionary<string, System.Object>;
+        var props = data.GetType().GetProperties();
+        foreach (var property in props)
+        {
+            if (property.CanRead)
+            {
+                req[property.Name] = property.GetValue(data);
+            }
+        }
+#endif
+        string seq = rnd.Next().ToString();
+        req["seq"] = seq;
+        // Debug.Log("rpc : " + req.ToString());
+        socketIoUnity.Emit("hello", req);
     }
 
 }

@@ -33,32 +33,55 @@ public class TexasHoldem : MonoBehaviour
 
     private void OnResponse(JToken jsonResponse)
     {
-        Dictionary<string, object> res = JsonResponse.ToDictionary(jsonResponse);
-        IEnumerable temp = JsonConvert.DeserializeObject(res["ret"].ToString()) as IEnumerable;
-        JObject[] valueArray = temp.Cast<JObject>().ToArray();
-        for (int i = 0; i < valueArray.Length; i++)
+        try
         {
-            int index = i;
-            Dictionary<string, object> dictionary = valueArray[i].ToObject<Dictionary<string, object>>();
-            string[] rowContents = parseRow(dictionary);
-            UnityMainThreadDispatcher.Instance().Enqueue(() =>
+            Dictionary<string, object> res = JsonResponse.ToDictionary(jsonResponse);
+            IEnumerable temp = JsonConvert.DeserializeObject(res["ret"].ToString()) as IEnumerable;
+            JObject[] valueArray = temp.Cast<JObject>().ToArray();
+            for (int i = 0; i < valueArray.Length; i++)
             {
-                AddRowToTable(rowContents, Int32.Parse(dictionary["id"].ToString()));
-            });
+                int index = i;
+                Dictionary<string, object> dictionary = valueArray[i].ToObject<Dictionary<string, object>>();
+                string[] rowContents = parseRow(dictionary);
+                if (rowContents != null)
+                {
+                    UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                    {
+                        AddRowToTable(rowContents, Int32.Parse(dictionary["id"].ToString()));
+                    });
+                }
+                
+            }
         }
+        catch(Exception ex)
+        {
+            LogHelper.AppLog("Room List On Response");
+            LogHelper.AppLog(ex.ToString());
+        }
+        
 
     }
 
     private string[] parseRow(Dictionary<string, object> data)
     {
-        string[] rowElements = { };
-        Array.Resize(ref rowElements, 5);
-        rowElements[0] = convertToTitleCase(data["type"].ToString());
-        rowElements[1] = convertToTitleCase(data["name"].ToString());
-        rowElements[2] = data["seats_taken"].ToString() + "/" + data["seats_count"].ToString();
-        rowElements[3] = data["small_blind"].ToString() + "/" + data["big_blind"].ToString();
-        rowElements[4] = data["min_buy"].ToString();
-        return rowElements;
+        try
+        {
+            string[] rowElements = { };
+            Array.Resize(ref rowElements, 5);
+            rowElements[0] = convertToTitleCase(data["type"].ToString());
+            rowElements[1] = convertToTitleCase(data["name"].ToString());
+            rowElements[2] = data["seats_taken"].ToString() + "/" + data["seats_count"].ToString();
+            rowElements[3] = data["small_blind"].ToString() + "/" + data["big_blind"].ToString();
+            rowElements[4] = data["min_buy"].ToString();
+            return rowElements;
+        }
+        catch (Exception ex)
+        {
+            LogHelper.AppLog("Room List Parse Row");
+            LogHelper.AppLog(ex.ToString());
+            return null;
+        }
+        
     }
 
     private string convertToTitleCase(string str)

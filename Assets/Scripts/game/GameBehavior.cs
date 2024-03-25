@@ -26,6 +26,9 @@ public class GameBehavior : MonoBehaviour
     public GameObject usersParent;
     public GameObject chipMinBuyLimitObject;
     public GameObject chipMaxBuyLimitObject;
+    public GameObject totalChipsValueObject;
+    public GameObject chipAddButton;
+
     public Slider chipsSliderObject;
     public GameObject publicCardArea;
     public GameObject sitToSeatArea;
@@ -70,12 +73,10 @@ public class GameBehavior : MonoBehaviour
 
     void Start()
     {
+        InvokeRepeating("RepeatCall", 0.0f, 0.5f);
     }
 
-
-
-    // Update is called once per frame
-    void Update()
+    void RepeatCall()
     {
         try
         {
@@ -115,8 +116,6 @@ public class GameBehavior : MonoBehaviour
             LogHelper.AppLog("Multiroom");
             LogHelper.AppLog(ex.ToString());
         }
-
-
     }
 
     bool UpdateRoomFromGlobal()
@@ -457,12 +456,28 @@ public class GameBehavior : MonoBehaviour
         roomNameObject.text = room.name;
     }
 
+    public void CheckUserBalance()
+    {
+        if (room.options.min_buy > Globals.userProfile.deposite)
+        {
+            Toast.Show("You have not enough balance.", "danger");
+        }
+    }
     void InitializeAddChipsModal()
     {
         chipMinBuyLimitObject.GetComponent<TMP_Text>().text = room.options.min_buy.ToString();
         chipMaxBuyLimitObject.GetComponent<TMP_Text>().text = Globals.userProfile.deposite.ToString();
+        totalChipsValueObject.GetComponent<TMP_Text>().text = Globals.userProfile.deposite.ToString();
         chipsSliderObject.minValue = room.options.min_buy;
         chipsSliderObject.maxValue = Globals.userProfile.deposite;
+        if (room.options.min_buy > Globals.userProfile.deposite)
+        {
+            chipAddButton.GetComponent<Button>().interactable = false;
+        }
+        else
+        {
+            chipAddButton.GetComponent<Button>().interactable = true;
+        }
 
     }
 
@@ -488,6 +503,7 @@ public class GameBehavior : MonoBehaviour
             uid = uid,
             pin = pin,
             f = "takeseat",
+            roomid=Globals.currentRoom,
             args = index.ToString(),
         };
         Globals.socketIoConnection.SendRpc(data, OnTakeSeatResponse);
@@ -1218,7 +1234,84 @@ public class GameBehavior : MonoBehaviour
 
     public void ChangeRoom(string roomId)
     {
+        
+        string uid = Globals.gameToken.uid;
+        int pin = Globals.gameToken.pin;
+        var data = new
+        {
+            uid = uid,
+            pin = pin,
+            f = "changeroom",
+            args = new
+            {
+                roomid = roomId,
+                seat = Globals.gameRooms[roomId].GetUserSeat()
+            },
+        };
+        Globals.socketIoConnection.SendRpc(data, OnChangeRoomResponse);
         Globals.currentRoom = roomId;
+    }
+
+    private void OnChangeRoomResponse(JToken jsonResponse)
+    {
+        
+        //string errorString = "";
+        //Dictionary<string, object> res = JsonResponse.ToDictionary(jsonResponse);
+
+        //do
+        //{
+        //    if (res == null)
+        //    {
+        //        errorString = "Invalid response";
+        //        UnityMainThreadDispatcher.Instance().Enqueue(() =>
+        //        {
+        //            Toast.Show(errorString, "danger");
+        //        });
+
+        //        break;
+        //    }
+        //    int err = res["err"].ConvertTo<int>();
+        //    if (err != 0)
+        //    {
+        //        if (!res.ContainsKey("ret"))
+        //        {
+        //            errorString = "Invalid response";
+        //            UnityMainThreadDispatcher.Instance().Enqueue(() =>
+        //            {
+        //                roomListTable.ClearRows();
+        //            });
+        //            UnityMainThreadDispatcher.Instance().Enqueue(() =>
+        //            {
+        //                Toast.Show(errorString, "danger");
+        //            });
+        //            break;
+        //        }
+        //        errorString = res["ret"].ToString();
+        //        UnityMainThreadDispatcher.Instance().Enqueue(() => { Toast.Show(errorString, "danger"); });
+        //        break;
+        //    }
+        //    if (!res.ContainsKey("ret"))
+        //    {
+        //        errorString = "Invalid response";
+        //        UnityMainThreadDispatcher.Instance().Enqueue(() => { Toast.Show(errorString, "danger"); });
+        //        break;
+        //    }
+        //    Dictionary<string, object> ret = JsonResponse.ToDictionary(res["ret"]);
+        //    if (ret == null)
+        //    {
+        //        errorString = "Invalid response";
+        //        UnityMainThreadDispatcher.Instance().Enqueue(() => { Toast.Show(errorString, "danger"); });
+        //        break;
+        //    }
+        //    UnityMainThreadDispatcher.Instance().Enqueue(() =>
+        //    {
+        //        Toast.Show("Chips added successfully");
+        //        addChipsModal.SetActive(false);
+        //    });
+
+
+        //    return;
+        //} while (false);
     }
 
     public void SetRoomsView()
