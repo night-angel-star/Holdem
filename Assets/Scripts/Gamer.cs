@@ -16,6 +16,7 @@ public class Gamer
     public int deposite;
     public int[] cards;
     public int prize;
+    public string phoneNumber = "";
 
     public static Gamer FromToken(JToken baseData)
     {

@@ -69,6 +69,8 @@ public class LoginScript : MonoBehaviour
             }
             Globals.gameToken = JsonConvert.DeserializeObject<Token>(token.ToString());
             Debug.Log(Globals.gameToken);
+            Globals.username = EmailInput.text;
+            Globals.password = PasswordInput.text;
             UnityMainThreadDispatcher.Instance().Enqueue(() =>
             {
                 SceneManager.LoadScene("Home");

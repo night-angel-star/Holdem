@@ -71,14 +71,11 @@ public class TournamentBehavior : MonoBehaviour
 
     void Start()
     {
+        InvokeRepeating("RepeatCall", 0.0f, 0.5f);
     }
 
-
-
-    // Update is called once per frame
-    void Update()
+    void RepeatCall()
     {
-
         try
         {
             //read from global
@@ -109,12 +106,12 @@ public class TournamentBehavior : MonoBehaviour
                 SetRoomsToggler();
                 SetRoomsView();
             }
-        }catch(Exception ex)
+        }
+        catch (Exception ex)
         {
             LogHelper.AppLog("Tournament");
             LogHelper.AppLog(ex.ToString());
         }
-
     }
 
     bool UpdateRoomFromGlobal()

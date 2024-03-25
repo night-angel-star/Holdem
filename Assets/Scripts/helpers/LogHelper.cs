@@ -20,7 +20,7 @@ public class LogHelper : MonoBehaviour
         {
             // Get the current timestamp
             string timestamp = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
-
+            Debug.Log("[" + timestamp + "]          " + text);
             // Write the timestamp and text to the file
             writer.WriteLine("[" + timestamp + "]          " + text);
         }
@@ -37,6 +37,7 @@ public class LogHelper : MonoBehaviour
         {
             // Get the current timestamp
             string timestamp = DateTime.Now.ToString("yyyy/MM/dd HH:mm:ss");
+            Debug.Log("[" + timestamp + "]          " + text);
 
             // Write the timestamp and text to the file
             writer.WriteLine("[" + timestamp + "]          " + text);

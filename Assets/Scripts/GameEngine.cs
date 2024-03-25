@@ -54,12 +54,12 @@ public class GameEngine
                 Debug.Log(errorString);
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             LogHelper.AppLog("OnRelogin");
             LogHelper.AppLog(ex.ToString());
         }
-        
+
     }
     private void OnPrompt(JToken baseToken)
     {
@@ -76,7 +76,10 @@ public class GameEngine
                 PromptNotifyEvent json = baseToken.ToObject<PromptNotifyEvent>();
                 if (json != null)
                 {
-                    Globals.gameRooms[json.roomid.ToString()].operations = json.args;
+                    if (Globals.gameRooms.ContainsKey(json.roomid.ToString()))
+                    {
+                        Globals.gameRooms[json.roomid.ToString()].operations = json.args;
+                    }
                 }
             } while (false);
             if (errorString != "")
@@ -84,7 +87,7 @@ public class GameEngine
                 // Debug.Log(errorString);
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             LogHelper.AppLog("OnPrompt");
             LogHelper.AppLog(ex.ToString());
@@ -115,7 +118,7 @@ public class GameEngine
                 Debug.Log(errorString);
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             LogHelper.AppLog("OnTakeSeat");
             LogHelper.AppLog(ex.ToString());
@@ -146,7 +149,7 @@ public class GameEngine
                 Debug.Log(errorString);
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             LogHelper.AppLog("OnBuyChip");
             LogHelper.AppLog(ex.ToString());
@@ -176,7 +179,7 @@ public class GameEngine
                 Debug.Log(errorString);
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             LogHelper.AppLog("OnUnseat");
             LogHelper.AppLog(ex.ToString());
@@ -229,7 +232,7 @@ public class GameEngine
                 Debug.Log(errorString);
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             LogHelper.AppLog("OnLeave");
             LogHelper.AppLog(ex.ToString());
@@ -272,7 +275,7 @@ public class GameEngine
                 Debug.Log(errorString);
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             LogHelper.AppLog("OnEnter");
             LogHelper.AppLog(ex.ToString());
@@ -311,7 +314,7 @@ public class GameEngine
                 Debug.Log(errorString);
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             LogHelper.AppLog("OnLook");
             LogHelper.AppLog(ex.ToString());
@@ -341,7 +344,7 @@ public class GameEngine
                 Debug.Log(errorString);
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             LogHelper.AppLog("OnReady");
             LogHelper.AppLog(ex.ToString());
@@ -369,9 +372,9 @@ public class GameEngine
                         Globals.gameRooms[roomid] = room;
                         Globals.gameRooms[roomid].gameStatus = 2;
                     }
-                    for (int i = 0 ; i < room.seats.Length; i++)
+                    for (int i = 0; i < room.seats.Length; i++)
                     {
-                        if(room.seats[i] != null)
+                        if (room.seats[i] != null)
                         {
                             if (!Globals.gameRooms[json.roomid.ToString()].chips.ContainsKey(i))
                             {
@@ -390,7 +393,7 @@ public class GameEngine
                 Debug.Log(errorString);
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             LogHelper.AppLog("OnGameStart");
             LogHelper.AppLog(ex.ToString());
@@ -436,7 +439,7 @@ public class GameEngine
                 Debug.Log(errorString);
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             LogHelper.AppLog("OnDeal");
             LogHelper.AppLog(ex.ToString());
@@ -466,7 +469,7 @@ public class GameEngine
                 Debug.Log(errorString);
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             LogHelper.AppLog("OnMoveTurn");
             LogHelper.AppLog(ex.ToString());
@@ -494,7 +497,7 @@ public class GameEngine
                 Debug.Log(errorString);
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             LogHelper.AppLog("OnFold");
             LogHelper.AppLog(ex.ToString());
@@ -522,7 +525,7 @@ public class GameEngine
                 Debug.Log(errorString);
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             LogHelper.AppLog("OnCheck");
             LogHelper.AppLog(ex.ToString());
@@ -553,7 +556,7 @@ public class GameEngine
                 Debug.Log(errorString);
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             LogHelper.AppLog("OnCall");
             LogHelper.AppLog(ex.ToString());
@@ -584,7 +587,7 @@ public class GameEngine
                 Debug.Log(errorString);
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             LogHelper.AppLog("OnRaise");
             LogHelper.AppLog(ex.ToString());
@@ -594,7 +597,7 @@ public class GameEngine
     {
         try
         {
-            
+
         }
         catch (Exception ex)
         {
@@ -643,12 +646,12 @@ public class GameEngine
                 Debug.Log(errorString);
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             LogHelper.AppLog("OnGameOver");
             LogHelper.AppLog(ex.ToString());
         }
-        
+
     }
 
     IEnumerator SleepForGameover()
@@ -679,7 +682,7 @@ public class GameEngine
                 Debug.Log(errorString);
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             LogHelper.AppLog("OnCountDown");
             LogHelper.AppLog(ex.ToString());
@@ -709,7 +712,7 @@ public class GameEngine
                 Debug.Log(errorString);
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             LogHelper.AppLog("OnSeeCard");
             LogHelper.AppLog(ex.ToString());
@@ -748,7 +751,7 @@ public class GameEngine
             // Globals.socketIoConnection.AddNotifyHandler("say", OnPrompt);
             Globals.socketIoConnection.AddNotifyHandler("prompt", OnPrompt);
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             LogHelper.AppLog("RegisterGameEvents");
             LogHelper.AppLog(ex.ToString());
@@ -758,10 +761,10 @@ public class GameEngine
 
     private void ProcessRelogin()
     {
-        /* UnityMainThreadDispatcher.Instance().Enqueue(() =>
+        UnityMainThreadDispatcher.Instance().Enqueue(() =>
         {
             SceneManager.LoadScene("Room");
-        }); */
+        });
     }
 
     private void ProcessSeeCard(string uid, string roomid, int seat, int[] cards)
@@ -780,12 +783,12 @@ public class GameEngine
                 }
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             LogHelper.AppLog("ProcessSeeCard");
             LogHelper.AppLog(ex.ToString());
         }
-        
+
     }
     private void ProcessCountdown(string roomid, int sec)
     {
@@ -794,6 +797,7 @@ public class GameEngine
             if (Globals.gameRooms.ContainsKey(roomid))
             {
                 Globals.gameRooms[roomid].countdown = sec;
+                Globals.gameRooms[roomid].gameStatus = 2;
             }
         }
         catch (Exception ex)
@@ -816,14 +820,15 @@ public class GameEngine
                 }
                 Globals.gameRooms[roomid].activeSeat = seat;
                 Globals.gameRooms[roomid].countdown = countdown;
+                Globals.gameRooms[roomid].gameStatus = 2;
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             LogHelper.AppLog("ProcessMoveturn");
             LogHelper.AppLog(ex.ToString());
         }
-        
+
     }
 
     private void ProcessTakeSeat(string uid, string roomid, int seat, int coins)
@@ -856,12 +861,12 @@ public class GameEngine
                 Globals.gameRooms[roomid].gamers[uid].coins += amount;
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             LogHelper.AppLog("ProcessBuyChip");
             LogHelper.AppLog(ex.ToString());
         }
-        
+
     }
     private void ProcessUnseat(string uid, string roomid, int seat)
     {
