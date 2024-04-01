@@ -153,21 +153,33 @@ public class TexasHoldem : MonoBehaviour
 
     public void AddRowToTable(string[] rowElements, int index)
     {
-        TableRow newRow = roomListTable.AddRow();
-        newRow.preferredHeight = 23;
-        for (int i = 0; i < rowElements.Length; i++)
+        try
         {
-            TableScript.AddStringToCell(newRow.Cells[i], convertToTitleCase(rowElements[i].ToString()));
+            if (roomListTable != null)
+            {
+                TableRow newRow = roomListTable.AddRow();
+                newRow.preferredHeight = 23;
+                for (int i = 0; i < rowElements.Length; i++)
+                {
+                    TableScript.AddStringToCell(newRow.Cells[i], convertToTitleCase(rowElements[i].ToString()));
+                }
+                GameObject cellObject = new GameObject("GameObject", typeof(RectTransform));
+                cellObject.transform.SetParent(newRow.Cells[5].transform);
+                cellObject.transform.localScale = Vector3.one;
+
+                GameObject instantiatedButton = Instantiate(joinButtonPrefab, cellObject.transform);
+                instantiatedButton.transform.localScale = Vector3.one;
+
+                Button button = instantiatedButton.GetComponent<Button>();
+                button.onClick.AddListener(() => JoinHandler(index));
+            }
+            
         }
-        GameObject cellObject = new GameObject("GameObject", typeof(RectTransform));
-        cellObject.transform.SetParent(newRow.Cells[5].transform);
-        cellObject.transform.localScale = Vector3.one;
-
-        GameObject instantiatedButton = Instantiate(joinButtonPrefab, cellObject.transform);
-        instantiatedButton.transform.localScale = Vector3.one;
-
-        Button button = instantiatedButton.GetComponent<Button>();
-        button.onClick.AddListener(() => JoinHandler(index));
+        catch(Exception ex)
+        {
+            LogHelper.AppLog("TexasHoldem:AddRowToTable");
+            LogHelper.AppLog(ex.ToString());
+        }
     }
 
     // Update is called once per frame

@@ -54,29 +54,48 @@ public class SocketIoWrapper
     }
     public void On(string _event, Action<string> callback)
     {
-        Debug.Log("socketIoWrapper.On();" + _event);
-        _socketIoInterface.On(_event, callback);
-        JsSocketIo_On(_event);
-        Debug.Log("socketIoWrapper.On(); end");
+        try
+        {
+            Debug.Log("socketIoWrapper.On();" + _event);
+            _socketIoInterface.On(_event, callback);
+            JsSocketIo_On(_event);
+            Debug.Log("socketIoWrapper.On(); end");
+        }
+        catch(Exception ex)
+        {
+            LogHelper.AppLog("Socket On");
+            LogHelper.AppLog(ex.ToString());
+        }
     }
     public void Emit(string _event)
     {
-        JsSocketIo_Emit(_event, JsonUtility.ToJson(new { }));
+        try
+        {
+            JsSocketIo_Emit(_event, JsonUtility.ToJson(new { }));
+
+        }
+        catch(Exception ex)
+        {
+            LogHelper.AppLog("Emit 1");
+            LogHelper.AppLog(ex.ToString());
+        }
     }
 
 
     public void Emit(string _event, JObject data)
     {
-        /*
-        if (data == null)
+        try
         {
-            data = new { };
+            string json = data.ToString();
+            Debug.Log("socket is sending");
+            Debug.Log(json);
+            JsSocketIo_Emit(_event, json);
         }
-        */
-        //string json = Newtonsoft.Json.JsonConvert.SerializeObject(data);
-        string json = data.ToString();
-        Debug.Log("socket is sending");
-        Debug.Log(json);
-        JsSocketIo_Emit(_event, json);
+        catch (Exception ex)
+        {
+            LogHelper.AppLog("Emit");
+            LogHelper.AppLog(ex.ToString());
+        }
+        
     }
 }

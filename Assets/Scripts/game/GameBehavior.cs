@@ -504,7 +504,6 @@ public class GameBehavior : MonoBehaviour
             f = "takeseat",
             roomid=Globals.currentRoom,
             args = index.ToString(),
-            roomid = Globals.currentRoom
         };
         Globals.socketIoConnection.SendRpc(data, OnTakeSeatResponse);
     }
@@ -1404,19 +1403,26 @@ public class GameBehavior : MonoBehaviour
 
     private void JoinHandler(int roomIndex)
     {
-        string uid = Globals.gameToken.uid;
-        int pin = Globals.gameToken.pin;
-        var data = new
+        if (Globals.gameRooms.Count < 3)
         {
-            uid = uid,
-            pin = pin,
-            f = "enterroom",
-            args = new
+            string uid = Globals.gameToken.uid;
+            int pin = Globals.gameToken.pin;
+            var data = new
             {
-                roomid = roomIndex.ToString()
-            }
-        };
-        Globals.socketIoConnection.SendRpc(data, OnJoinResponse);
+                uid = uid,
+                pin = pin,
+                f = "enterroom",
+                args = new
+                {
+                    roomid = roomIndex.ToString()
+                }
+            };
+            Globals.socketIoConnection.SendRpc(data, OnJoinResponse);
+        }
+        else
+        {
+            Toast.Show("You can't join more than 3 rooms", "danger");
+        }
     }
 
     private void OnJoinResponse(JToken jsonResponse)
@@ -1464,21 +1470,24 @@ public class GameBehavior : MonoBehaviour
 
     public void AddRowToTable(string[] rowElements, int index)
     {
-        TableRow newRow = roomListTable.AddRow();
-        newRow.preferredHeight = 23;
-        for (int i = 0; i < rowElements.Length; i++)
+        if (roomListTable != null)
         {
-            TableScript.AddStringToCell(newRow.Cells[i], convertToTitleCase(rowElements[i].ToString()));
+            TableRow newRow = roomListTable.AddRow();
+            newRow.preferredHeight = 23;
+            for (int i = 0; i < rowElements.Length; i++)
+            {
+                TableScript.AddStringToCell(newRow.Cells[i], convertToTitleCase(rowElements[i].ToString()));
+            }
+            GameObject cellObject = new GameObject("GameObject", typeof(RectTransform));
+            cellObject.transform.SetParent(newRow.Cells[5].transform);
+            cellObject.transform.localScale = Vector3.one;
+
+            GameObject instantiatedButton = Instantiate(joinButtonPrefab, cellObject.transform);
+            instantiatedButton.transform.localScale = Vector3.one;
+
+            Button button = instantiatedButton.GetComponent<Button>();
+            button.onClick.AddListener(() => JoinHandler(index));
         }
-        GameObject cellObject = new GameObject("GameObject", typeof(RectTransform));
-        cellObject.transform.SetParent(newRow.Cells[5].transform);
-        cellObject.transform.localScale = Vector3.one;
-
-        GameObject instantiatedButton = Instantiate(joinButtonPrefab, cellObject.transform);
-        instantiatedButton.transform.localScale = Vector3.one;
-
-        Button button = instantiatedButton.GetComponent<Button>();
-        button.onClick.AddListener(() => JoinHandler(index));
     }
 
     //End Table

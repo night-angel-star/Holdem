@@ -144,11 +144,15 @@ public class Tournament : MonoBehaviour
 
     void UpdateList(TournamentObject[] tournamentList)
     {
-        tournamentListTable.ClearRows();
-        for (int i = 0; i < tournamentList.Length; i++)
+        if (tournamentListTable != null)
         {
-            AddListRow(tournamentList[i]);
+            tournamentListTable.ClearRows();
+            for (int i = 0; i < tournamentList.Length; i++)
+            {
+                AddListRow(tournamentList[i]);
+            }
         }
+        
     }
 
     void AddListRow(TournamentObject tournamentListItem)

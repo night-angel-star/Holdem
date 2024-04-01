@@ -13,7 +13,7 @@ public class LoadProfileInfoBehavior : MonoBehaviour
     {
         balance.text = Globals.userProfile.deposite.ToString();
         avatar.GetComponent<SpriteRenderer>().sprite = AvatarHelper.GetAvatar(Globals.userProfile.avatar);
-        userName.GetComponent<TextMeshPro>().text = Globals.userProfile.name;
-        phoneNumber.GetComponent<TextMeshPro>().text = Globals.userProfile.phoneNumber;
+        userName.GetComponent<TMP_InputField>().text = Globals.userProfile.name;
+        phoneNumber.GetComponent<TMP_InputField>().text = Globals.userProfile.phoneNumber;
     }
 }
