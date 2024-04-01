@@ -19,13 +19,22 @@ public class SocketIoInterface : MonoBehaviour
     }
     public void callSocketEvent(string data)
     {
-        Debug.Log(data);
-        EventData eventData = JsonUtility.FromJson<EventData>(data);
-        Debug.Log(eventData._msg);
-        if (_eventHandlers.ContainsKey(eventData._event))
+        try
         {
-            _eventHandlers[eventData._event].Invoke(eventData._msg);
+            Debug.Log(data);
+            EventData eventData = JsonUtility.FromJson<EventData>(data);
+            Debug.Log(eventData._msg);
+            if (_eventHandlers.ContainsKey(eventData._event))
+            {
+                _eventHandlers[eventData._event].Invoke(eventData._msg);
+            }
         }
+        catch(Exception ex)
+        {
+            LogHelper.AppLog("callSocketEvent");
+            LogHelper.AppLog(ex.ToString());
+        }
+        
     }
 
     public void On(string _event, Action<string> callback)

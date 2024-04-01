@@ -60,14 +60,20 @@ public class RoomCreateScript : MonoBehaviour
                 break;
             }
 
-            UnityMainThreadDispatcher.Instance().Enqueue(() =>
+            if (ret.ContainsKey("roomid"))
             {
-                SceneManager.LoadScene("TexasHoldem");
-            });
+                JoinHandler(int.Parse(ret["roomid"].ToString()));
+            }
+
+            //UnityMainThreadDispatcher.Instance().Enqueue(() =>
+            //{
+            //    SceneManager.LoadScene("TexasHoldem");
+            //});
             return;
         } while (false);
 
         // Display errorString
+
         if (errorString != "")
         {
             UnityMainThreadDispatcher.Instance().Enqueue(() =>
@@ -125,6 +131,67 @@ public class RoomCreateScript : MonoBehaviour
     }
 
     // Update is called once per frame
+
+    private void JoinHandler(int roomIndex)
+    {
+        string uid = Globals.gameToken.uid;
+        int pin = Globals.gameToken.pin;
+        var data = new
+        {
+            uid = uid,
+            pin = pin,
+            f = "enterroom",
+            args = new
+            {
+                roomid = roomIndex
+            }
+        };
+        Globals.socketIoConnection.SendRpc(data, OnJoinResponse);
+    }
+
+    private void OnJoinResponse(JToken jsonResponse)
+    {
+        string errorString = "";
+        Dictionary<string, object> res = JsonResponse.ToDictionary(jsonResponse);
+
+        do
+        {
+            if (res == null)
+            {
+                errorString = "Invalid response";
+                break;
+            }
+            int err = res["err"].ConvertTo<int>();
+            if (err != 0)
+            {
+                if (!res.ContainsKey("ret"))
+                {
+                    errorString = "Invalid response";
+                    break;
+                }
+                errorString = res["ret"].ToString();
+                break;
+            }
+            if (!res.ContainsKey("ret"))
+            {
+                errorString = "Invalid response";
+                break;
+            }
+            Dictionary<string, object> ret = JsonResponse.ToDictionary(res["ret"]);
+            if (ret == null)
+            {
+                errorString = "Invalid response";
+                break;
+            }
+
+            UnityMainThreadDispatcher.Instance().Enqueue(() =>
+            {
+                SceneManager.LoadScene("Room");
+            });
+            return;
+        } while (false);
+    }
+
     void Update()
     {
         
