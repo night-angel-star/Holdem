@@ -91,7 +91,7 @@ public class TournamentBehavior : MonoBehaviour
                     GetMyCard();
                     GetActionButtonsInteractable();
                 }
-                AutoAction();
+                //AutoAction();
                 SetUserInfo();
                 SetRoomName();
                 InitializeAddChipsModal();
@@ -836,6 +836,22 @@ public class TournamentBehavior : MonoBehaviour
 
     public void ToggleCallAnyButton()
     {
+        string uid = Globals.gameToken.uid;
+        int pin = Globals.gameToken.pin;
+
+        var data = new
+        {
+            uid = uid,
+            pin = pin,
+            f = "activestatus",
+            args = 3,
+        };
+        Globals.socketIoConnection.SendRpc(data, ToggleCallAnyResponse);
+
+    }
+
+    private void ToggleCallAnyResponse(JToken jsonResponse)
+    {
         if (room.autoOperation.callAnyButton)
         {
             Globals.gameRooms[Globals.currentRoom].autoOperation.callAnyButton = false;
@@ -850,6 +866,22 @@ public class TournamentBehavior : MonoBehaviour
 
     public void ToggleFoldAnyButton()
     {
+        string uid = Globals.gameToken.uid;
+        int pin = Globals.gameToken.pin;
+
+        var data = new
+        {
+            uid = uid,
+            pin = pin,
+            f = "activestatus",
+            args = 1,
+        };
+        Globals.socketIoConnection.SendRpc(data, ToggleFoldAnyResponse);
+
+    }
+
+    private void ToggleFoldAnyResponse(JToken jsonResponse)
+    {
         if (room.autoOperation.foldAnyButton)
         {
             Globals.gameRooms[Globals.currentRoom].autoOperation.foldAnyButton = false;
@@ -860,11 +892,25 @@ public class TournamentBehavior : MonoBehaviour
             Globals.gameRooms[Globals.currentRoom].autoOperation.foldAnyButton = true;
             Globals.gameRooms[Globals.currentRoom].autoOperation.callAnyButton = false;
             Globals.gameRooms[Globals.currentRoom].autoOperation.checkFoldButton = false;
-
         }
     }
 
     public void ToggleCheckFoldButton()
+    {
+        string uid = Globals.gameToken.uid;
+        int pin = Globals.gameToken.pin;
+
+        var data = new
+        {
+            uid = uid,
+            pin = pin,
+            f = "activestatus",
+            args = 2,
+        };
+        Globals.socketIoConnection.SendRpc(data, ToggleCheckFoldResponse);
+    }
+
+    private void ToggleCheckFoldResponse(JToken jsonResponse)
     {
         if (room.autoOperation.checkFoldButton)
         {

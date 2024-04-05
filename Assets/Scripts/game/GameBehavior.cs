@@ -94,7 +94,7 @@ public class GameBehavior : MonoBehaviour
 
                     GetActionButtonsInteractable();
                 }
-                AutoAction();
+                //AutoAction();
                 SetUserInfo();
                 SetRoomName();
                 InitializeAddChipsModal();
@@ -846,48 +846,99 @@ public class GameBehavior : MonoBehaviour
         }
     }
 
-    public void ToggleCallAnyButton()
-    {
-        if (room.autoOperation.callAnyButton)
-        {
-            Globals.gameRooms[Globals.currentRoom].autoOperation.callAnyButton = false;
-        }
-        else
-        {
-            Globals.gameRooms[Globals.currentRoom].autoOperation.callAnyButton = true;
-            Globals.gameRooms[Globals.currentRoom].autoOperation.foldAnyButton = false;
-            Globals.gameRooms[Globals.currentRoom].autoOperation.checkFoldButton = false;
-        }
-    }
+    
 
     public void ToggleFoldAnyButton()
     {
-        if (room.autoOperation.foldAnyButton)
-        {
-            Globals.gameRooms[Globals.currentRoom].autoOperation.foldAnyButton = false;
+        string uid = Globals.gameToken.uid;
+        int pin = Globals.gameToken.pin;
 
-        }
-        else
+        var data = new
         {
-            Globals.gameRooms[Globals.currentRoom].autoOperation.foldAnyButton = true;
-            Globals.gameRooms[Globals.currentRoom].autoOperation.callAnyButton = false;
-            Globals.gameRooms[Globals.currentRoom].autoOperation.checkFoldButton = false;
+            uid = uid,
+            pin = pin,
+            f = "activestatus",
+            args = 1,
+        };
+        Globals.socketIoConnection.SendRpc(data, ToggleFoldAnyResponse);
+        
+    }
 
-        }
+    private void ToggleFoldAnyResponse(JToken jsonResponse)
+    {
+        //if (room.autoOperation.foldAnyButton)
+        //{
+        //    Globals.gameRooms[Globals.currentRoom].autoOperation.foldAnyButton = false;
+
+        //}
+        //else
+        //{
+        //    Globals.gameRooms[Globals.currentRoom].autoOperation.foldAnyButton = true;
+        //    Globals.gameRooms[Globals.currentRoom].autoOperation.callAnyButton = false;
+        //    Globals.gameRooms[Globals.currentRoom].autoOperation.checkFoldButton = false;
+        //}
+        Globals.gameRooms[Globals.currentRoom].gamers[Globals.gameToken.uid].activeStatus = 1;
     }
 
     public void ToggleCheckFoldButton()
     {
-        if (room.autoOperation.checkFoldButton)
+        string uid = Globals.gameToken.uid;
+        int pin = Globals.gameToken.pin;
+
+        var data = new
         {
-            Globals.gameRooms[Globals.currentRoom].autoOperation.checkFoldButton = false;
-        }
-        else
+            uid = uid,
+            pin = pin,
+            f = "activestatus",
+            args = 2,
+        };
+        Globals.socketIoConnection.SendRpc(data, ToggleCheckFoldResponse);
+    }
+
+    private void ToggleCheckFoldResponse(JToken jsonResponse)
+    {
+        //if (room.autoOperation.checkFoldButton)
+        //{
+        //    Globals.gameRooms[Globals.currentRoom].autoOperation.checkFoldButton = false;
+        //}
+        //else
+        //{
+        //    Globals.gameRooms[Globals.currentRoom].autoOperation.checkFoldButton = true;
+        //    Globals.gameRooms[Globals.currentRoom].autoOperation.callAnyButton = false;
+        //    Globals.gameRooms[Globals.currentRoom].autoOperation.foldAnyButton = false;
+        //}
+        Globals.gameRooms[Globals.currentRoom].gamers[Globals.gameToken.uid].activeStatus = 2;
+    }
+
+    public void ToggleCallAnyButton()
+    {
+        string uid = Globals.gameToken.uid;
+        int pin = Globals.gameToken.pin;
+
+        var data = new
         {
-            Globals.gameRooms[Globals.currentRoom].autoOperation.checkFoldButton = true;
-            Globals.gameRooms[Globals.currentRoom].autoOperation.callAnyButton = false;
-            Globals.gameRooms[Globals.currentRoom].autoOperation.foldAnyButton = false;
-        }
+            uid = uid,
+            pin = pin,
+            f = "activestatus",
+            args = 3,
+        };
+        Globals.socketIoConnection.SendRpc(data, ToggleCallAnyResponse);
+
+    }
+
+    private void ToggleCallAnyResponse(JToken jsonResponse)
+    {
+        //if (room.autoOperation.callAnyButton)
+        //{
+        //    Globals.gameRooms[Globals.currentRoom].autoOperation.callAnyButton = false;
+        //}
+        //else
+        //{
+        //    Globals.gameRooms[Globals.currentRoom].autoOperation.callAnyButton = true;
+        //    Globals.gameRooms[Globals.currentRoom].autoOperation.foldAnyButton = false;
+        //    Globals.gameRooms[Globals.currentRoom].autoOperation.checkFoldButton = false;
+        //}
+        Globals.gameRooms[Globals.currentRoom].gamers[Globals.gameToken.uid].activeStatus = 3;
     }
 
     void SetAutoButtons()
@@ -912,7 +963,29 @@ public class GameBehavior : MonoBehaviour
 
         }
 
-        if (room.autoOperation.callAnyButton)
+        
+
+        if (Globals.gameRooms[Globals.currentRoom].gamers[Globals.gameToken.uid].activeStatus==1)
+        {
+            foldAnyButton.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-active");
+
+        }
+        else
+        {
+            foldAnyButton.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-inactive");
+
+        }
+
+        if (Globals.gameRooms[Globals.currentRoom].gamers[Globals.gameToken.uid].activeStatus==2)
+        {
+            checkFoldButton.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-active");
+        }
+        else
+        {
+            checkFoldButton.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-inactive");
+        }
+
+        if (Globals.gameRooms[Globals.currentRoom].gamers[Globals.gameToken.uid].activeStatus == 3)
         {
             callAnyButton[0].GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-active");
             callAnyButton[1].GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-active");
@@ -924,30 +997,14 @@ public class GameBehavior : MonoBehaviour
             callAnyButton[1].GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-inactive");
 
         }
-
-        if (room.autoOperation.foldAnyButton)
-        {
-            foldAnyButton.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-active");
-
-        }
-        else
-        {
-            foldAnyButton.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-inactive");
-
-        }
-
-        if (room.autoOperation.checkFoldButton)
-        {
-            checkFoldButton.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-active");
-        }
-        else
-        {
-            checkFoldButton.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-inactive");
-        }
     }
 
     void AutoAction()
     {
+        //foreach(KeyValuePair<string, Room> kvp in Globals.gameRooms)
+        //{
+
+        //}
         if(room.gameStatus==2&& room.activeSeat == room.GetUserSeat())
         {
             if (room.autoOperation.foldAnyButton)

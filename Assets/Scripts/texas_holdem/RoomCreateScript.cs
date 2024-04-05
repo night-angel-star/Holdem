@@ -83,6 +83,7 @@ public class RoomCreateScript : MonoBehaviour
         }
     }
 
+
     private void CreateRoom()
     {
         if (Validate())
