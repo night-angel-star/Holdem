@@ -62,7 +62,12 @@ public class RoomCreateScript : MonoBehaviour
 
             if (ret.ContainsKey("roomid"))
             {
-                JoinHandler(int.Parse(ret["roomid"].ToString()));
+                UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                {
+                    StartCoroutine(DelayJoin(int.Parse(ret["roomid"].ToString())));
+                });
+                
+                //JoinHandler(int.Parse(ret["roomid"].ToString()));
             }
 
             //UnityMainThreadDispatcher.Instance().Enqueue(() =>
@@ -81,6 +86,12 @@ public class RoomCreateScript : MonoBehaviour
                 RoomNameError.text = errorString;
             });
         }
+    }
+
+    private IEnumerator DelayJoin(int roomid)
+    {
+        yield return new WaitForSeconds(1);
+        JoinHandler(roomid);
     }
 
 

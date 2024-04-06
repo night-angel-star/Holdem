@@ -43,25 +43,27 @@ public class Tournament : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        InvokeRepeating("GetData", 0f, 1f);
+        InvokeRepeating("GetData", 0f, 2f);
     }
 
     void GetData()
     {
-        if (currentView == ViewType.List)
+        if (listContainer != null && detailContainer != null)
         {
-            currentDetailId = -1;
-            listContainer.SetActive(true);
-            detailContainer.SetActive(false);
-            GetList();
+            if (currentView == ViewType.List)
+            {
+                currentDetailId = -1;
+                listContainer.SetActive(true);
+                detailContainer.SetActive(false);
+                GetList();
+            }
+            else if (currentView == ViewType.Detail)
+            {
+                listContainer.SetActive(false);
+                detailContainer.SetActive(true);
+                GetDetail();
+            }
         }
-        else if (currentView == ViewType.Detail)
-        {
-            listContainer.SetActive(false);
-            detailContainer.SetActive(true);
-            GetDetail();
-        }
-
     }
 
     void GetList()
@@ -157,15 +159,19 @@ public class Tournament : MonoBehaviour
 
     void AddListRow(TournamentObject tournamentListItem)
     {
-        GameObject newRow = Instantiate(tournamentListRowPrefab);
+        if (tournamentListTable != null)
+        {
+            GameObject newRow = Instantiate(tournamentListRowPrefab);
 
-        newRow.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<TMP_Text>().text = tournamentListItem.status;
-        newRow.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<TMP_Text>().text = tournamentListItem.name;
-        newRow.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.transform.GetChild(1).gameObject.GetComponent<TMP_Text>().text = tournamentListItem.delay.ToString();
-        newRow.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated(tournamentListItem.buy_in, 0);
-        newRow.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<TMP_Text>().text = tournamentListItem.registered_players + "/" + tournamentListItem.max_players;
-        newRow.GetComponent<Button>().onClick.AddListener(() => OpenDetail(tournamentListItem.id));
-        newRow.transform.SetParent(tournamentListTable.transform);
+            newRow.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<TMP_Text>().text = tournamentListItem.status;
+            newRow.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<TMP_Text>().text = tournamentListItem.name;
+            newRow.transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.transform.GetChild(1).gameObject.GetComponent<TMP_Text>().text = tournamentListItem.delay.ToString();
+            newRow.transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated(tournamentListItem.buy_in, 0);
+            newRow.transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject.GetComponent<TMP_Text>().text = tournamentListItem.registered_players + "/" + tournamentListItem.max_players;
+            newRow.GetComponent<Button>().onClick.AddListener(() => OpenDetail(tournamentListItem.id));
+            newRow.transform.SetParent(tournamentListTable.transform);
+        }
+        
     }
 
     void OpenDetail(int id)
@@ -176,10 +182,23 @@ public class Tournament : MonoBehaviour
 
     void UpdateDetail(TournamentDetailObject tournamentDetailObject)
     {
-        tournamentDetailName.GetComponent<TMP_Text>().text = tournamentDetailObject.name;
-        tournamentDetailStatus.GetComponent<TMP_Text>().text = tournamentDetailObject.status;
-        tournamentDetailDelay.GetComponent<TMP_Text>().text = tournamentDetailObject.delay.ToString();
-        tournamentDetailBuyIn.GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated(tournamentDetailObject.buy_in, 0);
+        if (tournamentDetailName != null)
+        {
+            tournamentDetailName.GetComponent<TMP_Text>().text = tournamentDetailObject.name;
+        }
+        if (tournamentDetailStatus != null)
+        {
+            tournamentDetailStatus.GetComponent<TMP_Text>().text = tournamentDetailObject.status;
+        }
+        if (tournamentDetailDelay != null)
+        {
+            tournamentDetailDelay.GetComponent<TMP_Text>().text = tournamentDetailObject.delay.ToString();
+        }
+        if (tournamentDetailBuyIn != null)
+        {
+            tournamentDetailBuyIn.GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated(tournamentDetailObject.buy_in, 0);
+        }
+        
     }
 
     public void OnRegister()

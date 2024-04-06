@@ -96,6 +96,8 @@ public class LookNotifyEvent : RoomEvent
 {
     public new Room args;
 }
+
+
 public class EnterNotifyEvent : RoomEvent
 {
     public class EnterEventArgs {
@@ -125,6 +127,17 @@ public class BuyChipNotifyEvent : RoomEvent
         public string uid;
     }
     public new BuyChipEventArgs args;
+}
+
+public class ChatNotifyEvent : RoomEvent
+{
+    public class ChatEventArgs
+    {
+        public string content;
+        public string uid;
+        public int where;
+    }
+    public new ChatEventArgs args;
 }
 
 public class UnSeatNotifyEvent : RoomEvent

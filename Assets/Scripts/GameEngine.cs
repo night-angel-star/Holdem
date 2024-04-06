@@ -718,6 +718,37 @@ public class GameEngine
             LogHelper.AppLog(ex.ToString());
         }
     }
+
+    private void OnChat(JToken baseToken)
+    {
+        try
+        {
+            string errorString = "";
+            do
+            {
+                if (baseToken == null)
+                    break;
+                if (baseToken.Type != JTokenType.Object)
+                    break;
+
+                ChatNotifyEvent json = baseToken.ToObject<ChatNotifyEvent>();
+                if (json != null)
+                {
+                    ProcessChat(json.args.uid, json.args.where.ToString(), json.args.content);
+                }
+
+            } while (false);
+            if (errorString != "")
+            {
+                Debug.Log(errorString);
+            }
+        }
+        catch(Exception ex)
+        {
+            LogHelper.AppLog("OnChat");
+            LogHelper.AppLog(ex.ToString());
+        }
+    }
     public void RegisterGameEvents()
     {
 
@@ -750,6 +781,7 @@ public class GameEngine
             // Globals.socketIoConnection.AddNotifyHandler("bue", OnPrompt);
             // Globals.socketIoConnection.AddNotifyHandler("say", OnPrompt);
             Globals.socketIoConnection.AddNotifyHandler("prompt", OnPrompt);
+            Globals.socketIoConnection.AddNotifyHandler("chat", OnChat);
         }
         catch (Exception ex)
         {
@@ -903,6 +935,28 @@ public class GameEngine
             LogHelper.AppLog("ProcessReady");
             LogHelper.AppLog(ex.ToString());
         }
+    }
+
+    private void ProcessChat(string uid, string roomid,string chat)
+    {
+        string name = "";
+        if (Globals.gameRooms.ContainsKey(roomid))
+        {
+            if (Globals.gameRooms[roomid].gamers.ContainsKey(uid))
+            {
+                name = Globals.gameRooms[roomid].gamers[uid].name;
+            }
+        }
+        
+        if (!Globals.chatHistory.ContainsKey(roomid))
+        {
+            Globals.chatHistory.Add(roomid, name+" : "+chat);
+        }
+        else
+        {
+            Globals.chatHistory[roomid] += (uid + " : " + chat);
+        }
+        Debug.Log(Globals.chatHistory[roomid]);
     }
 
 }

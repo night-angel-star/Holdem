@@ -58,6 +58,9 @@ public class GameBehavior : MonoBehaviour
     public GameObject foldAnyButton;
     public GameObject checkFoldButton;
 
+    public GameObject chatInput;
+    public GameObject chatHistory;
+
 
 
 
@@ -108,6 +111,7 @@ public class GameBehavior : MonoBehaviour
                 SetGamersActionStatus();
                 SetRoomsToggler();
                 SetRoomsView();
+                SetChatHistory();
             }
         }
         catch (Exception ex)
@@ -999,6 +1003,8 @@ public class GameBehavior : MonoBehaviour
         }
     }
 
+    
+
     void AutoAction()
     {
         //foreach(KeyValuePair<string, Room> kvp in Globals.gameRooms)
@@ -1548,4 +1554,35 @@ public class GameBehavior : MonoBehaviour
     }
 
     //End Table
+
+    public void SendChat(string text)
+    {
+        if (text.EndsWith("\n"))
+        {
+            chatInput.GetComponent<TMP_InputField>().text = "";
+            string uid = Globals.gameToken.uid;
+            int pin = Globals.gameToken.pin;
+            var data = new
+            {
+                uid = uid,
+                pin = pin,
+                f = "chat",
+                args = text
+            };
+            Globals.socketIoConnection.SendRpc(data, OnSendChatResponse);
+        }
+    }
+
+    private void OnSendChatResponse(JToken jsonResponse)
+    {
+    }
+
+    void SetChatHistory()
+    {
+        if (Globals.chatHistory.ContainsKey(room.id))
+        {
+            chatHistory.GetComponent<TMP_Text>().text = Globals.chatHistory[room.id];
+        }
+    }
+
 }
