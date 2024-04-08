@@ -547,9 +547,9 @@ public class GameEngine
                     break;
                 }
                 Globals.gameRooms[json.roomid.ToString()].status[json.args.seat] = "call";
-                Globals.gameRooms[json.roomid.ToString()].pot += json.args.call;
-                Globals.gameRooms[json.roomid.ToString()].chips[json.args.seat] += json.args.call;
-                Globals.gameRooms[json.roomid.ToString()].gamers[json.args.uid].coins -= json.args.call;
+                Globals.gameRooms[json.roomid.ToString()].pot = json.args.pot;
+                Globals.gameRooms[json.roomid.ToString()].chips[json.args.seat] = json.args.chips;
+                Globals.gameRooms[json.roomid.ToString()].gamers[json.args.uid].coins = json.args.coins;
             } while (false);
             if (errorString != "")
             {
@@ -578,9 +578,9 @@ public class GameEngine
                     break;
                 }
                 Globals.gameRooms[json.roomid.ToString()].status[json.args.seat] = "raise";
-                Globals.gameRooms[json.roomid.ToString()].pot += json.args.call + json.args.raise;
-                Globals.gameRooms[json.roomid.ToString()].chips[json.args.seat] += json.args.call + json.args.raise;
-                Globals.gameRooms[json.roomid.ToString()].gamers[json.args.uid].coins -= json.args.call + json.args.raise;
+                Globals.gameRooms[json.roomid.ToString()].pot = json.args.pot;
+                Globals.gameRooms[json.roomid.ToString()].chips[json.args.seat] = json.args.chips;
+                Globals.gameRooms[json.roomid.ToString()].gamers[json.args.uid].coins = json.args.coins;
             } while (false);
             if (errorString != "")
             {
@@ -673,7 +673,11 @@ public class GameEngine
                 CountdownNotifyEvent json = baseToken.ToObject<CountdownNotifyEvent>();
                 if (json != null)
                 {
-                    ProcessCountdown(json.roomid.ToString(), json.args.sec);
+                    if (json.args.seat != -1)
+                    {
+                        ProcessCountdown(json.roomid.ToString(), json.args.sec);
+                    }
+                    
                 }
 
             } while (false);
@@ -749,6 +753,21 @@ public class GameEngine
             LogHelper.AppLog(ex.ToString());
         }
     }
+    private void OnBye(JToken baseToken)
+    {
+        try
+        {
+            UnityMainThreadDispatcher.Instance().Enqueue(() =>
+            {
+                SceneManager.LoadScene("Login");
+            });
+        }
+        catch (Exception ex)
+        {
+            LogHelper.AppLog("OnBye");
+            LogHelper.AppLog(ex.ToString());
+        }
+    }
     public void RegisterGameEvents()
     {
 
@@ -782,6 +801,7 @@ public class GameEngine
             // Globals.socketIoConnection.AddNotifyHandler("say", OnPrompt);
             Globals.socketIoConnection.AddNotifyHandler("prompt", OnPrompt);
             Globals.socketIoConnection.AddNotifyHandler("chat", OnChat);
+            Globals.socketIoConnection.AddNotifyHandler("bye", OnBye);
         }
         catch (Exception ex)
         {
@@ -954,9 +974,8 @@ public class GameEngine
         }
         else
         {
-            Globals.chatHistory[roomid] += (uid + " : " + chat);
+            Globals.chatHistory[roomid] = (name + " : " + chat)+ Globals.chatHistory[roomid];
         }
-        Debug.Log(Globals.chatHistory[roomid]);
     }
 
 }

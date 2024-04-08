@@ -72,6 +72,8 @@ public class GameBehavior : MonoBehaviour
 
     bool receiveFromGlobalResult = false;
 
+    bool waiting = false;
+
 
     void Start()
     {
@@ -83,35 +85,185 @@ public class GameBehavior : MonoBehaviour
         try
         {
             //read from global
-            receiveFromGlobalResult = UpdateRoomFromGlobal();
+            try
+            {
+                receiveFromGlobalResult = UpdateRoomFromGlobal();
+            }
+            catch (Exception ex)
+            {
+                Debug.Log(ex);
+            }
+            
             if (receiveFromGlobalResult)
             {
                 //set data from room data
-                DisableUnneccessarySeats();
-                SetActionButtonArea();
+                try
+                {
+                    DisableUnneccessarySeats();
+                }
+                catch(Exception ex)
+                {
+                    Debug.Log(ex);
+                }
+                
+                try
+                {
+                    SetActionButtonArea();
+                }
+                catch (Exception ex)
+                {
+                    Debug.Log(ex);
+                }
+                
 
                 //draw ui
-                if (room.gameStatus == 2)
+                if (room.gameStatus == 2 && room.GetUserSeat()!=-1)
                 {
-                    GetMyCard();
-
-                    GetActionButtonsInteractable();
+                    try
+                    {
+                        GetMyCard();
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.Log(ex);
+                    }
+                    
+                    try
+                    {
+                        GetActionButtonsInteractable();
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.Log(ex);
+                    }
+                    
                 }
                 //AutoAction();
-                SetUserInfo();
-                SetRoomName();
-                InitializeAddChipsModal();
-                SetPublicCards();
-                SetTimer();
-                SetActionButtonAreaIndexByGlobal();
-                SetRaiseAmounts();
-                SetRaiseBar();
-                SetAutoButtons();
-                CheckRaiseAmount();
-                SetGamersActionStatus();
-                SetRoomsToggler();
-                SetRoomsView();
-                SetChatHistory();
+                try
+                {
+                    SetUserInfo();
+                }
+                catch (Exception ex)
+                {
+                    Debug.Log(ex);
+                }
+                
+                try
+                {
+                    SetRoomName();
+                }
+                catch (Exception ex)
+                {
+                    Debug.Log(ex);
+                }
+                
+                try
+                {
+                    InitializeAddChipsModal();
+                }
+                catch (Exception ex)
+                {
+                    Debug.Log(ex);
+                }
+                
+                try
+                {
+                    SetPublicCards();
+                }
+                catch (Exception ex)
+                {
+                    Debug.Log(ex);
+                }
+                
+                try
+                {
+                    SetTimer();
+                }
+                catch (Exception ex)
+                {
+                    Debug.Log(ex);
+                }
+                
+                try
+                {
+                    SetActionButtonAreaIndexByGlobal();
+                }
+                catch (Exception ex)
+                {
+                    Debug.Log(ex);
+                }
+                
+                try
+                {
+                    SetRaiseAmounts();
+                }
+                catch (Exception ex)
+                {
+                    Debug.Log(ex);
+                }
+                
+                try
+                {
+                    SetRaiseBar();
+                }
+                catch (Exception ex)
+                {
+                    Debug.Log(ex);
+                }
+                
+                try
+                {
+                    SetAutoButtons();
+                }
+                catch (Exception ex)
+                {
+                    Debug.Log(ex);
+                }
+                
+                try
+                {
+                    CheckRaiseAmount();
+                }
+                catch (Exception ex)
+                {
+                    Debug.Log(ex);
+                }
+                
+                try
+                {
+                    SetGamersActionStatus();
+                }
+                catch (Exception ex)
+                {
+                    Debug.Log(ex);
+                }
+                
+                try
+                {
+                    SetRoomsToggler();
+                }
+                catch (Exception ex)
+                {
+                    Debug.Log(ex);
+                }
+                
+                try
+                {
+                    SetRoomsView();
+                }
+                catch (Exception ex)
+                {
+                    Debug.Log(ex);
+                }
+                
+                try
+                {
+                    SetChatHistory();
+                }
+                catch (Exception ex)
+                {
+                    Debug.Log(ex);
+                }
             }
         }
         catch (Exception ex)
@@ -305,7 +457,7 @@ public class GameBehavior : MonoBehaviour
                     if (i == 0)
                     {
                         usersArray[i].transform.GetChild(1).gameObject.SetActive(true);
-                        if (room.gameStatus == 2 || room.gameStatus == 3)
+                        if ((room.gameStatus == 2 || room.gameStatus == 3)&& room.GetUserSeat() != -1&&!waiting)
                         {
                             usersArray[i].transform.GetChild(2).gameObject.SetActive(true);
                             usersArray[i].transform.GetChild(4).gameObject.SetActive(true);
@@ -319,7 +471,7 @@ public class GameBehavior : MonoBehaviour
                     else
                     {
                         usersArray[i].transform.GetChild(1).gameObject.SetActive(true);
-                        if (room.gameStatus == 2)
+                        if (room.gameStatus == 2 && room.GetUserSeat() != -1&&!waiting)
                         {
                             usersArray[i].transform.GetChild(2).gameObject.SetActive(true);
                             usersArray[i].transform.GetChild(3).gameObject.SetActive(true);
@@ -329,7 +481,7 @@ public class GameBehavior : MonoBehaviour
                             usersArray[i].transform.GetChild(2).gameObject.SetActive(false);
                             usersArray[i].transform.GetChild(3).gameObject.SetActive(false);
                         }
-                        if (room.gameStatus == 3)
+                        if (room.gameStatus == 3&&!waiting)
                         {
                             if (room.status[ArrayHelper.ReRotateNumber(i, room.GetUserSeat(), room.options.max_seats)] != "fold" && room.status[room.GetUserSeat()] != "fold")
                             {
@@ -370,14 +522,21 @@ public class GameBehavior : MonoBehaviour
                         }
 
                     }
-                    GameObject avatar = usersArray[i].transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.transform.GetChild(1).gameObject;
-                    avatar.GetComponent<SpriteRenderer>().sprite = AvatarHelper.GetAvatar(room.gamers[rotatedSeats[i]].avatar.ToString());
-                    GameObject name = usersArray[i].transform.GetChild(1).gameObject.transform.GetChild(1).gameObject.transform.GetChild(1).gameObject;
-                    name.GetComponent<TMP_Text>().text = room.gamers[rotatedSeats[i]].name;
-                    GameObject wallet_money = usersArray[i].transform.GetChild(1).gameObject.transform.GetChild(1).gameObject.transform.GetChild(2).gameObject;
-                    wallet_money.GetComponent<TMP_Text>().text = room.gamers[rotatedSeats[i]].coins + " ₮";
+                    if (room.gamers.ContainsKey(rotatedSeats[i]))
+                    {
+                        GameObject avatar = usersArray[i].transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.transform.GetChild(1).gameObject;
+                        avatar.GetComponent<SpriteRenderer>().sprite = AvatarHelper.GetAvatar(room.gamers[rotatedSeats[i]].avatar.ToString());
+                        GameObject name = usersArray[i].transform.GetChild(1).gameObject.transform.GetChild(1).gameObject.transform.GetChild(1).gameObject;
+                        name.GetComponent<TMP_Text>().text = room.gamers[rotatedSeats[i]].name;
+                        GameObject wallet_money = usersArray[i].transform.GetChild(1).gameObject.transform.GetChild(1).gameObject.transform.GetChild(2).gameObject;
+                        wallet_money.GetComponent<TMP_Text>().text = room.gamers[rotatedSeats[i]].coins + " ₮";
+                    }
+                    
+                    
+                    
+                    
 
-                    if (room.gameStatus == 2)
+                    if (room.gameStatus == 2 && room.GetUserSeat() != -1&&!waiting)
                     {
                         if (i == 0)
                         {
@@ -385,7 +544,11 @@ public class GameBehavior : MonoBehaviour
                             try
                             {
                                 int rotatedI = ArrayHelper.ReRotateNumber(i, room.GetUserSeat(), room.options.max_seats);
-                                money.GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated(long.Parse(room.chips[rotatedI].ToString()), 1);
+                                if (room.chips.ContainsKey(rotatedI))
+                                {
+                                    money.GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated(long.Parse(room.chips[rotatedI].ToString()), 1);
+                                }
+                                
 
                             }
                             catch (Exception ex)
@@ -397,11 +560,16 @@ public class GameBehavior : MonoBehaviour
                         else
                         {
                             GameObject money = usersArray[i].transform.GetChild(3).gameObject.transform.GetChild(1).gameObject;
-                            money.GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated(long.Parse(room.chips[ArrayHelper.ReRotateNumber(i, room.GetUserSeat(), room.options.max_seats)].ToString()), 1);
+                            if(room.chips.ContainsKey(ArrayHelper.ReRotateNumber(i, room.GetUserSeat(), room.options.max_seats)))
+                            {
+                                money.GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated(long.Parse(room.chips[ArrayHelper.ReRotateNumber(i, room.GetUserSeat(), room.options.max_seats)].ToString()), 1);
+                            }
+                            
                         }
                     }
                     else if (room.gameStatus == 3)
                     {
+                        
                         if (room.status[ArrayHelper.ReRotateNumber(i, room.GetUserSeat(), room.options.max_seats)] != "fold" && room.status[room.GetUserSeat()] != "fold")
                         {
                             if (i == 0)
@@ -412,10 +580,16 @@ public class GameBehavior : MonoBehaviour
                             {
                                 GameObject userShowCards1 = usersArray[i].transform.GetChild(5).gameObject.transform.GetChild(0).gameObject;
                                 GameObject userShowCards2 = usersArray[i].transform.GetChild(5).gameObject.transform.GetChild(1).gameObject;
-                                userShowCards1.GetComponent<SpriteRenderer>().sprite = CardHelper.GetCard(room.cards[ArrayHelper.ReRotateNumber(i, room.GetUserSeat(), room.options.max_seats)][0]);
-                                userShowCards2.GetComponent<SpriteRenderer>().sprite = CardHelper.GetCard(room.cards[ArrayHelper.ReRotateNumber(i, room.GetUserSeat(), room.options.max_seats)][1]);
+                                if(room.cards.ContainsKey(ArrayHelper.ReRotateNumber(i, room.GetUserSeat(), room.options.max_seats)))
+                                {
+                                    userShowCards1.GetComponent<SpriteRenderer>().sprite = CardHelper.GetCard(room.cards[ArrayHelper.ReRotateNumber(i, room.GetUserSeat(), room.options.max_seats)][0]);
+                                    userShowCards2.GetComponent<SpriteRenderer>().sprite = CardHelper.GetCard(room.cards[ArrayHelper.ReRotateNumber(i, room.GetUserSeat(), room.options.max_seats)][1]);
+                                }
+                                
                             }
                         }
+
+                        waiting = false;
 
                     }
 
@@ -509,6 +683,10 @@ public class GameBehavior : MonoBehaviour
             roomid=Globals.currentRoom,
             args = index.ToString(),
         };
+        if (room.gameStatus == 2)
+        {
+            waiting = true;
+        }
         Globals.socketIoConnection.SendRpc(data, OnTakeSeatResponse);
     }
 
@@ -577,7 +755,7 @@ public class GameBehavior : MonoBehaviour
 
     public void SetTimer()
     {
-        if (room.GetUserSeat() != -1)
+        if (room.GetUserSeat() != -1&&room.activeSeat!=-1 && !waiting)
         {
             GameObject[] usersArray = GameObjectHelper.GetActiveChildren(usersParent);
             string[] rotatedSeats = ArrayHelper.RotateArray(room.seats, room.GetUserSeat());
@@ -614,11 +792,26 @@ public class GameBehavior : MonoBehaviour
                     actionButtonAreaIndex = -1;
                     break;
                 case 2:
-                    if (room.status != null)
+                    if (!waiting)
                     {
-                        if (room.status[room.GetUserSeat()] == "fold")
+                        if (room.status != null)
                         {
-                            actionButtonAreaIndex = 2;
+                            if (room.status[room.GetUserSeat()] == "fold")
+                            {
+                                actionButtonAreaIndex = 2;
+                            }
+                            else
+                            {
+                                if (room.activeSeat == room.GetUserSeat())
+                                {
+                                    actionButtonAreaIndex = 1;
+                                }
+                                else
+                                {
+                                    actionButtonAreaIndex = 3;
+                                }
+                            }
+
                         }
                         else
                         {
@@ -631,18 +824,11 @@ public class GameBehavior : MonoBehaviour
                                 actionButtonAreaIndex = 3;
                             }
                         }
-
+                        
                     }
                     else
                     {
-                        if (room.activeSeat == room.GetUserSeat())
-                        {
-                            actionButtonAreaIndex = 1;
-                        }
-                        else
-                        {
-                            actionButtonAreaIndex = 3;
-                        }
+                        actionButtonAreaIndex = -1;
                     }
                     break;
                 case 3:
@@ -1044,14 +1230,21 @@ public class GameBehavior : MonoBehaviour
 
     void SetRaiseAmounts()
     {
-        if (room.gameStatus == 2)
+        if (room.gameStatus == 2 && room.GetUserSeat() != -1 && !waiting)
         {
             int[] gamersCoinArray = new int[room.options.max_seats];
             for (int i = 0; i < gamersCoinArray.Length; i++)
             {
                 if (room.seats[i] != null)
                 {
-                    gamersCoinArray[i] = room.chips[i];
+                    if (room.chips.ContainsKey(i))
+                    {
+                        gamersCoinArray[i] = room.chips[i];
+                    }
+                    else
+                    {
+                        gamersCoinArray[i] = 0;
+                    }
                 }
                 else
                 {
@@ -1079,7 +1272,7 @@ public class GameBehavior : MonoBehaviour
 
     void SetRaiseBar()
     {
-        if (room.gameStatus == 2)
+        if (room.gameStatus == 2 && room.GetUserSeat() != -1 && !waiting)
         {
             GameObject[] raiseBarGrades = GameObjectHelper.GetChildren(raiseBarGradeParent);
             raiseToValue.GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated((long)raiseAmount, 1);
@@ -1208,7 +1401,7 @@ public class GameBehavior : MonoBehaviour
 
     public void SetGamersActionStatus()
     {
-        if (room.gameStatus == 2)
+        if (room.gameStatus == 2 && room.GetUserSeat() != -1 && !waiting)
         {
             if (room.status != null)
             {

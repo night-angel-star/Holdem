@@ -67,9 +67,38 @@ public class leaveScript : MonoBehaviour
                 });
             } else
             {
+                
                 Globals.currentRoom = Globals.gameRooms.Keys.First();
+                ChangeRoom(Globals.currentRoom);
+
             }
             return;
         } while (false);
+    }
+
+    public void ChangeRoom(string roomId)
+    {
+
+        string uid = Globals.gameToken.uid;
+        int pin = Globals.gameToken.pin;
+        var data = new
+        {
+            uid = uid,
+            pin = pin,
+            f = "changeroom",
+            args = new
+            {
+                roomid = roomId,
+                seat = Globals.gameRooms[roomId].GetUserSeat()
+            },
+        };
+        Globals.socketIoConnection.SendRpc(data, OnChangeRoomResponse);
+        Globals.currentRoom = roomId;
+    }
+
+    private void OnChangeRoomResponse(JToken jsonResponse)
+    {
+
+
     }
 }

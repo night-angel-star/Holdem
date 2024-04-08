@@ -56,6 +56,13 @@ public class TournamentBehavior : MonoBehaviour
     public GameObject foldAnyButton;
     public GameObject checkFoldButton;
 
+    public GameObject chatInput;
+    public GameObject chatHistory;
+
+    public GameObject blindsInfo;
+    public GameObject newBlindsInfo;
+    public GameObject blindsUpTimeInfo;
+
 
 
 
@@ -105,6 +112,7 @@ public class TournamentBehavior : MonoBehaviour
                 SetGamersActionStatus();
                 SetRoomsToggler();
                 SetRoomsView();
+                SetTournamentInfo();
             }
         }
         catch (Exception ex)
@@ -946,20 +954,9 @@ public class TournamentBehavior : MonoBehaviour
 
         }
 
-        if (room.autoOperation.callAnyButton)
-        {
-            callAnyButton[0].GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-active");
-            callAnyButton[1].GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-active");
 
-        }
-        else
-        {
-            callAnyButton[0].GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-inactive");
-            callAnyButton[1].GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-inactive");
 
-        }
-
-        if (room.autoOperation.foldAnyButton)
+        if (Globals.gameRooms[Globals.currentRoom].gamers[Globals.gameToken.uid].activeStatus == 1)
         {
             foldAnyButton.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-active");
 
@@ -970,13 +967,26 @@ public class TournamentBehavior : MonoBehaviour
 
         }
 
-        if (room.autoOperation.checkFoldButton)
+        if (Globals.gameRooms[Globals.currentRoom].gamers[Globals.gameToken.uid].activeStatus == 2)
         {
             checkFoldButton.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-active");
         }
         else
         {
             checkFoldButton.GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-inactive");
+        }
+
+        if (Globals.gameRooms[Globals.currentRoom].gamers[Globals.gameToken.uid].activeStatus == 3)
+        {
+            callAnyButton[0].GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-active");
+            callAnyButton[1].GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-active");
+
+        }
+        else
+        {
+            callAnyButton[0].GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-inactive");
+            callAnyButton[1].GetComponent<Image>().sprite = Resources.Load<Sprite>("Images/room/btn-grey-type1-inactive");
+
         }
     }
 
@@ -1438,4 +1448,54 @@ public class TournamentBehavior : MonoBehaviour
     }
 
     //End Table
+
+    public void SendChat(string text)
+    {
+        if (text.EndsWith("\n"))
+        {
+            chatInput.GetComponent<TMP_InputField>().text = "";
+            string uid = Globals.gameToken.uid;
+            int pin = Globals.gameToken.pin;
+            var data = new
+            {
+                uid = uid,
+                pin = pin,
+                f = "chat",
+                args = text
+            };
+            Globals.socketIoConnection.SendRpc(data, OnSendChatResponse);
+        }
+    }
+
+    private void OnSendChatResponse(JToken jsonResponse)
+    {
+    }
+
+    void SetChatHistory()
+    {
+        if (Globals.chatHistory.ContainsKey(room.id))
+        {
+            chatHistory.GetComponent<TMP_Text>().text = Globals.chatHistory[room.id];
+        }
+    }
+
+    void SetTournamentInfo()
+    {
+        int smallBlinds = Globals.tournamentInfo.small_bilnd;
+        int nextSmallBlinds = 2 * smallBlinds;
+        int bigBlinds = 2 * smallBlinds;
+        int nextBigBlinds = 2 * bigBlinds;
+        int blindUpTime = Globals.tournamentInfo.timeleft;
+        
+        string smallBlindStr = MoneyHelper.FormatNumberAbbreviated(smallBlinds, 1);
+        string bigBlindStr = MoneyHelper.FormatNumberAbbreviated(bigBlinds, 1);
+        string nextSmallBlindStr = MoneyHelper.FormatNumberAbbreviated(nextSmallBlinds, 1);
+        string nextBigBlindStr = MoneyHelper.FormatNumberAbbreviated(nextBigBlinds, 1);
+        string blindUpTimeStr = TimeSpan.FromSeconds(blindUpTime).ToString(@"hh\:mm\:ss");
+
+        blindsInfo.GetComponent<TMP_Text>().text = smallBlindStr + "/" + bigBlindStr;
+        newBlindsInfo.GetComponent<TMP_Text>().text = nextSmallBlindStr + "/" + nextBigBlindStr;
+        blindsUpTimeInfo.GetComponent<TMP_Text>().text = blindUpTimeStr;
+
+    }
 }

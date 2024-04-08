@@ -9,6 +9,7 @@ using Unity.VisualScripting;
 using Newtonsoft.Json;
 using System;
 using EasyUI.Toast;
+using GameRoomsT = System.Collections.Generic.Dictionary<string, Room>;
 
 public class LoginScript : MonoBehaviour
 {
@@ -73,6 +74,12 @@ public class LoginScript : MonoBehaviour
             Globals.password = PasswordInput.text;
             UnityMainThreadDispatcher.Instance().Enqueue(() =>
             {
+                Globals.notification = new TournamentEngine();
+                Globals.gameRooms = new GameRoomsT();
+                Globals.currentRoom = null;
+                Globals.chatHistory = new Dictionary<string, string>();
+                Globals.tournamentInfo = new TournamentInfo();
+
                 SceneManager.LoadScene("Home");
             });
             return;
@@ -139,5 +146,11 @@ public class LoginScript : MonoBehaviour
     private void Update()
     {
         TabSelect.TabKeyDown(inputFields);
+        if (Input.GetKeyDown(KeyCode.Return))
+        {
+            Login();
+        }
     }
+
+    
 }

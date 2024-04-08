@@ -4654,7 +4654,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 878115730}
   m_Direction: 2
   m_Value: 1
-  m_Size: 1
+  m_Size: 0.5000003
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -15859,14 +15859,14 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 1389751850}
-  - {fileID: 974408986}
-  - {fileID: 405798393}
-  - {fileID: 1275703509}
-  - {fileID: 2130900352}
-  - {fileID: 1557121759}
-  - {fileID: 1199730204}
-  - {fileID: 2129246778}
   - {fileID: 280005926}
+  - {fileID: 2129246778}
+  - {fileID: 1199730204}
+  - {fileID: 1557121759}
+  - {fileID: 2130900352}
+  - {fileID: 1275703509}
+  - {fileID: 405798393}
+  - {fileID: 974408986}
   m_Father: {fileID: 970717847}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
@@ -16046,14 +16046,14 @@ RectTransform:
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 5656052706863232810}
-  - {fileID: 917459860}
-  - {fileID: 562807948}
-  - {fileID: 890150030}
-  - {fileID: 459546004}
-  - {fileID: 169124288}
-  - {fileID: 141817882}
-  - {fileID: 448318155}
   - {fileID: 2005158720}
+  - {fileID: 448318155}
+  - {fileID: 141817882}
+  - {fileID: 169124288}
+  - {fileID: 459546004}
+  - {fileID: 890150030}
+  - {fileID: 562807948}
+  - {fileID: 917459860}
   m_Father: {fileID: 970717847}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}

@@ -62,12 +62,12 @@ public class RoomCreateScript : MonoBehaviour
 
             if (ret.ContainsKey("roomid"))
             {
-                UnityMainThreadDispatcher.Instance().Enqueue(() =>
-                {
-                    StartCoroutine(DelayJoin(int.Parse(ret["roomid"].ToString())));
-                });
+                //UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                //{
+                //    StartCoroutine(DelayJoin(int.Parse(ret["roomid"].ToString())));
+                //});
                 
-                //JoinHandler(int.Parse(ret["roomid"].ToString()));
+                JoinHandler(int.Parse(ret["roomid"].ToString()));
             }
 
             //UnityMainThreadDispatcher.Instance().Enqueue(() =>

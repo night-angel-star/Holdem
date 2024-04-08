@@ -140,6 +140,7 @@ public class ChatNotifyEvent : RoomEvent
     public new ChatEventArgs args;
 }
 
+
 public class UnSeatNotifyEvent : RoomEvent
 {
     public class UnSeatEventArgs
@@ -252,6 +253,10 @@ public class RaiseNotifyEvent : RoomEvent
         public int call;
         public int raise;
         public int seat;
+
+        public int pot;
+        public int chips;
+        public int coins;
     }
     public new RaiseEventArgs args;
 }
@@ -264,6 +269,10 @@ public class CallNotifyEvent : RoomEvent
         public int call;
         public int raise;
         public int seat;
+
+        public int pot;
+        public int chips;
+        public int coins;
     }
     public new CallEventArgs args;
 }
@@ -287,4 +296,13 @@ public class TournamentStatusNotifyEvent : RoomEvent
         public int tid;
     }
     public new TournamentStatusEventArgs args;
+}
+
+public class TournamentNewBlindNotifyEvent : RoomEvent
+{
+    public class TournamentNewBlindNotifyEventArgs
+    {
+        public int new_small_blind;
+    }
+    public new TournamentNewBlindNotifyEventArgs args;
 }

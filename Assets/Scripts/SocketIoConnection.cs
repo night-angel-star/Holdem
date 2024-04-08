@@ -8,6 +8,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Linq;
 using System.Dynamic;
+using UnityEngine.SceneManagement;
 
 #if UNITY_WEBGL
 using SocketIOResponse = System.String;
@@ -119,6 +120,18 @@ public class SocketIoConnection
                     {
                         Debug.Log("Invalid rpc response (JContainer): " + responseArray[i].ToString());
                         continue;
+                    }
+                    JToken err = jContainer.SelectToken("err");
+                    if (err != null)
+                    {
+                        if (err.ToString() == "401")
+                        {
+                            UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                            {
+                                SceneManager.LoadScene("Login");
+                            });
+                            continue;
+                        }
                     }
 
                     JToken jToken = jContainer.SelectToken("seq");
