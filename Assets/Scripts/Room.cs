@@ -18,7 +18,7 @@ public class Room
     public int casino = -1;
     public Dictionary<int, int> chips = null;
     public int dealer_seat = -1;
-    public int activeSeat = -1;
+    public int activeSeat = -2;
     public int countdown = -1;
     public int totalCount = -1;
     public Dictionary<string, Gamer> gamers = new Dictionary<string, Gamer>();

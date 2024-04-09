@@ -367,7 +367,7 @@ public class GameEngine
                 {
                     Room room = json.args.room;
                     string roomid = room.id;
-                    
+
                     if (Globals.gameRooms.ContainsKey(roomid))
                     {
                         object readyButtonStatus = Globals.gameRooms[roomid].operations.ready;
@@ -695,11 +695,7 @@ public class GameEngine
                 CountdownNotifyEvent json = baseToken.ToObject<CountdownNotifyEvent>();
                 if (json != null)
                 {
-                    if (json.args.seat != -1)
-                    {
-                        ProcessCountdown(json.roomid.ToString(), json.args.sec);
-                    }
-                    
+                    ProcessCountdown(json.roomid.ToString(), json.args.sec,json.args.seat);
                 }
 
             } while (false);
@@ -769,7 +765,7 @@ public class GameEngine
                 Debug.Log(errorString);
             }
         }
-        catch(Exception ex)
+        catch (Exception ex)
         {
             LogHelper.AppLog("OnChat");
             LogHelper.AppLog(ex.ToString());
@@ -864,14 +860,19 @@ public class GameEngine
         }
 
     }
-    private void ProcessCountdown(string roomid, int sec)
+    private void ProcessCountdown(string roomid, int sec, int seat)
     {
         try
         {
             if (Globals.gameRooms.ContainsKey(roomid))
             {
                 Globals.gameRooms[roomid].countdown = sec;
-                Globals.gameRooms[roomid].gameStatus = 2;
+                Globals.gameRooms[roomid].activeSeat = seat;
+                if (seat != -1)
+                {
+                    Globals.gameRooms[roomid].gameStatus = 2;
+                }
+                
             }
         }
         catch (Exception ex)
@@ -979,7 +980,7 @@ public class GameEngine
         }
     }
 
-    private void ProcessChat(string uid, string roomid,string chat)
+    private void ProcessChat(string uid, string roomid, string chat)
     {
         string name = "";
         if (Globals.gameRooms.ContainsKey(roomid))
@@ -989,14 +990,14 @@ public class GameEngine
                 name = Globals.gameRooms[roomid].gamers[uid].name;
             }
         }
-        
+
         if (!Globals.chatHistory.ContainsKey(roomid))
         {
-            Globals.chatHistory.Add(roomid, name+" : "+chat);
+            Globals.chatHistory.Add(roomid, name + " : " + chat);
         }
         else
         {
-            Globals.chatHistory[roomid] = (name + " : " + chat)+ Globals.chatHistory[roomid];
+            Globals.chatHistory[roomid] = (name + " : " + chat) + Globals.chatHistory[roomid];
         }
     }
 

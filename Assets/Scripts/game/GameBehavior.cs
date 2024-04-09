@@ -62,6 +62,8 @@ public class GameBehavior : MonoBehaviour
     public GameObject chatInput;
     public GameObject chatHistory;
 
+    public GameObject waitTimeInfo;
+
 
 
 
@@ -263,6 +265,14 @@ public class GameBehavior : MonoBehaviour
                     SetChatHistory();
                 }
                 catch (Exception ex)
+                {
+                    Debug.Log(ex);
+                }
+                try
+                {
+                    SetWaitTimeInfo();
+                }
+                catch(Exception ex)
                 {
                     Debug.Log(ex);
                 }
@@ -832,6 +842,7 @@ public class GameBehavior : MonoBehaviour
             for (int i = 0; i < rotatedSeats.Length; i++)
             {
                 GameObject progressbar = usersArray[i].transform.GetChild(1).transform.GetChild(2).transform.GetChild(0).gameObject;
+                progressbar.SetActive(true);
                 if (i == currentActiveUserRotated)
                 {
                     progressbar.GetComponent<Image>().fillAmount = ((float)(20 - room.countdown) / room.totalCount);
@@ -840,6 +851,16 @@ public class GameBehavior : MonoBehaviour
                 {
                     progressbar.GetComponent<Image>().fillAmount = 0;
                 }
+            }
+        }
+        else
+        {
+            GameObject[] usersArray = GameObjectHelper.GetActiveChildren(usersParent);
+            string[] rotatedSeats = ArrayHelper.RotateArray(room.seats, room.GetUserSeat());
+            for (int i = 0; i < rotatedSeats.Length; i++)
+            {
+                GameObject progressbar = usersArray[i].transform.GetChild(1).transform.GetChild(2).transform.GetChild(0).gameObject;
+                progressbar.SetActive(false);
             }
         }
     }
@@ -1793,6 +1814,21 @@ public class GameBehavior : MonoBehaviour
         if (Globals.chatHistory.ContainsKey(room.id))
         {
             chatHistory.GetComponent<TMP_Text>().text = Globals.chatHistory[room.id];
+        }
+    }
+
+    void SetWaitTimeInfo()
+    {
+        if (room.activeSeat == -1)
+        {
+            waitTimeInfo.SetActive(true);
+            GameObject waitTimeValue=waitTimeInfo.transform.GetChild(1).gameObject;
+            string waitTimeStr = TimeSpan.FromSeconds(room.countdown).ToString(@"hh\:mm\:ss");
+            waitTimeValue.GetComponent<TMP_Text>().text = waitTimeStr;
+        }
+        else
+        {
+            waitTimeInfo.SetActive(false);
         }
     }
 
