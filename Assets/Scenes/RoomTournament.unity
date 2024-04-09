@@ -2385,7 +2385,7 @@ MonoBehaviour:
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: -10000
+          m_IntArgument: -50
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -12063,7 +12063,7 @@ MonoBehaviour:
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 10000
+          m_IntArgument: 50
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -18327,8 +18327,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1266220735}
   m_HandleRect: {fileID: 1266220734}
   m_Direction: 2
-  m_Value: 1
-  m_Size: 1
+  m_Value: 0
+  m_Size: 0.50000006
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -21464,7 +21464,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.000015258789, y: 23.609982}
+  m_AnchoredPosition: {x: -0.000015258789, y: 23.609995}
   m_SizeDelta: {x: 167.49, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1815449316

@@ -60,6 +60,7 @@ public class Room
         public object check = null;
         public object call = null;
         public object raise = null;
+        public object ready = null;
     }
     public Operations operations = new Operations();
 

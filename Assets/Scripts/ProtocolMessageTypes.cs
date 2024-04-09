@@ -261,6 +261,22 @@ public class RaiseNotifyEvent : RoomEvent
     public new RaiseEventArgs args;
 }
 
+public class AllInNotifyEvent : RoomEvent
+{
+    public class AllInEventArgs
+    {
+        public string uid;
+        public int call;
+        public int raise;
+        public int seat;
+
+        public int pot;
+        public int chips;
+        public int coins;
+    }
+    public new AllInEventArgs args;
+}
+
 public class CallNotifyEvent : RoomEvent
 {
     public class CallEventArgs

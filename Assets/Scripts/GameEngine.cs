@@ -367,10 +367,13 @@ public class GameEngine
                 {
                     Room room = json.args.room;
                     string roomid = room.id;
+                    
                     if (Globals.gameRooms.ContainsKey(roomid))
                     {
+                        object readyButtonStatus = Globals.gameRooms[roomid].operations.ready;
                         Globals.gameRooms[roomid] = room;
                         Globals.gameRooms[roomid].gameStatus = 2;
+                        Globals.gameRooms[roomid].operations.ready = readyButtonStatus;
                     }
                     for (int i = 0; i < room.seats.Length; i++)
                     {
@@ -490,7 +493,7 @@ public class GameEngine
                 {
                     break;
                 }
-                Globals.gameRooms[json.roomid.ToString()].status[json.args.seat] = "fold";
+                Globals.gameRooms[json.roomid.ToString()].status[json.args.seat] = "Fold";
             } while (false);
             if (errorString != "")
             {
@@ -518,7 +521,7 @@ public class GameEngine
                 {
                     break;
                 }
-                Globals.gameRooms[json.roomid.ToString()].status[json.args.seat] = "check";
+                Globals.gameRooms[json.roomid.ToString()].status[json.args.seat] = "Check";
             } while (false);
             if (errorString != "")
             {
@@ -546,7 +549,7 @@ public class GameEngine
                 {
                     break;
                 }
-                Globals.gameRooms[json.roomid.ToString()].status[json.args.seat] = "call";
+                Globals.gameRooms[json.roomid.ToString()].status[json.args.seat] = "Call";
                 Globals.gameRooms[json.roomid.ToString()].pot = json.args.pot;
                 Globals.gameRooms[json.roomid.ToString()].chips[json.args.seat] = json.args.chips;
                 Globals.gameRooms[json.roomid.ToString()].gamers[json.args.uid].coins = json.args.coins;
@@ -577,7 +580,7 @@ public class GameEngine
                 {
                     break;
                 }
-                Globals.gameRooms[json.roomid.ToString()].status[json.args.seat] = "raise";
+                Globals.gameRooms[json.roomid.ToString()].status[json.args.seat] = "Raise";
                 Globals.gameRooms[json.roomid.ToString()].pot = json.args.pot;
                 Globals.gameRooms[json.roomid.ToString()].chips[json.args.seat] = json.args.chips;
                 Globals.gameRooms[json.roomid.ToString()].gamers[json.args.uid].coins = json.args.coins;
@@ -597,7 +600,26 @@ public class GameEngine
     {
         try
         {
+            string errorString = "";
+            do
+            {
+                if (baseToken == null)
+                    break;
+                AllInNotifyEvent json = baseToken.ToObject<AllInNotifyEvent>();
 
+                if (json == null)
+                {
+                    break;
+                }
+                Globals.gameRooms[json.roomid.ToString()].status[json.args.seat] = "All In";
+                Globals.gameRooms[json.roomid.ToString()].pot = json.args.pot;
+                Globals.gameRooms[json.roomid.ToString()].chips[json.args.seat] = json.args.chips;
+                Globals.gameRooms[json.roomid.ToString()].gamers[json.args.uid].coins = json.args.coins;
+            } while (false);
+            if (errorString != "")
+            {
+                Debug.Log(errorString);
+            }
         }
         catch (Exception ex)
         {

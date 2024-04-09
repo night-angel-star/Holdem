@@ -60,20 +60,20 @@ public class RoomCreateScript : MonoBehaviour
                 break;
             }
 
-            if (ret.ContainsKey("roomid"))
-            {
-                //UnityMainThreadDispatcher.Instance().Enqueue(() =>
-                //{
-                //    StartCoroutine(DelayJoin(int.Parse(ret["roomid"].ToString())));
-                //});
-                
-                JoinHandler(int.Parse(ret["roomid"].ToString()));
-            }
-
-            //UnityMainThreadDispatcher.Instance().Enqueue(() =>
+            //if (ret.ContainsKey("roomid"))
             //{
-            //    SceneManager.LoadScene("TexasHoldem");
-            //});
+            //    //UnityMainThreadDispatcher.Instance().Enqueue(() =>
+            //    //{
+            //    //    StartCoroutine(DelayJoin(int.Parse(ret["roomid"].ToString())));
+            //    //});
+              
+            //    JoinHandler(int.Parse(ret["roomid"].ToString()));
+            //}
+
+            UnityMainThreadDispatcher.Instance().Enqueue(() =>
+            {
+                SceneManager.LoadScene("TexasHoldem");
+            });
             return;
         } while (false);
 
@@ -115,6 +115,7 @@ public class RoomCreateScript : MonoBehaviour
             };
 
             Globals.socketIoConnection.SendRpc(data, OnResponse);
+            //SceneManager.LoadScene("TexasHoldem");
         }
     }
 

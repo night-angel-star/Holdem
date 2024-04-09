@@ -1938,7 +1938,7 @@ MonoBehaviour:
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: -10000
+          m_IntArgument: -50
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -4653,8 +4653,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 878115731}
   m_HandleRect: {fileID: 878115730}
   m_Direction: 2
-  m_Value: 1
-  m_Size: 0.5000003
+  m_Value: 0
+  m_Size: 0.50000006
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -9375,8 +9375,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 114, y: 34.1}
-  m_SizeDelta: {x: 69.9, y: 14.35}
+  m_AnchoredPosition: {x: 94.02, y: 34.1}
+  m_SizeDelta: {x: 109.86, y: 14.35}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &851495003
 MonoBehaviour:
@@ -9398,7 +9398,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: MAX
+  m_text: MAX(User Balance)
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -10940,7 +10940,7 @@ MonoBehaviour:
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 10000
+          m_IntArgument: 50
           m_FloatArgument: 0
           m_StringArgument: 
           m_BoolArgument: 0
@@ -13301,6 +13301,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   roomNameObject: {fileID: 46589902}
+  roomMoneyObject: {fileID: 300192653}
   myCards: {fileID: 1320116196}
   usersParent: {fileID: 1424365566}
   chipMinBuyLimitObject: {fileID: 689534251}

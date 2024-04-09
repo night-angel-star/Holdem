@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
+using System;
 
 public class AddChipsModalBehavior : MonoBehaviour
 {
@@ -18,6 +19,7 @@ public class AddChipsModalBehavior : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        chipSlider.value=(int) Math.Floor(chipSlider.value); 
         currentChipValue.text=chipSlider.value.ToString();
     }
 }

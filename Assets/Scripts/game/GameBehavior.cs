@@ -22,6 +22,7 @@ public class GameBehavior : MonoBehaviour
     public Room room;
 
     public TMP_Text roomNameObject;
+    public TMP_Text roomMoneyObject;
     public GameObject myCards;
     public GameObject usersParent;
     public GameObject chipMinBuyLimitObject;
@@ -128,15 +129,16 @@ public class GameBehavior : MonoBehaviour
                         Debug.Log(ex);
                     }
                     
-                    try
-                    {
-                        GetActionButtonsInteractable();
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.Log(ex);
-                    }
                     
+                    
+                }
+                try
+                {
+                    GetActionButtonsInteractable();
+                }
+                catch (Exception ex)
+                {
+                    Debug.Log(ex);
                 }
                 //AutoAction();
                 try
@@ -386,22 +388,27 @@ public class GameBehavior : MonoBehaviour
     {
         GameObject callButton = ActionButtonsArea.transform.GetChild(1).gameObject.transform.GetChild(2).gameObject;
         GameObject checkButton = ActionButtonsArea.transform.GetChild(1).gameObject.transform.GetChild(1).gameObject;
-        if (room.operations.call != null)
-        {
-            callButton.GetComponent<Button>().interactable = true;
-        }
-        else
-        {
-            callButton.GetComponent<Button>().interactable = false;
-        }
-
+        GameObject readyButton = ActionButtonsArea.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject;
+        
         if (room.operations.check != null)
         {
             checkButton.GetComponent<Button>().interactable = true;
+            callButton.GetComponent<Button>().interactable = false;
         }
         else
         {
             checkButton.GetComponent<Button>().interactable = false;
+            callButton.GetComponent<Button>().interactable = true;
+        }
+
+        if (room.operations.ready != null)
+        {
+            readyButton.GetComponent<Button>().interactable = true;
+
+        }
+        else
+        {
+            readyButton.GetComponent<Button>().interactable = false;
         }
     }
     void SetUserInfo()
@@ -588,8 +595,11 @@ public class GameBehavior : MonoBehaviour
                                 
                             }
                         }
-
-                        waiting = false;
+                        if (room.operations.ready != null)
+                        {
+                            waiting = false;
+                        }
+                        
 
                     }
 
@@ -631,6 +641,7 @@ public class GameBehavior : MonoBehaviour
     void SetRoomName()
     {
         roomNameObject.text = room.name;
+        roomMoneyObject.text = room.options.min_buy.ToString();
     }
 
     public void CheckUserBalance()
@@ -729,6 +740,14 @@ public class GameBehavior : MonoBehaviour
                 errorString = "Invalid response";
                 break;
             }
+            else
+            {
+                if (ret["cmds"] != null)
+                {
+                    Dictionary<string, object> cmds = JsonResponse.ToDictionary(ret["cmds"]);
+                    Globals.gameRooms[Globals.currentRoom].operations.ready = cmds["ready"];
+                }
+            }
 
             actionButtonAreaIndex = 0;
             return;
@@ -751,6 +770,56 @@ public class GameBehavior : MonoBehaviour
 
     private void OnReadyResponse(JToken jsonResponse)
     {
+        string errorString = "";
+        Dictionary<string, object> res = JsonResponse.ToDictionary(jsonResponse);
+
+        do
+        {
+            if (res == null)
+            {
+                errorString = "Invalid response";
+                break;
+            }
+            int err = res["err"].ConvertTo<int>();
+            if (err != 0)
+            {
+                if (!res.ContainsKey("ret"))
+                {
+                    errorString = "Invalid response";
+                    break;
+                }
+                errorString = res["ret"].ToString();
+                UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                {
+                    Toast.Show(errorString, "danger");
+                });
+
+                break;
+            }
+            if (!res.ContainsKey("ret"))
+            {
+                errorString = "Invalid response";
+                break;
+            }
+            Dictionary<string, object> ret = JsonResponse.ToDictionary(res["ret"]);
+            if (ret == null)
+            {
+                errorString = "Invalid response";
+                break;
+            }
+            else
+            {
+                if (ret["cmds"] != null)
+                {
+                    Dictionary<string, object> cmds = JsonResponse.ToDictionary(ret["cmds"]);
+                    Globals.gameRooms[Globals.currentRoom].operations.ready = cmds["ready"];
+                    Debug.Log("ready button disabled");
+                }
+            }
+
+            actionButtonAreaIndex = 0;
+            return;
+        } while (false);
     }
 
     public void SetTimer()
@@ -785,14 +854,14 @@ public class GameBehavior : MonoBehaviour
         {
             switch (room.gameStatus)
             {
-                case 0:
-                    actionButtonAreaIndex = 0;
-                    break;
-                case 1:
-                    actionButtonAreaIndex = -1;
-                    break;
+                //case 0:
+                //    actionButtonAreaIndex = 0;
+                //    break;
+                //case 1:
+                //    actionButtonAreaIndex = -1;
+                //    break;
                 case 2:
-                    if (!waiting)
+                    if (!waiting&&room.operations.ready==null)
                     {
                         if (room.status != null)
                         {
@@ -828,14 +897,14 @@ public class GameBehavior : MonoBehaviour
                     }
                     else
                     {
-                        actionButtonAreaIndex = -1;
+                        actionButtonAreaIndex = 0;
                     }
                     break;
-                case 3:
-                    actionButtonAreaIndex = 0;
-                    break;
+                //case 3:
+                //    actionButtonAreaIndex = 0;
+                //    break;
                 default:
-                    actionButtonAreaIndex = -1;
+                    actionButtonAreaIndex = 0;
                     break;
             }
         }
@@ -850,62 +919,6 @@ public class GameBehavior : MonoBehaviour
             if (i == actionButtonAreaIndex)
             {
                 actionButtonGroup[i].SetActive(true);
-                //switch (i)
-                //{
-                //    case 0:
-                //        GameObject readyButton = actionButtonGroup[i].transform.GetChild(0).gameObject;
-                //        if (room.operations.ready)
-                //        {
-                //            readyButton.GetComponent<Button>().interactable = true;
-                //        }
-                //        else
-                //        {
-                //            readyButton.GetComponent<Button>().interactable = false;
-                //        }
-                //        break;
-                //    case 1:
-                //        GameObject foldButton = actionButtonGroup[i].transform.GetChild(0).gameObject;
-                //        if (room.operations.fold)
-                //        {
-                //            foldButton.GetComponent<Button>().interactable = true;
-                //        }
-                //        else
-                //        {
-                //            foldButton.GetComponent<Button>().interactable = false;
-                //        }
-                //        GameObject checkButton = actionButtonGroup[i].transform.GetChild(1).gameObject;
-                //        if (room.operations.check)
-                //        {
-                //            checkButton.GetComponent<Button>().interactable = true;
-                //        }
-                //        else
-                //        {
-                //            checkButton.GetComponent<Button>().interactable = false;
-                //        }
-                //        GameObject callButton = actionButtonGroup[i].transform.GetChild(2).gameObject;
-                //        if (room.operations.call)
-                //        {
-                //            callButton.GetComponent<Button>().interactable = true;
-                //        }
-                //        else
-                //        {
-                //            callButton.GetComponent<Button>().interactable = false;
-                //        }
-                //        GameObject raiseButton = actionButtonGroup[i].transform.GetChild(3).gameObject;
-                //        if (room.operations.raise)
-                //        {
-                //            raiseButton.GetComponent<Button>().interactable = true;
-                //        }
-                //        else
-                //        {
-                //            raiseButton.GetComponent<Button>().interactable = false;
-                //        }
-                //        break;
-                //    case 2:
-                //        break;
-                //    default:
-                //        break;
-                //}
             }
             else
             {
@@ -1048,7 +1061,7 @@ public class GameBehavior : MonoBehaviour
             uid = uid,
             pin = pin,
             f = "activestatus",
-            args = 1,
+            args = (Globals.gameRooms[Globals.currentRoom].gamers[Globals.gameToken.uid].activeStatus != 1 ? 1 : 0),
         };
         Globals.socketIoConnection.SendRpc(data, ToggleFoldAnyResponse);
         
@@ -1067,7 +1080,7 @@ public class GameBehavior : MonoBehaviour
         //    Globals.gameRooms[Globals.currentRoom].autoOperation.callAnyButton = false;
         //    Globals.gameRooms[Globals.currentRoom].autoOperation.checkFoldButton = false;
         //}
-        Globals.gameRooms[Globals.currentRoom].gamers[Globals.gameToken.uid].activeStatus = 1;
+        Globals.gameRooms[Globals.currentRoom].gamers[Globals.gameToken.uid].activeStatus = (Globals.gameRooms[Globals.currentRoom].gamers[Globals.gameToken.uid].activeStatus != 1 ? 1 : 0);
     }
 
     public void ToggleCheckFoldButton()
@@ -1080,7 +1093,7 @@ public class GameBehavior : MonoBehaviour
             uid = uid,
             pin = pin,
             f = "activestatus",
-            args = 2,
+            args = (Globals.gameRooms[Globals.currentRoom].gamers[Globals.gameToken.uid].activeStatus != 2 ? 2 : 0),
         };
         Globals.socketIoConnection.SendRpc(data, ToggleCheckFoldResponse);
     }
@@ -1097,7 +1110,7 @@ public class GameBehavior : MonoBehaviour
         //    Globals.gameRooms[Globals.currentRoom].autoOperation.callAnyButton = false;
         //    Globals.gameRooms[Globals.currentRoom].autoOperation.foldAnyButton = false;
         //}
-        Globals.gameRooms[Globals.currentRoom].gamers[Globals.gameToken.uid].activeStatus = 2;
+        Globals.gameRooms[Globals.currentRoom].gamers[Globals.gameToken.uid].activeStatus = (Globals.gameRooms[Globals.currentRoom].gamers[Globals.gameToken.uid].activeStatus != 2 ? 2 : 0);
     }
 
     public void ToggleCallAnyButton()
@@ -1110,7 +1123,7 @@ public class GameBehavior : MonoBehaviour
             uid = uid,
             pin = pin,
             f = "activestatus",
-            args = 3,
+            args = (Globals.gameRooms[Globals.currentRoom].gamers[Globals.gameToken.uid].activeStatus != 3 ? 3 : 0),
         };
         Globals.socketIoConnection.SendRpc(data, ToggleCallAnyResponse);
 
@@ -1128,7 +1141,7 @@ public class GameBehavior : MonoBehaviour
         //    Globals.gameRooms[Globals.currentRoom].autoOperation.foldAnyButton = false;
         //    Globals.gameRooms[Globals.currentRoom].autoOperation.checkFoldButton = false;
         //}
-        Globals.gameRooms[Globals.currentRoom].gamers[Globals.gameToken.uid].activeStatus = 3;
+        Globals.gameRooms[Globals.currentRoom].gamers[Globals.gameToken.uid].activeStatus = (Globals.gameRooms[Globals.currentRoom].gamers[Globals.gameToken.uid].activeStatus != 3 ? 3 : 0);
     }
 
     void SetAutoButtons()
@@ -1392,8 +1405,70 @@ public class GameBehavior : MonoBehaviour
             {
                 Toast.Show("Chips added successfully");
                 addChipsModal.SetActive(false);
+
+                string uid = Globals.gameToken.uid;
+                int pin = Globals.gameToken.pin;
+                var data = new
+                {
+                    uid = uid,
+                    pin = pin,
+                    f = "profile",
+                    args = 0,
+                };
+                Globals.socketIoConnection.SendRpc(data, OnGetMoney);
             });
 
+
+            return;
+        } while (false);
+    }
+    void OnGetMoney(JToken jsonResponse)
+    {
+        string errorString = "";
+        Dictionary<string, object> res = JsonResponse.ToDictionary(jsonResponse);
+
+        do
+        {
+            if (res == null)
+            {
+                errorString = "Invalid response";
+                break;
+            }
+            int err = res["err"].ConvertTo<int>();
+            if (err != 0)
+            {
+                if (!res.ContainsKey("ret"))
+                {
+                    errorString = "Invalid response";
+                    break;
+                }
+                errorString = res["ret"].ToString();
+                break;
+            }
+            if (!res.ContainsKey("ret"))
+            {
+                errorString = "Invalid response";
+                break;
+            }
+            Dictionary<string, object> ret = JsonResponse.ToDictionary(res["ret"]);
+            if (ret == null)
+            {
+                errorString = "Invalid response";
+                break;
+            }
+
+            if (ret.ContainsKey("name"))
+            {
+                Globals.userProfile.name = ret["name"].ToString();
+            }
+            if (ret.ContainsKey("deposite"))
+            {
+                Globals.userProfile.deposite = int.Parse(ret["deposite"].ToString());
+            }
+            if (ret.ContainsKey("avatar"))
+            {
+                Globals.userProfile.avatar = ret["avatar"].ToString();
+            }
 
             return;
         } while (false);
@@ -1510,63 +1585,6 @@ public class GameBehavior : MonoBehaviour
     private void OnChangeRoomResponse(JToken jsonResponse)
     {
         
-        //string errorString = "";
-        //Dictionary<string, object> res = JsonResponse.ToDictionary(jsonResponse);
-
-        //do
-        //{
-        //    if (res == null)
-        //    {
-        //        errorString = "Invalid response";
-        //        UnityMainThreadDispatcher.Instance().Enqueue(() =>
-        //        {
-        //            Toast.Show(errorString, "danger");
-        //        });
-
-        //        break;
-        //    }
-        //    int err = res["err"].ConvertTo<int>();
-        //    if (err != 0)
-        //    {
-        //        if (!res.ContainsKey("ret"))
-        //        {
-        //            errorString = "Invalid response";
-        //            UnityMainThreadDispatcher.Instance().Enqueue(() =>
-        //            {
-        //                roomListTable.ClearRows();
-        //            });
-        //            UnityMainThreadDispatcher.Instance().Enqueue(() =>
-        //            {
-        //                Toast.Show(errorString, "danger");
-        //            });
-        //            break;
-        //        }
-        //        errorString = res["ret"].ToString();
-        //        UnityMainThreadDispatcher.Instance().Enqueue(() => { Toast.Show(errorString, "danger"); });
-        //        break;
-        //    }
-        //    if (!res.ContainsKey("ret"))
-        //    {
-        //        errorString = "Invalid response";
-        //        UnityMainThreadDispatcher.Instance().Enqueue(() => { Toast.Show(errorString, "danger"); });
-        //        break;
-        //    }
-        //    Dictionary<string, object> ret = JsonResponse.ToDictionary(res["ret"]);
-        //    if (ret == null)
-        //    {
-        //        errorString = "Invalid response";
-        //        UnityMainThreadDispatcher.Instance().Enqueue(() => { Toast.Show(errorString, "danger"); });
-        //        break;
-        //    }
-        //    UnityMainThreadDispatcher.Instance().Enqueue(() =>
-        //    {
-        //        Toast.Show("Chips added successfully");
-        //        addChipsModal.SetActive(false);
-        //    });
-
-
-        //    return;
-        //} while (false);
     }
 
     public void SetRoomsView()
