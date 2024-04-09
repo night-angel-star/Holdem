@@ -414,11 +414,12 @@ public class GameBehavior : MonoBehaviour
         if (room.operations.ready != null)
         {
             readyButton.GetComponent<Button>().interactable = true;
-
+            readyButton.SetActive(true);
         }
         else
         {
             readyButton.GetComponent<Button>().interactable = false;
+            readyButton.SetActive(false);
         }
     }
     void SetUserInfo()
