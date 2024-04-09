@@ -23,4 +23,23 @@ public class CardHelper:MonoBehaviour
         }
         
     }
+
+    public static string GetCardStr(int nCardNumber)
+    {
+        try
+        {
+            string card = "";
+            int cardColor = (int)Math.Floor((decimal)(nCardNumber / 16)) - 1;
+            int cardNumber = nCardNumber % 16;
+            string[] cardColorString = new string[] { "d", "c", "h", "s" };
+            string[] cardNumberString = new string[] { "?", "", "2", "3", "4", "5", "6", "7", "8", "9", "T", "J", "Q", "K", "A" };
+            card = cardNumberString[cardNumber]+ cardColorString[cardColor];
+
+            return card;
+        }
+        catch (Exception)
+        {
+            return "";
+        }
+    }
 }

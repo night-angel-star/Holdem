@@ -835,34 +835,38 @@ public class GameBehavior : MonoBehaviour
 
     public void SetTimer()
     {
-        if (room.GetUserSeat() != -1&&room.activeSeat!=-1 && !waiting)
+        if (room.GetUserSeat() != -1)
         {
-            GameObject[] usersArray = GameObjectHelper.GetActiveChildren(usersParent);
-            string[] rotatedSeats = ArrayHelper.RotateArray(room.seats, room.GetUserSeat());
-            int currentActiveUserRotated = ArrayHelper.RotateNumber(room.activeSeat, room.GetUserSeat(), rotatedSeats.Length);
-            for (int i = 0; i < rotatedSeats.Length; i++)
+            if(room.activeSeat != -1 && !waiting)
             {
-                GameObject progressbar = usersArray[i].transform.GetChild(1).transform.GetChild(2).transform.GetChild(0).gameObject;
-                progressbar.SetActive(true);
-                if (i == currentActiveUserRotated)
+                GameObject[] usersArray = GameObjectHelper.GetActiveChildren(usersParent);
+                string[] rotatedSeats = ArrayHelper.RotateArray(room.seats, room.GetUserSeat());
+                int currentActiveUserRotated = ArrayHelper.RotateNumber(room.activeSeat, room.GetUserSeat(), rotatedSeats.Length);
+                for (int i = 0; i < rotatedSeats.Length; i++)
                 {
-                    progressbar.GetComponent<Image>().fillAmount = ((float)(20 - room.countdown) / room.totalCount);
-                }
-                else
-                {
-                    progressbar.GetComponent<Image>().fillAmount = 0;
+                    GameObject progressbar = usersArray[i].transform.GetChild(1).transform.GetChild(2).transform.GetChild(0).gameObject;
+                    progressbar.SetActive(true);
+                    if (i == currentActiveUserRotated)
+                    {
+                        progressbar.GetComponent<Image>().fillAmount = ((float)(20 - room.countdown) / room.totalCount);
+                    }
+                    else
+                    {
+                        progressbar.GetComponent<Image>().fillAmount = 0;
+                    }
                 }
             }
-        }
-        else
-        {
-            GameObject[] usersArray = GameObjectHelper.GetActiveChildren(usersParent);
-            string[] rotatedSeats = ArrayHelper.RotateArray(room.seats, room.GetUserSeat());
-            for (int i = 0; i < rotatedSeats.Length; i++)
+            else
             {
-                GameObject progressbar = usersArray[i].transform.GetChild(1).transform.GetChild(2).transform.GetChild(0).gameObject;
-                progressbar.SetActive(false);
+                GameObject[] usersArray = GameObjectHelper.GetActiveChildren(usersParent);
+                string[] rotatedSeats = ArrayHelper.RotateArray(room.seats, room.GetUserSeat());
+                for (int i = 0; i < rotatedSeats.Length; i++)
+                {
+                    GameObject progressbar = usersArray[i].transform.GetChild(1).transform.GetChild(2).transform.GetChild(0).gameObject;
+                    progressbar.SetActive(false);
+                }
             }
+            
         }
     }
 
