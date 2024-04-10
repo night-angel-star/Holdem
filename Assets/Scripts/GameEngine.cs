@@ -643,18 +643,15 @@ public class GameEngine
                     break;
                 }
                 Globals.gameRooms[json.roomid.ToString()].gameStatus = 3;
-                foreach (Gamer g in json.args)
+
+                foreach (GameoverNotifyEvent.GameoverNotifyEventArgs g in json.args)
                 {
-                    Globals.gameRooms[json.roomid.ToString()].gamers[g.uid] = g;
+                    //Globals.gameRooms[json.roomid.ToString()].gamers[g.uid] = g;
                     int index = Array.IndexOf(Globals.gameRooms[json.roomid.ToString()].seats, g.uid);
                     Globals.gameRooms[json.roomid.ToString()].cards[index] = g.cards;
-                    if (g.prize > 0)
-                    {
-                        UnityMainThreadDispatcher.Instance().Enqueue(() =>
-                        {
-                            Toast.Show("Winner: " + g.name);
-                        });
-                    }
+                    Globals.gameRooms[json.roomid.ToString()].gamers[g.uid].coins = g.coins;
+                    Globals.gameRooms[json.roomid.ToString()].chips[g.seat] = g.chips;
+                    Globals.gameRooms[json.roomid.ToString()].gamers[g.uid].is_winner = g.is_winner;
                     if (Globals.gameRooms[json.roomid.ToString()].gamers[g.uid].coins == 0)
                     {
                         SleepForGameover();

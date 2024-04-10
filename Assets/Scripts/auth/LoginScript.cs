@@ -103,6 +103,7 @@ public class LoginScript : MonoBehaviour
 
             var data = new
             {
+                uid=enteredEmail,
                 args = new
                 {
                     uid = enteredEmail,

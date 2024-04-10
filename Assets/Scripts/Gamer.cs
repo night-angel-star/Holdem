@@ -18,6 +18,7 @@ public class Gamer
     public int prize;
     public string phoneNumber = "";
     public int activeStatus = 0;
+    public bool is_winner = false;
 
     public static Gamer FromToken(JToken baseData)
     {

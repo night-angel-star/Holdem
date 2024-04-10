@@ -31,6 +31,4 @@ public static class Globals
     public static string strUri = "http://124.158.120.246/";
     public static Dictionary<string, string> chatHistory= new Dictionary<string, string>();
     public static TournamentInfo tournamentInfo = new TournamentInfo();
-
-    
 }

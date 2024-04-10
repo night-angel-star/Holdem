@@ -93,6 +93,7 @@ public class RegisterScript : MonoBehaviour
 
             var data = new
             {
+                uid=enteredEmail,
                 args = new
                 {
                     name = enteredName,

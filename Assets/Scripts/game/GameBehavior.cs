@@ -63,6 +63,7 @@ public class GameBehavior : MonoBehaviour
     public GameObject chatHistory;
 
     public GameObject waitTimeInfo;
+    public GameObject winnersInfo;
 
 
 
@@ -99,6 +100,14 @@ public class GameBehavior : MonoBehaviour
             
             if (receiveFromGlobalResult)
             {
+                try
+                {
+                    SetWaiting();
+                }
+                catch (Exception ex)
+                {
+                    Debug.Log(ex);
+                }
                 //set data from room data
                 try
                 {
@@ -276,6 +285,16 @@ public class GameBehavior : MonoBehaviour
                 {
                     Debug.Log(ex);
                 }
+                try
+                {
+                    SetWinners();
+                }
+                catch(Exception ex)
+                {
+                    Debug.Log(ex);
+                }
+
+                
             }
         }
         catch (Exception ex)
@@ -387,8 +406,12 @@ public class GameBehavior : MonoBehaviour
                 myCards.SetActive(true);
                 GameObject card1 = myCards.transform.GetChild(0).gameObject;
                 GameObject card2 = myCards.transform.GetChild(1).gameObject;
-                card1.GetComponent<SpriteRenderer>().sprite = CardHelper.GetCard(room.cards[room.GetUserSeat()][0]);
-                card2.GetComponent<SpriteRenderer>().sprite = CardHelper.GetCard(room.cards[room.GetUserSeat()][1]);
+                if (room.cards.ContainsKey(room.GetUserSeat()))
+                {
+                    card1.GetComponent<SpriteRenderer>().sprite = CardHelper.GetCard(room.cards[room.GetUserSeat()][0]);
+                    card2.GetComponent<SpriteRenderer>().sprite = CardHelper.GetCard(room.cards[room.GetUserSeat()][1]);
+                }
+                
             }
         }
 
@@ -475,14 +498,21 @@ public class GameBehavior : MonoBehaviour
                     if (i == 0)
                     {
                         usersArray[i].transform.GetChild(1).gameObject.SetActive(true);
-                        if ((room.gameStatus == 2 || room.gameStatus == 3)&& room.GetUserSeat() != -1&&!waiting)
+                        if (room.gameStatus == 2&& room.GetUserSeat() != -1&&!waiting)
                         {
                             usersArray[i].transform.GetChild(2).gameObject.SetActive(true);
                             usersArray[i].transform.GetChild(4).gameObject.SetActive(true);
                         }
                         else
                         {
-                            usersArray[i].transform.GetChild(2).gameObject.SetActive(false);
+                            if (room.gameStatus == 3 && room.GetUserSeat() != -1 && !waiting)
+                            {
+                                usersArray[i].transform.GetChild(2).gameObject.SetActive(true);
+                            }
+                            else
+                            {
+                                usersArray[i].transform.GetChild(2).gameObject.SetActive(false);
+                            }
                             usersArray[i].transform.GetChild(4).gameObject.SetActive(false);
                         }
                     }
@@ -606,10 +636,6 @@ public class GameBehavior : MonoBehaviour
                                 
                             }
                         }
-                        if (room.operations.ready != null)
-                        {
-                            waiting = false;
-                        }
                         
 
                     }
@@ -705,10 +731,7 @@ public class GameBehavior : MonoBehaviour
             roomid=Globals.currentRoom,
             args = index.ToString(),
         };
-        if (room.gameStatus == 2)
-        {
-            waiting = true;
-        }
+        
         Globals.socketIoConnection.SendRpc(data, OnTakeSeatResponse);
     }
 
@@ -837,7 +860,7 @@ public class GameBehavior : MonoBehaviour
     {
         if (room.GetUserSeat() != -1)
         {
-            if(room.activeSeat != -1 && !waiting)
+            if(room.activeSeat != -1)
             {
                 GameObject[] usersArray = GameObjectHelper.GetActiveChildren(usersParent);
                 string[] rotatedSeats = ArrayHelper.RotateArray(room.seats, room.GetUserSeat());
@@ -866,7 +889,36 @@ public class GameBehavior : MonoBehaviour
                     progressbar.SetActive(false);
                 }
             }
-            
+
+        }
+        else
+        {
+            if (room.activeSeat != -1)
+            {
+                GameObject[] usersArray = GameObjectHelper.GetActiveChildren(usersParent);
+                for (int i = 0; i < room.seats.Length; i++)
+                {
+                    GameObject progressbar = usersArray[i].transform.GetChild(1).transform.GetChild(2).transform.GetChild(0).gameObject;
+                    progressbar.SetActive(true);
+                    if (i == room.activeSeat)
+                    {
+                        progressbar.GetComponent<Image>().fillAmount = ((float)(20 - room.countdown) / room.totalCount);
+                    }
+                    else
+                    {
+                        progressbar.GetComponent<Image>().fillAmount = 0;
+                    }
+                }
+            }
+            else
+            {
+                GameObject[] usersArray = GameObjectHelper.GetActiveChildren(usersParent);
+                for (int i = 0; i < room.seats.Length; i++)
+                {
+                    GameObject progressbar = usersArray[i].transform.GetChild(1).transform.GetChild(2).transform.GetChild(0).gameObject;
+                    progressbar.SetActive(false);
+                }
+            }
         }
     }
 
@@ -1834,6 +1886,61 @@ public class GameBehavior : MonoBehaviour
         else
         {
             waitTimeInfo.SetActive(false);
+        }
+    }
+
+    void SetWaiting()
+    {
+        if (room.GetUserSeat() != -1)
+        {
+            if (room.gameStatus == 2)
+            {
+                if (room.operations.ready != null)
+                {
+                    waiting = true;
+                }
+            }
+            else
+            {
+                waiting = false;
+            }
+        }
+    }
+
+    void SetWinners()
+    {
+        if (room.activeSeat == -1)
+        {
+            string winners = "";
+            for(int i = 0; i < room.seats.Length; i++)
+            {
+
+                if (room.seats[i] != null)
+                {
+                    if (room.gamers[room.seats[i]].is_winner)
+                    {
+                        if (winners != "")
+                        {
+                            winners += ", ";
+                        }
+                        winners += room.gamers[room.seats[i]].name;
+                    }
+                }
+                
+            }
+            if (winners != "")
+            {
+                winnersInfo.transform.GetChild(1).gameObject.GetComponent<TMP_Text>().text = winners;
+                winnersInfo.SetActive(true);
+            }
+            else
+            {
+                winnersInfo.SetActive(false);
+            }
+        }
+        else
+        {
+            winnersInfo.SetActive(false);
         }
     }
 

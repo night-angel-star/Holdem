@@ -295,7 +295,12 @@ public class CallNotifyEvent : RoomEvent
 
 public class GameoverNotifyEvent : RoomEvent
 {
-    public Gamer[] args;
+    public class GameoverNotifyEventArgs:Gamer
+    {
+        public int chips;
+        public int seat;
+    }
+    public GameoverNotifyEventArgs[] args;
 }
 
 public class PromptNotifyEvent : RoomEvent
