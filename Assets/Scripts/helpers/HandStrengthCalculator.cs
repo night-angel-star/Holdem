@@ -146,10 +146,14 @@ public class HandStrengthCalculator
 
     private static bool HasFlush(List<string> cards)
     {
-        List<string> suits = cards.Select(card => card.Substring(1)).Distinct().ToList();
+        if (cards.Count >= 5)
+        {
+            List<string> suits = cards.Select(card => card.Substring(1)).Distinct().ToList();
 
-        if (suits.Count == 1)
-            return true;
+            if (suits.Count == 1)
+                return true;
+        }
+        
 
         return false;
     }

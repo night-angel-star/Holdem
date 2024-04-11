@@ -2378,7 +2378,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1189902640}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: TournamentBehavior, Assembly-CSharp
         m_MethodName: ChangeRaiseAmount
         m_Mode: 3
@@ -2618,7 +2618,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1189902640}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: TournamentBehavior, Assembly-CSharp
         m_MethodName: RaiseModalDismiss
         m_Mode: 1
@@ -7341,8 +7341,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1189902640}
-        m_TargetAssemblyTypeName: TournamentBehavior, Assembly-CSharp
+      - m_Target: {fileID: 1189902641}
+        m_TargetAssemblyTypeName: GameBehavior, Assembly-CSharp
         m_MethodName: Check
         m_Mode: 1
         m_Arguments:
@@ -9170,8 +9170,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1189902640}
-        m_TargetAssemblyTypeName: TournamentBehavior, Assembly-CSharp
+      - m_Target: {fileID: 1189902641}
+        m_TargetAssemblyTypeName: GameBehavior, Assembly-CSharp
         m_MethodName: RaiseConfirm
         m_Mode: 1
         m_Arguments:
@@ -10092,13 +10092,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1189902640}
-        m_TargetAssemblyTypeName: TournamentBehavior, Assembly-CSharp
+      - m_Target: {fileID: 1189902641}
+        m_TargetAssemblyTypeName: GameBehavior, Assembly-CSharp
         m_MethodName: ToggleFoldAnyButton
-        m_Mode: 2
+        m_Mode: 1
         m_Arguments:
-          m_ObjectArgument: {fileID: 840692431}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -10398,8 +10398,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1189902640}
-        m_TargetAssemblyTypeName: TournamentBehavior, Assembly-CSharp
+      - m_Target: {fileID: 1189902641}
+        m_TargetAssemblyTypeName: GameBehavior, Assembly-CSharp
         m_MethodName: Call
         m_Mode: 1
         m_Arguments:
@@ -12056,7 +12056,7 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1189902640}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: TournamentBehavior, Assembly-CSharp
         m_MethodName: ChangeRaiseAmount
         m_Mode: 3
@@ -13261,19 +13261,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1110193597}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1189902640}
-        m_TargetAssemblyTypeName: TournamentBehavior, Assembly-CSharp
-        m_MethodName: readyForGame
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1110193597
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -14370,7 +14358,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1189902639}
-  - component: {fileID: 1189902640}
+  - component: {fileID: 1189902641}
   m_Layer: 0
   m_Name: GameBehavior
   m_TagString: Untagged
@@ -14393,7 +14381,7 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &1189902640
+--- !u!114 &1189902641
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -14402,31 +14390,34 @@ MonoBehaviour:
   m_GameObject: {fileID: 1189902637}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 844eabeab386f25408eedc2ccb27a1a2, type: 3}
+  m_Script: {fileID: 11500000, guid: 3371b9c2be33d8145bb3effebe46b385, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   roomNameObject: {fileID: 46589902}
+  roomMoneyObject: {fileID: 300192653}
   myCards: {fileID: 1320116196}
   usersParent: {fileID: 1424365566}
-  chipMinBuyLimitObject: {fileID: 689534251}
-  chipMaxBuyLimitObject: {fileID: 119146527}
-  chipsSliderObject: {fileID: 2098966995}
+  chipMinBuyLimitObject: {fileID: 0}
+  chipMaxBuyLimitObject: {fileID: 0}
+  totalChipsValueObject: {fileID: 0}
+  chipAddButton: {fileID: 0}
+  chipsSliderObject: {fileID: 0}
   publicCardArea: {fileID: 385525405}
   sitToSeatArea: {fileID: 1398504375}
   ActionButtonsArea: {fileID: 1792248560}
   raiseModal: {fileID: 534063831}
   raiseButton: {fileID: 1301383333}
   raiseConfirmButton: {fileID: 786611785}
-  addChipsModal: {fileID: 1135906475}
+  addChipsModal: {fileID: 0}
   raiseBar: {fileID: 113392886}
   raiseBarGradeParent: {fileID: 805374122}
   raiseToValue: {fileID: 484829154}
   raiseBarSlider: {fileID: 1236721871}
-  roomListTable: {fileID: 1341002472}
-  joinButtonPrefab: {fileID: 1628190318251472301, guid: d76a305c8e491a34f899c93ad489641a, type: 3}
-  RoomTogglerParent: {fileID: 265549839}
-  RoomViewParent: {fileID: 1775733626}
-  RoomAddButton: {fileID: 2095449976}
+  roomListTable: {fileID: 0}
+  joinButtonPrefab: {fileID: 0}
+  RoomTogglerParent: {fileID: 0}
+  RoomViewParent: {fileID: 0}
+  RoomAddButton: {fileID: 0}
   sitOutNextHandButton: {fileID: 1242177545}
   sitOutNextBigBlindButton: {fileID: 1969530481}
   callAnyButton:
@@ -14436,13 +14427,11 @@ MonoBehaviour:
   checkFoldButton: {fileID: 1919424537}
   chatInput: {fileID: 1830496327}
   chatHistory: {fileID: 1815449314}
+  waitTimeInfo: {fileID: 0}
+  winnersInfo: {fileID: 0}
   blindsInfo: {fileID: 1615776716}
   newBlindsInfo: {fileID: 2050892230}
   blindsUpTimeInfo: {fileID: 1377004299}
-  raiseAmount: 10000
-  minRaiseAmount: 0
-  maxRaiseAmount: 0
-  actionButtonAreaIndex: -1
 --- !u!1 &1199730203
 GameObject:
   m_ObjectHideFlags: 0
@@ -15324,13 +15313,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1189902640}
-        m_TargetAssemblyTypeName: TournamentBehavior, Assembly-CSharp
+      - m_Target: {fileID: 1189902641}
+        m_TargetAssemblyTypeName: GameBehavior, Assembly-CSharp
         m_MethodName: ToggleSitOutNextHandButton
-        m_Mode: 2
+        m_Mode: 1
         m_Arguments:
-          m_ObjectArgument: {fileID: 1242177545}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -16174,8 +16163,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1189902640}
-        m_TargetAssemblyTypeName: TournamentBehavior, Assembly-CSharp
+      - m_Target: {fileID: 1189902641}
+        m_TargetAssemblyTypeName: GameBehavior, Assembly-CSharp
         m_MethodName: Raise
         m_Mode: 1
         m_Arguments:
@@ -16524,8 +16513,8 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1189902640}
-        m_TargetAssemblyTypeName: TournamentBehavior, Assembly-CSharp
+      - m_Target: {fileID: 1189902641}
+        m_TargetAssemblyTypeName: GameBehavior, Assembly-CSharp
         m_MethodName: Fold
         m_Mode: 1
         m_Arguments:
@@ -18327,8 +18316,8 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1266220735}
   m_HandleRect: {fileID: 1266220734}
   m_Direction: 2
-  m_Value: 0
-  m_Size: 0.50000006
+  m_Value: 1
+  m_Size: 1
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:
@@ -19015,13 +19004,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1189902640}
-        m_TargetAssemblyTypeName: TournamentBehavior, Assembly-CSharp
+      - m_Target: {fileID: 1189902641}
+        m_TargetAssemblyTypeName: GameBehavior, Assembly-CSharp
         m_MethodName: ToggleCallAnyButton
-        m_Mode: 2
+        m_Mode: 1
         m_Arguments:
-          m_ObjectArgument: {fileID: 1635926670}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -20051,13 +20040,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1189902640}
-        m_TargetAssemblyTypeName: TournamentBehavior, Assembly-CSharp
+      - m_Target: {fileID: 1189902641}
+        m_TargetAssemblyTypeName: GameBehavior, Assembly-CSharp
         m_MethodName: ToggleCallAnyButton
-        m_Mode: 2
+        m_Mode: 1
         m_Arguments:
-          m_ObjectArgument: {fileID: 1695128709}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -21464,7 +21453,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.000015258789, y: 23.609995}
+  m_AnchoredPosition: {x: -0.000015258789, y: 23.610006}
   m_SizeDelta: {x: 167.49, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &1815449316
@@ -21785,7 +21774,7 @@ MonoBehaviour:
   m_OnValueChanged:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1189902640}
+      - m_Target: {fileID: 0}
         m_TargetAssemblyTypeName: TournamentBehavior, Assembly-CSharp
         m_MethodName: SendChat
         m_Mode: 0
@@ -23143,13 +23132,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1189902640}
-        m_TargetAssemblyTypeName: TournamentBehavior, Assembly-CSharp
+      - m_Target: {fileID: 1189902641}
+        m_TargetAssemblyTypeName: GameBehavior, Assembly-CSharp
         m_MethodName: ToggleCheckFoldButton
-        m_Mode: 2
+        m_Mode: 1
         m_Arguments:
-          m_ObjectArgument: {fileID: 1919424537}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 
@@ -23788,13 +23777,13 @@ MonoBehaviour:
   m_OnClick:
     m_PersistentCalls:
       m_Calls:
-      - m_Target: {fileID: 1189902640}
-        m_TargetAssemblyTypeName: TournamentBehavior, Assembly-CSharp
+      - m_Target: {fileID: 1189902641}
+        m_TargetAssemblyTypeName: GameBehavior, Assembly-CSharp
         m_MethodName: ToggleSitOutNextBigBlindButton
-        m_Mode: 2
+        m_Mode: 1
         m_Arguments:
-          m_ObjectArgument: {fileID: 1969530481}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.GameObject, UnityEngine
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
           m_StringArgument: 

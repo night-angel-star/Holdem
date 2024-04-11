@@ -14,7 +14,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 
-public class GameBehavior : MonoBehaviour
+public class TournamentBehaviorOld : MonoBehaviour
 {
     // Start is called before the first frame update
 
@@ -22,13 +22,10 @@ public class GameBehavior : MonoBehaviour
     public Room room;
 
     public TMP_Text roomNameObject;
-    public TMP_Text roomMoneyObject;
     public GameObject myCards;
     public GameObject usersParent;
     public GameObject chipMinBuyLimitObject;
     public GameObject chipMaxBuyLimitObject;
-    public GameObject totalChipsValueObject;
-    public GameObject chipAddButton;
     public Slider chipsSliderObject;
     public GameObject publicCardArea;
     public GameObject sitToSeatArea;
@@ -62,23 +59,21 @@ public class GameBehavior : MonoBehaviour
     public GameObject chatInput;
     public GameObject chatHistory;
 
-    public GameObject waitTimeInfo;
-    public GameObject winnersInfo;
-
-    public GameObject handStrengthParent;
-
+    public GameObject blindsInfo;
+    public GameObject newBlindsInfo;
+    public GameObject blindsUpTimeInfo;
 
 
 
-    protected int raiseAmount = 0;
-    protected int minRaiseAmount = 0;
-    protected int maxRaiseAmount = 0;
 
-    protected int actionButtonAreaIndex = -1;
+    public int raiseAmount = 0;
 
-    protected bool receiveFromGlobalResult = false;
+    public int minRaiseAmount = 0;
+    public int maxRaiseAmount = 0;
 
-    protected bool waiting = false;
+    public int actionButtonAreaIndex = -1;
+
+    bool receiveFromGlobalResult = false;
 
 
     void Start()
@@ -91,228 +86,43 @@ public class GameBehavior : MonoBehaviour
         try
         {
             //read from global
-            try
-            {
-                receiveFromGlobalResult = UpdateRoomFromGlobal();
-            }
-            catch (Exception ex)
-            {
-                Debug.Log(ex);
-            }
-
+            receiveFromGlobalResult = UpdateRoomFromGlobal();
             if (receiveFromGlobalResult)
             {
-                try
-                {
-                    SetWaiting();
-                }
-                catch (Exception ex)
-                {
-                    Debug.Log(ex);
-                }
                 //set data from room data
-                try
-                {
-                    DisableUnneccessarySeats();
-                }
-                catch (Exception ex)
-                {
-                    Debug.Log(ex);
-                }
-
-                try
-                {
-                    SetActionButtonArea();
-                }
-                catch (Exception ex)
-                {
-                    Debug.Log(ex);
-                }
-
-
+                DisableUnneccessarySeats();
+                SetActionButtonArea();
                 //draw ui
-                if (room.gameStatus == 2 && room.GetUserSeat() != -1 && !waiting)
+                if (room.gameStatus == 2)
                 {
-                    try
-                    {
-                        GetMyCard();
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.Log(ex);
-                    }
-                }
-                try
-                {
+                    GetMyCard();
                     GetActionButtonsInteractable();
                 }
-                catch (Exception ex)
-                {
-                    Debug.Log(ex);
-                }
                 //AutoAction();
-                try
-                {
-                    SetUserInfo();
-                }
-                catch (Exception ex)
-                {
-                    Debug.Log(ex);
-                }
-
-                try
-                {
-                    SetRoomName();
-                }
-                catch (Exception ex)
-                {
-                    Debug.Log(ex);
-                }
-
-                try
-                {
-                    InitializeAddChipsModal();
-                }
-                catch (Exception ex)
-                {
-                    Debug.Log(ex);
-                }
-
-                try
-                {
-                    SetPublicCards();
-                }
-                catch (Exception ex)
-                {
-                    Debug.Log(ex);
-                }
-
-                try
-                {
-                    SetTimer();
-                }
-                catch (Exception ex)
-                {
-                    Debug.Log(ex);
-                }
-
-                try
-                {
-                    SetActionButtonAreaIndexByGlobal();
-                }
-                catch (Exception ex)
-                {
-                    Debug.Log(ex);
-                }
-
-                try
-                {
-                    SetRaiseAmounts();
-                }
-                catch (Exception ex)
-                {
-                    Debug.Log(ex);
-                }
-
-                try
-                {
-                    SetRaiseBar();
-                }
-                catch (Exception ex)
-                {
-                    Debug.Log(ex);
-                }
-
-                try
-                {
-                    SetAutoButtons();
-                }
-                catch (Exception ex)
-                {
-                    Debug.Log(ex);
-                }
-
-                try
-                {
-                    CheckRaiseAmount();
-                }
-                catch (Exception ex)
-                {
-                    Debug.Log(ex);
-                }
-
-                try
-                {
-                    SetGamersActionStatus();
-                }
-                catch (Exception ex)
-                {
-                    Debug.Log(ex);
-                }
-
-                try
-                {
-                    SetRoomsToggler();
-                }
-                catch (Exception ex)
-                {
-                    Debug.Log(ex);
-                }
-
-                try
-                {
-                    SetRoomsView();
-                }
-                catch (Exception ex)
-                {
-                    Debug.Log(ex);
-                }
-
-                try
-                {
-                    SetChatHistory();
-                }
-                catch (Exception ex)
-                {
-                    Debug.Log(ex);
-                }
-                try
-                {
-                    SetWaitTimeInfo();
-                }
-                catch (Exception ex)
-                {
-                    Debug.Log(ex);
-                }
-                try
-                {
-                    SetWinners();
-                }
-                catch (Exception ex)
-                {
-                    Debug.Log(ex);
-                }
-
-                try
-                {
-                    SetHandStrength();
-                }
-                catch (Exception ex)
-                {
-                    Debug.Log(ex);
-                }
-
-
+                SetUserInfo();
+                SetRoomName();
+                InitializeAddChipsModal();
+                SetPublicCards();
+                SetTimer();
+                SetActionButtonAreaIndexByGlobal();
+                SetRaiseAmounts();
+                SetRaiseBar();
+                SetAutoButtons();
+                CheckRaiseAmount();
+                SetGamersActionStatus();
+                SetRoomsToggler();
+                SetRoomsView();
+                SetTournamentInfo();
             }
         }
         catch (Exception ex)
         {
-            LogHelper.AppLog("Multiroom");
+            LogHelper.AppLog("Tournament");
             LogHelper.AppLog(ex.ToString());
         }
     }
 
-    protected bool UpdateRoomFromGlobal()
+    bool UpdateRoomFromGlobal()
     {
         if (Globals.currentRoom != null)
         {
@@ -330,10 +140,9 @@ public class GameBehavior : MonoBehaviour
         {
             return false;
         }
-
     }
 
-    protected void DisableUnneccessarySeats()
+    void DisableUnneccessarySeats()
     {
         GameObject[] usersArray = GameObjectHelper.GetChildren(usersParent);
         GameObject[] sitButtons = GameObjectHelper.GetChildren(sitToSeatArea);
@@ -405,7 +214,7 @@ public class GameBehavior : MonoBehaviour
 
     }
 
-    protected void GetMyCard()
+    void GetMyCard()
     {
         if (room.cards.Count > 0)
         {
@@ -414,22 +223,17 @@ public class GameBehavior : MonoBehaviour
                 myCards.SetActive(true);
                 GameObject card1 = myCards.transform.GetChild(0).gameObject;
                 GameObject card2 = myCards.transform.GetChild(1).gameObject;
-                if (room.cards.ContainsKey(room.GetUserSeat()))
-                {
-                    card1.GetComponent<SpriteRenderer>().sprite = CardHelper.GetCard(room.cards[room.GetUserSeat()][0]);
-                    card2.GetComponent<SpriteRenderer>().sprite = CardHelper.GetCard(room.cards[room.GetUserSeat()][1]);
-                }
-
+                card1.GetComponent<SpriteRenderer>().sprite = CardHelper.GetCard(room.cards[room.GetUserSeat()][0]);
+                card2.GetComponent<SpriteRenderer>().sprite = CardHelper.GetCard(room.cards[room.GetUserSeat()][1]);
             }
         }
 
     }
 
-    protected void GetActionButtonsInteractable()
+    void GetActionButtonsInteractable()
     {
         GameObject callButton = ActionButtonsArea.transform.GetChild(1).gameObject.transform.GetChild(2).gameObject;
         GameObject checkButton = ActionButtonsArea.transform.GetChild(1).gameObject.transform.GetChild(1).gameObject;
-        GameObject readyButton = ActionButtonsArea.transform.GetChild(0).gameObject.transform.GetChild(0).gameObject;
 
         if (room.operations.check != null)
         {
@@ -441,19 +245,9 @@ public class GameBehavior : MonoBehaviour
             checkButton.GetComponent<Button>().interactable = false;
             callButton.GetComponent<Button>().interactable = true;
         }
-
-        if (room.operations.ready != null)
-        {
-            readyButton.GetComponent<Button>().interactable = true;
-            readyButton.SetActive(true);
-        }
-        else
-        {
-            readyButton.GetComponent<Button>().interactable = false;
-            readyButton.SetActive(false);
-        }
     }
-    protected void SetUserInfo()
+
+    void SetUserInfo()
     {
         if (room.GetUserSeat() == -1)
         {
@@ -506,28 +300,21 @@ public class GameBehavior : MonoBehaviour
                     if (i == 0)
                     {
                         usersArray[i].transform.GetChild(1).gameObject.SetActive(true);
-                        if (room.gameStatus == 2 && room.GetUserSeat() != -1 && !waiting)
+                        if (room.gameStatus == 2||room.gameStatus==3)
                         {
                             usersArray[i].transform.GetChild(2).gameObject.SetActive(true);
                             usersArray[i].transform.GetChild(4).gameObject.SetActive(true);
                         }
                         else
                         {
-                            if (room.gameStatus == 3 && room.GetUserSeat() != -1 && !waiting)
-                            {
-                                usersArray[i].transform.GetChild(2).gameObject.SetActive(true);
-                            }
-                            else
-                            {
-                                usersArray[i].transform.GetChild(2).gameObject.SetActive(false);
-                            }
+                            usersArray[i].transform.GetChild(2).gameObject.SetActive(false);
                             usersArray[i].transform.GetChild(4).gameObject.SetActive(false);
                         }
                     }
                     else
                     {
                         usersArray[i].transform.GetChild(1).gameObject.SetActive(true);
-                        if (room.gameStatus == 2 && room.GetUserSeat() != -1 && !waiting)
+                        if (room.gameStatus == 2)
                         {
                             usersArray[i].transform.GetChild(2).gameObject.SetActive(true);
                             usersArray[i].transform.GetChild(3).gameObject.SetActive(true);
@@ -537,7 +324,7 @@ public class GameBehavior : MonoBehaviour
                             usersArray[i].transform.GetChild(2).gameObject.SetActive(false);
                             usersArray[i].transform.GetChild(3).gameObject.SetActive(false);
                         }
-                        if (room.gameStatus == 3 && !waiting)
+                        if (room.gameStatus == 3)
                         {
                             if (room.status[ArrayHelper.ReRotateNumber(i, room.GetUserSeat(), room.options.max_seats)] != "fold" && room.status[room.GetUserSeat()] != "fold")
                             {
@@ -578,21 +365,14 @@ public class GameBehavior : MonoBehaviour
                         }
 
                     }
-                    if (room.gamers.ContainsKey(rotatedSeats[i]))
-                    {
-                        GameObject avatar = usersArray[i].transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.transform.GetChild(1).gameObject;
-                        avatar.GetComponent<SpriteRenderer>().sprite = AvatarHelper.GetAvatar(room.gamers[rotatedSeats[i]].avatar.ToString());
-                        GameObject name = usersArray[i].transform.GetChild(1).gameObject.transform.GetChild(1).gameObject.transform.GetChild(1).gameObject;
-                        name.GetComponent<TMP_Text>().text = room.gamers[rotatedSeats[i]].name;
-                        GameObject wallet_money = usersArray[i].transform.GetChild(1).gameObject.transform.GetChild(1).gameObject.transform.GetChild(2).gameObject;
-                        wallet_money.GetComponent<TMP_Text>().text = room.gamers[rotatedSeats[i]].coins + " ₮";
-                    }
+                    GameObject avatar = usersArray[i].transform.GetChild(1).gameObject.transform.GetChild(0).gameObject.transform.GetChild(1).gameObject;
+                    avatar.GetComponent<SpriteRenderer>().sprite = AvatarHelper.GetAvatar(room.gamers[rotatedSeats[i]].avatar.ToString());
+                    GameObject name = usersArray[i].transform.GetChild(1).gameObject.transform.GetChild(1).gameObject.transform.GetChild(1).gameObject;
+                    name.GetComponent<TMP_Text>().text = room.gamers[rotatedSeats[i]].name;
+                    GameObject wallet_money = usersArray[i].transform.GetChild(1).gameObject.transform.GetChild(1).gameObject.transform.GetChild(2).gameObject;
+                    wallet_money.GetComponent<TMP_Text>().text = room.gamers[rotatedSeats[i]].coins + " ₮";
 
-
-
-
-
-                    if (room.gameStatus == 2 && room.GetUserSeat() != -1 && !waiting)
+                    if (room.gameStatus == 2)
                     {
                         if (i == 0)
                         {
@@ -600,11 +380,7 @@ public class GameBehavior : MonoBehaviour
                             try
                             {
                                 int rotatedI = ArrayHelper.ReRotateNumber(i, room.GetUserSeat(), room.options.max_seats);
-                                if (room.chips.ContainsKey(rotatedI))
-                                {
-                                    money.GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated(long.Parse(room.chips[rotatedI].ToString()), 1);
-                                }
-
+                                money.GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated(long.Parse(room.chips[rotatedI].ToString()), 1);
 
                             }
                             catch (Exception ex)
@@ -616,17 +392,22 @@ public class GameBehavior : MonoBehaviour
                         else
                         {
                             GameObject money = usersArray[i].transform.GetChild(3).gameObject.transform.GetChild(1).gameObject;
-                            if (room.chips.ContainsKey(ArrayHelper.ReRotateNumber(i, room.GetUserSeat(), room.options.max_seats)))
+                            try
                             {
-                                money.GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated(long.Parse(room.chips[ArrayHelper.ReRotateNumber(i, room.GetUserSeat(), room.options.max_seats)].ToString()), 1);
-                            }
+                                int rotatedI = ArrayHelper.ReRotateNumber(i, room.GetUserSeat(), room.options.max_seats);
+                                money.GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated(long.Parse(room.chips[rotatedI].ToString()), 1);
 
+                            }
+                            catch (Exception ex)
+                            {
+                                Toast.Show(ex.ToString());
+                                Debug.Log(ex);
+                            }
                         }
                     }
                     else if (room.gameStatus == 3)
                     {
-
-                        if (room.status[ArrayHelper.ReRotateNumber(i, room.GetUserSeat(), room.options.max_seats)] != "fold" && room.status[room.GetUserSeat()] != "fold")
+                        if (room.status[ArrayHelper.ReRotateNumber(i, room.GetUserSeat(), room.options.max_seats)] != "fold" && room.status[room.GetUserSeat()]!="fold")
                         {
                             if (i == 0)
                             {
@@ -636,15 +417,10 @@ public class GameBehavior : MonoBehaviour
                             {
                                 GameObject userShowCards1 = usersArray[i].transform.GetChild(5).gameObject.transform.GetChild(0).gameObject;
                                 GameObject userShowCards2 = usersArray[i].transform.GetChild(5).gameObject.transform.GetChild(1).gameObject;
-                                if (room.cards.ContainsKey(ArrayHelper.ReRotateNumber(i, room.GetUserSeat(), room.options.max_seats)))
-                                {
-                                    userShowCards1.GetComponent<SpriteRenderer>().sprite = CardHelper.GetCard(room.cards[ArrayHelper.ReRotateNumber(i, room.GetUserSeat(), room.options.max_seats)][0]);
-                                    userShowCards2.GetComponent<SpriteRenderer>().sprite = CardHelper.GetCard(room.cards[ArrayHelper.ReRotateNumber(i, room.GetUserSeat(), room.options.max_seats)][1]);
-                                }
-
+                                userShowCards1.GetComponent<SpriteRenderer>().sprite = CardHelper.GetCard(room.cards[ArrayHelper.ReRotateNumber(i, room.GetUserSeat(), room.options.max_seats)][0]);
+                                userShowCards2.GetComponent<SpriteRenderer>().sprite = CardHelper.GetCard(room.cards[ArrayHelper.ReRotateNumber(i, room.GetUserSeat(), room.options.max_seats)][1]);
                             }
                         }
-
 
                     }
 
@@ -683,38 +459,21 @@ public class GameBehavior : MonoBehaviour
         }
     }
 
-    protected void SetRoomName()
+    void SetRoomName()
     {
         roomNameObject.text = room.name;
-        roomMoneyObject.text = room.options.min_buy.ToString();
     }
 
-    public void CheckUserBalance()
-    {
-        if (room.options.min_buy > Globals.userProfile.deposite)
-        {
-            Toast.Show("You have not enough balance.", "danger");
-        }
-    }
-    protected void InitializeAddChipsModal()
+    void InitializeAddChipsModal()
     {
         chipMinBuyLimitObject.GetComponent<TMP_Text>().text = room.options.min_buy.ToString();
         chipMaxBuyLimitObject.GetComponent<TMP_Text>().text = Globals.userProfile.deposite.ToString();
-        totalChipsValueObject.GetComponent<TMP_Text>().text = Globals.userProfile.deposite.ToString();
         chipsSliderObject.minValue = room.options.min_buy;
         chipsSliderObject.maxValue = Globals.userProfile.deposite;
-        if (room.options.min_buy > Globals.userProfile.deposite)
-        {
-            chipAddButton.GetComponent<Button>().interactable = false;
-        }
-        else
-        {
-            chipAddButton.GetComponent<Button>().interactable = true;
-        }
 
     }
 
-    protected void SetPublicCards()
+    void SetPublicCards()
     {
         GameObject[] publicCards = GameObjectHelper.GetChildren(publicCardArea);
         if (room.shared_cards != null)
@@ -729,18 +488,16 @@ public class GameBehavior : MonoBehaviour
 
     public void sitToRoom(int index) //api
     {
-        string uid = Globals.gameToken.uid;
-        int pin = Globals.gameToken.pin;
-        var data = new
-        {
-            uid = uid,
-            pin = pin,
-            f = "takeseat",
-            roomid = Globals.currentRoom,
-            args = index.ToString(),
-        };
-
-        Globals.socketIoConnection.SendRpc(data, OnTakeSeatResponse);
+        //string uid = Globals.gameToken.uid;
+        //int pin = Globals.gameToken.pin;
+        //var data = new
+        //{
+        //    uid = uid,
+        //    pin = pin,
+        //    f = "takeseat",
+        //    args = index.ToString(),
+        //};
+        //Globals.socketIoConnection.SendRpc(data, OnTakeSeatResponse);
     }
 
     private void OnTakeSeatResponse(JToken jsonResponse)
@@ -782,14 +539,6 @@ public class GameBehavior : MonoBehaviour
                 errorString = "Invalid response";
                 break;
             }
-            else
-            {
-                if (ret["cmds"] != null)
-                {
-                    Dictionary<string, object> cmds = JsonResponse.ToDictionary(ret["cmds"]);
-                    Globals.gameRooms[Globals.currentRoom].operations.ready = cmds["ready"];
-                }
-            }
 
             actionButtonAreaIndex = 0;
             return;
@@ -812,119 +561,25 @@ public class GameBehavior : MonoBehaviour
 
     private void OnReadyResponse(JToken jsonResponse)
     {
-        string errorString = "";
-        Dictionary<string, object> res = JsonResponse.ToDictionary(jsonResponse);
-
-        do
-        {
-            if (res == null)
-            {
-                errorString = "Invalid response";
-                break;
-            }
-            int err = res["err"].ConvertTo<int>();
-            if (err != 0)
-            {
-                if (!res.ContainsKey("ret"))
-                {
-                    errorString = "Invalid response";
-                    break;
-                }
-                errorString = res["ret"].ToString();
-                UnityMainThreadDispatcher.Instance().Enqueue(() =>
-                {
-                    Toast.Show(errorString, "danger");
-                });
-
-                break;
-            }
-            if (!res.ContainsKey("ret"))
-            {
-                errorString = "Invalid response";
-                break;
-            }
-            Dictionary<string, object> ret = JsonResponse.ToDictionary(res["ret"]);
-            if (ret == null)
-            {
-                errorString = "Invalid response";
-                break;
-            }
-            else
-            {
-                if (ret["cmds"] != null)
-                {
-                    Dictionary<string, object> cmds = JsonResponse.ToDictionary(ret["cmds"]);
-                    Globals.gameRooms[Globals.currentRoom].operations.ready = cmds["ready"];
-                    Debug.Log("ready button disabled");
-                }
-            }
-
-            actionButtonAreaIndex = 0;
-            return;
-        } while (false);
     }
 
     public void SetTimer()
     {
         if (room.GetUserSeat() != -1)
         {
-            if (room.activeSeat != -1)
+            GameObject[] usersArray = GameObjectHelper.GetActiveChildren(usersParent);
+            string[] rotatedSeats = ArrayHelper.RotateArray(room.seats, room.GetUserSeat());
+            int currentActiveUserRotated = ArrayHelper.RotateNumber(room.activeSeat, room.GetUserSeat(), rotatedSeats.Length);
+            for (int i = 0; i < rotatedSeats.Length; i++)
             {
-                GameObject[] usersArray = GameObjectHelper.GetActiveChildren(usersParent);
-                string[] rotatedSeats = ArrayHelper.RotateArray(room.seats, room.GetUserSeat());
-                int currentActiveUserRotated = ArrayHelper.RotateNumber(room.activeSeat, room.GetUserSeat(), rotatedSeats.Length);
-                for (int i = 0; i < rotatedSeats.Length; i++)
+                GameObject progressbar = usersArray[i].transform.GetChild(1).transform.GetChild(2).transform.GetChild(0).gameObject;
+                if (i == currentActiveUserRotated)
                 {
-                    GameObject progressbar = usersArray[i].transform.GetChild(1).transform.GetChild(2).transform.GetChild(0).gameObject;
-                    progressbar.SetActive(true);
-                    if (i == currentActiveUserRotated)
-                    {
-                        progressbar.GetComponent<Image>().fillAmount = ((float)(20 - room.countdown) / room.totalCount);
-                    }
-                    else
-                    {
-                        progressbar.GetComponent<Image>().fillAmount = 0;
-                    }
+                    progressbar.GetComponent<Image>().fillAmount = ((float)(20 - room.countdown) / room.totalCount);
                 }
-            }
-            else
-            {
-                GameObject[] usersArray = GameObjectHelper.GetActiveChildren(usersParent);
-                string[] rotatedSeats = ArrayHelper.RotateArray(room.seats, room.GetUserSeat());
-                for (int i = 0; i < rotatedSeats.Length; i++)
+                else
                 {
-                    GameObject progressbar = usersArray[i].transform.GetChild(1).transform.GetChild(2).transform.GetChild(0).gameObject;
-                    progressbar.SetActive(false);
-                }
-            }
-
-        }
-        else
-        {
-            if (room.activeSeat != -1)
-            {
-                GameObject[] usersArray = GameObjectHelper.GetActiveChildren(usersParent);
-                for (int i = 0; i < room.seats.Length; i++)
-                {
-                    GameObject progressbar = usersArray[i].transform.GetChild(1).transform.GetChild(2).transform.GetChild(0).gameObject;
-                    progressbar.SetActive(true);
-                    if (i == room.activeSeat)
-                    {
-                        progressbar.GetComponent<Image>().fillAmount = ((float)(20 - room.countdown) / room.totalCount);
-                    }
-                    else
-                    {
-                        progressbar.GetComponent<Image>().fillAmount = 0;
-                    }
-                }
-            }
-            else
-            {
-                GameObject[] usersArray = GameObjectHelper.GetActiveChildren(usersParent);
-                for (int i = 0; i < room.seats.Length; i++)
-                {
-                    GameObject progressbar = usersArray[i].transform.GetChild(1).transform.GetChild(2).transform.GetChild(0).gameObject;
-                    progressbar.SetActive(false);
+                    progressbar.GetComponent<Image>().fillAmount = 0;
                 }
             }
         }
@@ -940,33 +595,18 @@ public class GameBehavior : MonoBehaviour
         {
             switch (room.gameStatus)
             {
-                //case 0:
-                //    actionButtonAreaIndex = 0;
-                //    break;
-                //case 1:
-                //    actionButtonAreaIndex = -1;
-                //    break;
+                case 0:
+                    actionButtonAreaIndex = 0;
+                    break;
+                case 1:
+                    actionButtonAreaIndex = -1;
+                    break;
                 case 2:
-                    if (!waiting && room.operations.ready == null)
+                    if (room.status != null)
                     {
-                        if (room.status != null)
+                        if (room.status[room.GetUserSeat()] == "fold")
                         {
-                            if (room.status[room.GetUserSeat()] == "fold")
-                            {
-                                actionButtonAreaIndex = 2;
-                            }
-                            else
-                            {
-                                if (room.activeSeat == room.GetUserSeat())
-                                {
-                                    actionButtonAreaIndex = 1;
-                                }
-                                else
-                                {
-                                    actionButtonAreaIndex = 3;
-                                }
-                            }
-
+                            actionButtonAreaIndex = 2;
                         }
                         else
                         {
@@ -983,14 +623,21 @@ public class GameBehavior : MonoBehaviour
                     }
                     else
                     {
-                        actionButtonAreaIndex = 0;
+                        if (room.activeSeat == room.GetUserSeat())
+                        {
+                            actionButtonAreaIndex = 1;
+                        }
+                        else
+                        {
+                            actionButtonAreaIndex = 3;
+                        }
                     }
                     break;
-                //case 3:
-                //    actionButtonAreaIndex = 0;
-                //    break;
-                default:
+                case 3:
                     actionButtonAreaIndex = 0;
+                    break;
+                default:
+                    actionButtonAreaIndex = -1;
                     break;
             }
         }
@@ -1005,6 +652,62 @@ public class GameBehavior : MonoBehaviour
             if (i == actionButtonAreaIndex)
             {
                 actionButtonGroup[i].SetActive(true);
+                //switch (i)
+                //{
+                //    case 0:
+                //        GameObject readyButton = actionButtonGroup[i].transform.GetChild(0).gameObject;
+                //        if (room.operations.ready)
+                //        {
+                //            readyButton.GetComponent<Button>().interactable = true;
+                //        }
+                //        else
+                //        {
+                //            readyButton.GetComponent<Button>().interactable = false;
+                //        }
+                //        break;
+                //    case 1:
+                //        GameObject foldButton = actionButtonGroup[i].transform.GetChild(0).gameObject;
+                //        if (room.operations.fold)
+                //        {
+                //            foldButton.GetComponent<Button>().interactable = true;
+                //        }
+                //        else
+                //        {
+                //            foldButton.GetComponent<Button>().interactable = false;
+                //        }
+                //        GameObject checkButton = actionButtonGroup[i].transform.GetChild(1).gameObject;
+                //        if (room.operations.check)
+                //        {
+                //            checkButton.GetComponent<Button>().interactable = true;
+                //        }
+                //        else
+                //        {
+                //            checkButton.GetComponent<Button>().interactable = false;
+                //        }
+                //        GameObject callButton = actionButtonGroup[i].transform.GetChild(2).gameObject;
+                //        if (room.operations.call)
+                //        {
+                //            callButton.GetComponent<Button>().interactable = true;
+                //        }
+                //        else
+                //        {
+                //            callButton.GetComponent<Button>().interactable = false;
+                //        }
+                //        GameObject raiseButton = actionButtonGroup[i].transform.GetChild(3).gameObject;
+                //        if (room.operations.raise)
+                //        {
+                //            raiseButton.GetComponent<Button>().interactable = true;
+                //        }
+                //        else
+                //        {
+                //            raiseButton.GetComponent<Button>().interactable = false;
+                //        }
+                //        break;
+                //    case 2:
+                //        break;
+                //    default:
+                //        break;
+                //}
             }
             else
             {
@@ -1097,11 +800,10 @@ public class GameBehavior : MonoBehaviour
         raiseConfirmButton.SetActive(false);
     }
 
-
-
     private void OnRaiseResponse(JToken jsonResponse)
     {
         Debug.Log("Raise");
+
     }
 
     public void RaiseModalDismiss()
@@ -1134,8 +836,6 @@ public class GameBehavior : MonoBehaviour
             Globals.gameRooms[Globals.currentRoom].autoOperation.sitOutNextBigBlindButton = true;
         }
     }
-
-
 
     public void ToggleFoldAnyButton()
     {
@@ -1230,7 +930,7 @@ public class GameBehavior : MonoBehaviour
         Globals.gameRooms[Globals.currentRoom].gamers[Globals.gameToken.uid].activeStatus = (Globals.gameRooms[Globals.currentRoom].gamers[Globals.gameToken.uid].activeStatus != 3 ? 3 : 0);
     }
 
-    protected void SetAutoButtons()
+    void SetAutoButtons()
     {
         if (room.autoOperation.sitOutNextHandButton)
         {
@@ -1288,14 +988,8 @@ public class GameBehavior : MonoBehaviour
         }
     }
 
-
-
     void AutoAction()
     {
-        //foreach(KeyValuePair<string, Room> kvp in Globals.gameRooms)
-        //{
-
-        //}
         if (room.gameStatus == 2 && room.activeSeat == room.GetUserSeat())
         {
             if (room.autoOperation.foldAnyButton)
@@ -1327,23 +1021,16 @@ public class GameBehavior : MonoBehaviour
         }
     }
 
-    protected void SetRaiseAmounts()
+    void SetRaiseAmounts()
     {
-        if (room.gameStatus == 2 && room.GetUserSeat() != -1 && !waiting)
+        if (room.gameStatus == 2)
         {
             int[] gamersCoinArray = new int[room.options.max_seats];
             for (int i = 0; i < gamersCoinArray.Length; i++)
             {
                 if (room.seats[i] != null)
                 {
-                    if (room.chips.ContainsKey(i))
-                    {
-                        gamersCoinArray[i] = room.chips[i];
-                    }
-                    else
-                    {
-                        gamersCoinArray[i] = 0;
-                    }
+                    gamersCoinArray[i] = room.chips[i];
                 }
                 else
                 {
@@ -1368,13 +1055,13 @@ public class GameBehavior : MonoBehaviour
 
         }
     }
-    protected void SetRaiseBar()
+
+    void SetRaiseBar()
     {
-        if (room.gameStatus == 2 && room.GetUserSeat() != -1 && !waiting)
+        if (room.gameStatus == 2)
         {
             GameObject[] raiseBarGrades = GameObjectHelper.GetChildren(raiseBarGradeParent);
-            //raiseToValue.GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated((long)raiseAmount, 1);
-            raiseToValue.GetComponent<TMP_Text>().text = raiseAmount.ToString();
+            raiseToValue.GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated((long)raiseAmount, 1);
             int raiseBarStep = (maxRaiseAmount - minRaiseAmount) / raiseBarGrades.Length;
             for (int i = 0; i < raiseBarGrades.Length; i++)
             {
@@ -1394,7 +1081,7 @@ public class GameBehavior : MonoBehaviour
 
     }
 
-    protected void CheckRaiseAmount()
+    void CheckRaiseAmount()
     {
         if (raiseAmount > maxRaiseAmount)
         {
@@ -1499,70 +1186,8 @@ public class GameBehavior : MonoBehaviour
             {
                 Toast.Show("Chips added successfully");
                 addChipsModal.SetActive(false);
-
-                string uid = Globals.gameToken.uid;
-                int pin = Globals.gameToken.pin;
-                var data = new
-                {
-                    uid = uid,
-                    pin = pin,
-                    f = "profile",
-                    args = 0,
-                };
-                Globals.socketIoConnection.SendRpc(data, OnGetMoney);
             });
 
-
-            return;
-        } while (false);
-    }
-    void OnGetMoney(JToken jsonResponse)
-    {
-        string errorString = "";
-        Dictionary<string, object> res = JsonResponse.ToDictionary(jsonResponse);
-
-        do
-        {
-            if (res == null)
-            {
-                errorString = "Invalid response";
-                break;
-            }
-            int err = res["err"].ConvertTo<int>();
-            if (err != 0)
-            {
-                if (!res.ContainsKey("ret"))
-                {
-                    errorString = "Invalid response";
-                    break;
-                }
-                errorString = res["ret"].ToString();
-                break;
-            }
-            if (!res.ContainsKey("ret"))
-            {
-                errorString = "Invalid response";
-                break;
-            }
-            Dictionary<string, object> ret = JsonResponse.ToDictionary(res["ret"]);
-            if (ret == null)
-            {
-                errorString = "Invalid response";
-                break;
-            }
-
-            if (ret.ContainsKey("name"))
-            {
-                Globals.userProfile.name = ret["name"].ToString();
-            }
-            if (ret.ContainsKey("deposite"))
-            {
-                Globals.userProfile.deposite = int.Parse(ret["deposite"].ToString());
-            }
-            if (ret.ContainsKey("avatar"))
-            {
-                Globals.userProfile.avatar = ret["avatar"].ToString();
-            }
 
             return;
         } while (false);
@@ -1570,11 +1195,11 @@ public class GameBehavior : MonoBehaviour
 
     public void SetGamersActionStatus()
     {
-        if (room.gameStatus == 2 && room.GetUserSeat() != -1 && !waiting)
+        if (room.gameStatus == 2)
         {
             if (room.status != null)
             {
-                GameObject[] usersArray = GameObjectHelper.GetChildrenForRoomSize(usersParent, room.options.max_seats);
+                GameObject[] usersArray = GameObjectHelper.GetChildrenForRoomSize(usersParent,room.options.max_seats);
                 string[] gamerActionStatus = room.status;
                 string[] rotatedGamerActionStatus = ArrayHelper.RotateArray(gamerActionStatus, room.GetUserSeat());
 
@@ -1658,27 +1283,7 @@ public class GameBehavior : MonoBehaviour
 
     public void ChangeRoom(string roomId)
     {
-
-        string uid = Globals.gameToken.uid;
-        int pin = Globals.gameToken.pin;
-        var data = new
-        {
-            uid = uid,
-            pin = pin,
-            f = "changeroom",
-            args = new
-            {
-                roomid = roomId,
-                seat = Globals.gameRooms[roomId].GetUserSeat()
-            },
-        };
-        Globals.socketIoConnection.SendRpc(data, OnChangeRoomResponse);
         Globals.currentRoom = roomId;
-    }
-
-    private void OnChangeRoomResponse(JToken jsonResponse)
-    {
-
     }
 
     public void SetRoomsView()
@@ -1771,26 +1376,19 @@ public class GameBehavior : MonoBehaviour
 
     private void JoinHandler(int roomIndex)
     {
-        if (Globals.gameRooms.Count < 3)
+        string uid = Globals.gameToken.uid;
+        int pin = Globals.gameToken.pin;
+        var data = new
         {
-            string uid = Globals.gameToken.uid;
-            int pin = Globals.gameToken.pin;
-            var data = new
+            uid = uid,
+            pin = pin,
+            f = "enterroom",
+            args = new
             {
-                uid = uid,
-                pin = pin,
-                f = "enterroom",
-                args = new
-                {
-                    roomid = roomIndex.ToString()
-                }
-            };
-            Globals.socketIoConnection.SendRpc(data, OnJoinResponse);
-        }
-        else
-        {
-            Toast.Show("You can't join more than 3 rooms", "danger");
-        }
+                roomid = roomIndex.ToString()
+            }
+        };
+        Globals.socketIoConnection.SendRpc(data, OnJoinResponse);
     }
 
     private void OnJoinResponse(JToken jsonResponse)
@@ -1838,24 +1436,21 @@ public class GameBehavior : MonoBehaviour
 
     public void AddRowToTable(string[] rowElements, int index)
     {
-        if (roomListTable != null)
+        TableRow newRow = roomListTable.AddRow();
+        newRow.preferredHeight = 23;
+        for (int i = 0; i < rowElements.Length; i++)
         {
-            TableRow newRow = roomListTable.AddRow();
-            newRow.preferredHeight = 23;
-            for (int i = 0; i < rowElements.Length; i++)
-            {
-                TableScript.AddStringToCell(newRow.Cells[i], convertToTitleCase(rowElements[i].ToString()));
-            }
-            GameObject cellObject = new GameObject("GameObject", typeof(RectTransform));
-            cellObject.transform.SetParent(newRow.Cells[5].transform);
-            cellObject.transform.localScale = Vector3.one;
-
-            GameObject instantiatedButton = Instantiate(joinButtonPrefab, cellObject.transform);
-            instantiatedButton.transform.localScale = Vector3.one;
-
-            Button button = instantiatedButton.GetComponent<Button>();
-            button.onClick.AddListener(() => JoinHandler(index));
+            TableScript.AddStringToCell(newRow.Cells[i], convertToTitleCase(rowElements[i].ToString()));
         }
+        GameObject cellObject = new GameObject("GameObject", typeof(RectTransform));
+        cellObject.transform.SetParent(newRow.Cells[5].transform);
+        cellObject.transform.localScale = Vector3.one;
+
+        GameObject instantiatedButton = Instantiate(joinButtonPrefab, cellObject.transform);
+        instantiatedButton.transform.localScale = Vector3.one;
+
+        Button button = instantiatedButton.GetComponent<Button>();
+        button.onClick.AddListener(() => JoinHandler(index));
     }
 
     //End Table
@@ -1890,109 +1485,23 @@ public class GameBehavior : MonoBehaviour
         }
     }
 
-    void SetWaitTimeInfo()
+    void SetTournamentInfo()
     {
-        if (room.activeSeat == -1)
-        {
-            waitTimeInfo.SetActive(true);
-            GameObject waitTimeValue = waitTimeInfo.transform.GetChild(1).gameObject;
-            string waitTimeStr = TimeSpan.FromSeconds(room.countdown).ToString(@"hh\:mm\:ss");
-            waitTimeValue.GetComponent<TMP_Text>().text = waitTimeStr;
-        }
-        else
-        {
-            waitTimeInfo.SetActive(false);
-        }
+        int smallBlinds = Globals.tournamentInfo.small_bilnd;
+        int nextSmallBlinds = 2 * smallBlinds;
+        int bigBlinds = 2 * smallBlinds;
+        int nextBigBlinds = 2 * bigBlinds;
+        int blindUpTime = Globals.tournamentInfo.timeleft;
+        
+        string smallBlindStr = MoneyHelper.FormatNumberAbbreviated(smallBlinds, 1);
+        string bigBlindStr = MoneyHelper.FormatNumberAbbreviated(bigBlinds, 1);
+        string nextSmallBlindStr = MoneyHelper.FormatNumberAbbreviated(nextSmallBlinds, 1);
+        string nextBigBlindStr = MoneyHelper.FormatNumberAbbreviated(nextBigBlinds, 1);
+        string blindUpTimeStr = TimeSpan.FromSeconds(blindUpTime).ToString(@"hh\:mm\:ss");
+
+        blindsInfo.GetComponent<TMP_Text>().text = smallBlindStr + "/" + bigBlindStr;
+        newBlindsInfo.GetComponent<TMP_Text>().text = nextSmallBlindStr + "/" + nextBigBlindStr;
+        blindsUpTimeInfo.GetComponent<TMP_Text>().text = blindUpTimeStr;
+
     }
-
-    void SetWaiting()
-    {
-        if (room.GetUserSeat() != -1)
-        {
-            if (room.gameStatus == 2)
-            {
-                if (room.operations.ready != null)
-                {
-                    waiting = true;
-                }
-            }
-            else
-            {
-                waiting = false;
-            }
-        }
-    }
-
-    void SetWinners()
-    {
-        if (room.activeSeat == -1)
-        {
-            string winners = "";
-            for (int i = 0; i < room.seats.Length; i++)
-            {
-
-                if (room.seats[i] != null)
-                {
-                    if (room.gamers[room.seats[i]].is_winner)
-                    {
-                        if (winners != "")
-                        {
-                            winners += ", ";
-                        }
-                        winners += room.gamers[room.seats[i]].name;
-                    }
-                }
-
-            }
-            if (winners != "")
-            {
-                winnersInfo.transform.GetChild(1).gameObject.GetComponent<TMP_Text>().text = winners;
-                winnersInfo.SetActive(true);
-            }
-            else
-            {
-                winnersInfo.SetActive(false);
-            }
-        }
-        else
-        {
-            winnersInfo.SetActive(false);
-        }
-    }
-
-    protected void SetHandStrength()
-    {
-        if (room.gameStatus == 2 && room.GetUserSeat() != -1 && !waiting)
-        {
-            GameObject[] handStrengthObjects = GameObjectHelper.GetChildren(handStrengthParent);
-
-            List<string> allCards = new List<string>
-                {
-                    CardHelper.GetCardStr(room.cards[room.GetUserSeat()][0]),
-                    CardHelper.GetCardStr(room.cards[room.GetUserSeat()][1])
-                };
-            for(int i = 0; i < 5; i++)
-            {
-                if (room.shared_cards[i] != 0)
-                {
-                    allCards.Add(CardHelper.GetCardStr(room.shared_cards[i]));
-                }
-            }
-
-            int handStrength = HandStrengthCalculator.CalculateHandStrength(allCards)-1;
-            for(int i = 0; i < handStrengthObjects.Length; i++)
-            {
-                if (i < handStrength)
-                {
-                    handStrengthObjects[i].SetActive(true);
-                }
-                else
-                {
-                    handStrengthObjects[i].SetActive(false);
-                }
-            }
-
-        }
-    }
-
 }

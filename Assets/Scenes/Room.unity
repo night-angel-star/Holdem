@@ -2244,7 +2244,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.000015258789, y: 23.610014}
+  m_AnchoredPosition: {x: -0.000015258789, y: 23.610018}
   m_SizeDelta: {x: 167.49, y: 0}
   m_Pivot: {x: 0.5, y: 1}
 --- !u!114 &222437987
@@ -13575,10 +13575,7 @@ MonoBehaviour:
   chatHistory: {fileID: 222437985}
   waitTimeInfo: {fileID: 1291506800}
   winnersInfo: {fileID: 470161047}
-  raiseAmount: 10000
-  minRaiseAmount: 0
-  maxRaiseAmount: 0
-  actionButtonAreaIndex: -1
+  handStrengthParent: {fileID: 465586527}
 --- !u!4 &1189902639
 Transform:
   m_ObjectHideFlags: 0
