@@ -30,6 +30,8 @@ public class GameBehavior : MonoBehaviour
     public GameObject totalChipsValueObject;
     public GameObject chipAddButton;
     public Slider chipsSliderObject;
+    public GameObject chipSliderParent;
+    public GameObject depositeWarningText;
     public GameObject publicCardArea;
     public GameObject sitToSeatArea;
     public GameObject ActionButtonsArea;
@@ -66,6 +68,8 @@ public class GameBehavior : MonoBehaviour
     public GameObject winnersInfo;
 
     public GameObject handStrengthParent;
+
+    public GameObject mentionDropdown;
 
 
 
@@ -169,14 +173,14 @@ public class GameBehavior : MonoBehaviour
                     Debug.Log(ex);
                 }
 
-                try
-                {
-                    InitializeAddChipsModal();
-                }
-                catch (Exception ex)
-                {
-                    Debug.Log(ex);
-                }
+                //try
+                //{
+                //    InitializeAddChipsModal();
+                //}
+                //catch (Exception ex)
+                //{
+                //    Debug.Log(ex);
+                //}
 
                 try
                 {
@@ -696,22 +700,53 @@ public class GameBehavior : MonoBehaviour
             Toast.Show("You have not enough balance.", "danger");
         }
     }
-    protected void InitializeAddChipsModal()
+    public void InitializeAddChipsModal()
+    {
+        string uid = Globals.gameToken.uid;
+        int pin = Globals.gameToken.pin;
+        var data = new
+        {
+            uid = uid,
+            pin = pin,
+            f = "profile",
+            args = new
+            {
+                roomid = room.id
+            },
+        };
+        Globals.socketIoConnection.SendRpc(data, OnGetMoney);
+        
+    }
+
+    protected void UpdateAddChipsModal()
     {
         chipMinBuyLimitObject.GetComponent<TMP_Text>().text = room.options.min_buy.ToString();
         chipMaxBuyLimitObject.GetComponent<TMP_Text>().text = Globals.userProfile.deposite.ToString();
-        totalChipsValueObject.GetComponent<TMP_Text>().text = Globals.userProfile.deposite.ToString();
-        chipsSliderObject.minValue = room.options.min_buy;
-        chipsSliderObject.maxValue = Globals.userProfile.deposite;
-        if (room.options.min_buy > Globals.userProfile.deposite)
+        //totalChipsValueObject.GetComponent<TMP_Text>().text = Globals.userProfile.deposite.ToString();
+        if (room.options.min_buy <= Globals.userProfile.deposite)
         {
-            chipAddButton.GetComponent<Button>().interactable = false;
+            chipsSliderObject.minValue = room.options.min_buy;
+            chipsSliderObject.maxValue = Globals.userProfile.deposite;
+            chipAddButton.GetComponent<Button>().interactable = true;
+            chipSliderParent.SetActive(true);
+            depositeWarningText.SetActive(false);
         }
         else
         {
-            chipAddButton.GetComponent<Button>().interactable = true;
+            chipsSliderObject.gameObject.SetActive(false);
+            chipAddButton.GetComponent<Button>().interactable = false;
+            chipSliderParent.SetActive(false);
+            depositeWarningText.SetActive(true);
         }
-
+        
+        if (room.options.min_buy > Globals.userProfile.deposite)
+        {
+            
+        }
+        else
+        {
+            
+        }
     }
 
     protected void SetPublicCards()
@@ -1353,7 +1388,7 @@ public class GameBehavior : MonoBehaviour
 
 
             minRaiseAmount = 0;
-            maxRaiseAmount = room.gamers[Globals.userProfile.uid].coins - gamersCoinArray.Max();
+            maxRaiseAmount = room.gamers[Globals.userProfile.uid].coins - (gamersCoinArray.Max() - room.chips[room.GetUserSeat()]);
             if (maxRaiseAmount < minRaiseAmount)
             {
                 raiseButton.GetComponent<Button>().interactable = false;
@@ -1499,17 +1534,6 @@ public class GameBehavior : MonoBehaviour
             {
                 Toast.Show("Chips added successfully");
                 addChipsModal.SetActive(false);
-
-                string uid = Globals.gameToken.uid;
-                int pin = Globals.gameToken.pin;
-                var data = new
-                {
-                    uid = uid,
-                    pin = pin,
-                    f = "profile",
-                    args = 0,
-                };
-                Globals.socketIoConnection.SendRpc(data, OnGetMoney);
             });
 
 
@@ -1563,6 +1587,26 @@ public class GameBehavior : MonoBehaviour
             {
                 Globals.userProfile.avatar = ret["avatar"].ToString();
             }
+            if (ret.ContainsKey("coins"))
+            {
+                UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                {
+                    totalChipsValueObject.GetComponent<TMP_Text>().text = ret["coins"].ToString();
+                });
+                
+            }
+            else
+            {
+                UnityMainThreadDispatcher.Instance().Enqueue(() =>
+                {
+                    totalChipsValueObject.GetComponent<TMP_Text>().text = "0";
+                });
+            }
+            UnityMainThreadDispatcher.Instance().Enqueue(() =>
+            {
+                UpdateAddChipsModal();
+            });
+            
 
             return;
         } while (false);
@@ -1876,6 +1920,31 @@ public class GameBehavior : MonoBehaviour
             };
             Globals.socketIoConnection.SendRpc(data, OnSendChatResponse);
         }
+        else if (text.EndsWith("@"))
+        {
+            List<TMP_Dropdown.OptionData> optionDatas = new List<TMP_Dropdown.OptionData>();
+            List<string> gamersUid = new List<string>(room.gamers.Keys);
+            foreach(string gamerUid in  gamersUid)
+            {
+                TMP_Dropdown.OptionData option = new TMP_Dropdown.OptionData();
+                option.text = room.gamers[gamerUid].name;
+                optionDatas.Add(option);
+            }
+            
+            mentionDropdown.GetComponent<TMP_Dropdown>().options = optionDatas;
+            mentionDropdown.GetComponent<TMP_Dropdown>().Show();
+        }
+    }
+
+    public void AddUserNameFromDropdown()
+    {
+        int index = mentionDropdown.GetComponent<TMP_Dropdown>().value;
+        if (index != -1)
+        {
+            List<string> gamersUid = new List<string>(room.gamers.Keys);
+            chatInput.GetComponent<TMP_InputField>().text += room.gamers[gamersUid[index]].name;
+        }
+        
     }
 
     private void OnSendChatResponse(JToken jsonResponse)

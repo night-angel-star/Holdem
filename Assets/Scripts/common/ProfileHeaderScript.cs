@@ -21,7 +21,10 @@ public class ProfileHearderScript : MonoBehaviour
             uid = uid,
             pin = pin,
             f = "profile",
-            args = 0,
+            args = new
+            {
+                roomid="-1"
+            },
         };
         Globals.socketIoConnection.SendRpc(data, OnProfile);
         
