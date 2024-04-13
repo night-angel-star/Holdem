@@ -652,6 +652,7 @@ public class GameEngine
                     Globals.gameRooms[json.roomid.ToString()].gamers[g.uid].coins = g.coins;
                     Globals.gameRooms[json.roomid.ToString()].chips[g.seat] = g.chips;
                     Globals.gameRooms[json.roomid.ToString()].gamers[g.uid].is_winner = g.is_winner;
+                    Globals.gameRooms[json.roomid.ToString()].gamers[g.uid].profit = g.profit;
                     if (Globals.gameRooms[json.roomid.ToString()].gamers[g.uid].coins == 0)
                     {
                         SleepForGameover();
@@ -783,6 +784,38 @@ public class GameEngine
             LogHelper.AppLog(ex.ToString());
         }
     }
+
+    private void OnMessage(JToken baseToken)
+    {
+        try
+        {
+            string errorString = "";
+            do
+            {
+                if (baseToken == null)
+                    break;
+                if (baseToken.Type != JTokenType.Object)
+                    break;
+
+                MessageNotifyEvent json = baseToken.ToObject<MessageNotifyEvent>();
+                if (json != null)
+                {
+                    ProcessMessage(json.args.message);
+                }
+
+            } while (false);
+            if (errorString != "")
+            {
+                Debug.Log(errorString);
+            }
+            
+        }
+        catch (Exception ex)
+        {
+            LogHelper.AppLog("OnMessage");
+            LogHelper.AppLog(ex.ToString());
+        }
+    }
     public void RegisterGameEvents()
     {
 
@@ -817,6 +850,7 @@ public class GameEngine
             Globals.socketIoConnection.AddNotifyHandler("prompt", OnPrompt);
             Globals.socketIoConnection.AddNotifyHandler("chat", OnChat);
             Globals.socketIoConnection.AddNotifyHandler("bye", OnBye);
+            Globals.socketIoConnection.AddNotifyHandler("message", OnMessage);
         }
         catch (Exception ex)
         {
@@ -996,6 +1030,14 @@ public class GameEngine
         {
             Globals.chatHistory[roomid] = (name + " : " + chat) + Globals.chatHistory[roomid];
         }
+    }
+
+    private void ProcessMessage(string message)
+    {
+        UnityMainThreadDispatcher.Instance().Enqueue(() =>
+        {
+            Toast.Show(message);
+        });
     }
 
 }

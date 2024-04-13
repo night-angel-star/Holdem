@@ -218,7 +218,7 @@ MonoBehaviour:
   m_fontColor32:
     serializedVersion: 2
     rgba: 4294967295
-  m_fontColor: {r: 1, g: 1, b: 1, a: 1}
+  m_fontColor: {r: 1, g: 0, b: 0, a: 1}
   m_enableVertexGradient: 0
   m_colorMode: 3
   m_fontColorGradient:
@@ -592,6 +592,18 @@ PrefabInstance:
     - target: {fileID: 3585659422406750369, guid: f96c65db10b8b414bbe4fa5d9558a695, type: 3}
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3948938457277931665, guid: f96c65db10b8b414bbe4fa5d9558a695, type: 3}
+      propertyPath: m_fontSizeMax
+      value: 9
+      objectReference: {fileID: 0}
+    - target: {fileID: 3948938457277931665, guid: f96c65db10b8b414bbe4fa5d9558a695, type: 3}
+      propertyPath: m_fontSizeMin
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 3948938457277931665, guid: f96c65db10b8b414bbe4fa5d9558a695, type: 3}
+      propertyPath: m_enableAutoSizing
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 5178924922921741957, guid: f96c65db10b8b414bbe4fa5d9558a695, type: 3}
       propertyPath: m_SortingLayer

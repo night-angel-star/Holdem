@@ -140,6 +140,15 @@ public class ChatNotifyEvent : RoomEvent
     public new ChatEventArgs args;
 }
 
+public class MessageNotifyEvent : RoomEvent
+{
+    public class MessageEventArgs
+    {
+        public string message;
+    }
+    public new MessageEventArgs args;
+}
+
 
 public class UnSeatNotifyEvent : RoomEvent
 {
@@ -326,4 +335,22 @@ public class TournamentNewBlindNotifyEvent : RoomEvent
         public int new_small_blind;
     }
     public new TournamentNewBlindNotifyEventArgs args;
+}
+
+public class TournamentWinnerNotifyEvent
+{
+    public class TournamentWinners
+    {
+        public string uid;
+        public string name;
+        public int tournament_prize;
+        public int ranking;
+    }
+    public class TournamentWinnerNotifyEventArgs
+    {
+        public int tid;
+        public TournamentWinners[] tournament_winners;
+    }
+
+    public new TournamentWinnerNotifyEventArgs args;
 }

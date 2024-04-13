@@ -58834,6 +58834,7 @@ MonoBehaviour:
   tournamentDetailStatus: {fileID: 2063561605}
   tournamentDetailDelay: {fileID: 950164452}
   tournamentDetailBuyIn: {fileID: 1545844175}
+  tournamentDetailInfoTable: {fileID: 1157449485}
   registerButton: {fileID: 898416}
   watchButton: {fileID: 0}
 --- !u!4 &1707903626
@@ -59828,7 +59829,7 @@ MonoBehaviour:
   m_HandleRect: {fileID: 1439694977}
   m_Direction: 2
   m_Value: 1
-  m_Size: 0.9664148
+  m_Size: 0.96641475
   m_NumberOfSteps: 0
   m_OnValueChanged:
     m_PersistentCalls:

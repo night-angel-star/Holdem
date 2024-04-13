@@ -34,6 +34,8 @@ public class Tournament : MonoBehaviour
     public GameObject tournamentDetailStatus;
     public GameObject tournamentDetailDelay;
     public GameObject tournamentDetailBuyIn;
+    public GameObject tournamentDetailPrize;
+    public GameObject tournamentDetailInfoTable;
     public GameObject registerButton;
     public GameObject watchButton;
 
@@ -197,6 +199,29 @@ public class Tournament : MonoBehaviour
         if (tournamentDetailBuyIn != null)
         {
             tournamentDetailBuyIn.GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated(tournamentDetailObject.buy_in, 0);
+        }
+        if (tournamentDetailPrize != null)
+        {
+            tournamentDetailPrize.GetComponent<TMP_Text>().text=tournamentDetailObject.prize.ToString();
+        }
+
+        if (tournamentDetailInfoTable != null)
+        {
+            GameObject startingChips = tournamentDetailInfoTable.transform.GetChild(0).gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject;
+            GameObject gameType = tournamentDetailInfoTable.transform.GetChild(1).gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject;
+            GameObject minMaxPlayers = tournamentDetailInfoTable.transform.GetChild(2).gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject;
+            GameObject currentBlinds = tournamentDetailInfoTable.transform.GetChild(3).gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject;
+            GameObject blindLvlUp = tournamentDetailInfoTable.transform.GetChild(4).gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject;
+            GameObject breakTime = tournamentDetailInfoTable.transform.GetChild(5).gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject;
+            GameObject reEntry = tournamentDetailInfoTable.transform.GetChild(6).gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject;
+            GameObject gameSpeed = tournamentDetailInfoTable.transform.GetChild(7).gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject;
+            GameObject earlyBird = tournamentDetailInfoTable.transform.GetChild(8).gameObject.transform.GetChild(1).gameObject.transform.GetChild(0).gameObject;
+
+            startingChips.GetComponent<TMP_Text>().text = tournamentDetailObject.buy_in.ToString();
+            minMaxPlayers.GetComponent<TMP_Text>().text = $"<color=#FCB823>{tournamentDetailObject.registered_players}</color>/{tournamentDetailObject.max_players}";
+            currentBlinds.GetComponent<TMP_Text>().text = $"lvl:<color=#FCB823>{Globals.tournamentInfo.small_bilnd}/{Globals.tournamentInfo.small_bilnd*2}</color>({Globals.tournamentInfo.timeleft}s)";
+            blindLvlUp.GetComponent<TMP_Text>().text = $"Lvl up every <color=#FC2323>{(int)(tournamentDetailObject.rise_time/60)}mins</color>";
+
         }
         
     }

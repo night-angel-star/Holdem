@@ -65,11 +65,12 @@ public class GameBehavior : MonoBehaviour
     public GameObject chatHistory;
 
     public GameObject waitTimeInfo;
-    public GameObject winnersInfo;
 
     public GameObject handStrengthParent;
 
     public GameObject mentionDropdown;
+
+    public GameObject pot;
 
 
 
@@ -288,9 +289,10 @@ public class GameBehavior : MonoBehaviour
                 {
                     Debug.Log(ex);
                 }
+
                 try
                 {
-                    SetWinners();
+                    SetHandStrength();
                 }
                 catch (Exception ex)
                 {
@@ -299,9 +301,9 @@ public class GameBehavior : MonoBehaviour
 
                 try
                 {
-                    SetHandStrength();
+                    SetPot();
                 }
-                catch (Exception ex)
+                catch(Exception ex)
                 {
                     Debug.Log(ex);
                 }
@@ -606,7 +608,8 @@ public class GameBehavior : MonoBehaviour
                                 int rotatedI = ArrayHelper.ReRotateNumber(i, room.GetUserSeat(), room.options.max_seats);
                                 if (room.chips.ContainsKey(rotatedI))
                                 {
-                                    money.GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated(long.Parse(room.chips[rotatedI].ToString()), 1);
+                                    //money.GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated(long.Parse(room.chips[rotatedI].ToString()), 1);
+                                    money.GetComponent<TMP_Text>().text = room.chips[rotatedI].ToString();
                                 }
 
 
@@ -622,7 +625,8 @@ public class GameBehavior : MonoBehaviour
                             GameObject money = usersArray[i].transform.GetChild(3).gameObject.transform.GetChild(1).gameObject;
                             if (room.chips.ContainsKey(ArrayHelper.ReRotateNumber(i, room.GetUserSeat(), room.options.max_seats)))
                             {
-                                money.GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated(long.Parse(room.chips[ArrayHelper.ReRotateNumber(i, room.GetUserSeat(), room.options.max_seats)].ToString()), 1);
+                                //money.GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated(long.Parse(room.chips[ArrayHelper.ReRotateNumber(i, room.GetUserSeat(), room.options.max_seats)].ToString()), 1);
+                                money.GetComponent<TMP_Text>().text = room.chips[ArrayHelper.ReRotateNumber(i, room.GetUserSeat(), room.options.max_seats)].ToString();
                             }
 
                         }
@@ -1622,12 +1626,68 @@ public class GameBehavior : MonoBehaviour
                 string[] gamerActionStatus = room.status;
                 string[] rotatedGamerActionStatus = ArrayHelper.RotateArray(gamerActionStatus, room.GetUserSeat());
 
-                for (int i = 1; i < usersArray.Length; i++)
+                for (int i = 0; i < usersArray.Length; i++)
                 {
                     if (rotatedGamerActionStatus[i] != null)
                     {
+                        if (i == 0)
+                        {
+                            usersArray[i].transform.GetChild(3).gameObject.SetActive(true);
+                            usersArray[i].transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<TMP_Text>().text = rotatedGamerActionStatus[i];
+                        }
+                        else
+                        {
+                            usersArray[i].transform.GetChild(4).gameObject.SetActive(true);
+                            usersArray[i].transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.GetComponent<TMP_Text>().text = rotatedGamerActionStatus[i];
+                        }
+                        
+                    }
+                    else
+                    {
+                        usersArray[i].transform.GetChild(4).gameObject.SetActive(false);
+                    }
+                }
+            }
+        }else if (room.gameStatus == 3)
+        {
+            if (room.GetUserSeat() != -1)
+            {
+                GameObject[] usersArray = GameObjectHelper.GetChildrenForRoomSize(usersParent, room.options.max_seats);
+                string[] rotatedSeats = ArrayHelper.RotateArray(room.seats, room.GetUserSeat());
+                for(int i = 0; i < rotatedSeats.Length; i++)
+                {
+                    if (rotatedSeats[i] != null)
+                    {
+                        if (i == 0)
+                        {
+                            usersArray[i].transform.GetChild(3).gameObject.SetActive(true);
+                            string profit = room.gamers[rotatedSeats[i]].profit.ToString();
+                            usersArray[i].transform.GetChild(3).gameObject.transform.GetChild(0).gameObject.GetComponent<TMP_Text>().text = profit;
+                        }
+                        else
+                        {
+                            usersArray[i].transform.GetChild(4).gameObject.SetActive(true);
+                            string profit = room.gamers[rotatedSeats[i]].profit.ToString();
+                            usersArray[i].transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.GetComponent<TMP_Text>().text = profit;
+                        }
+                        
+                    }
+                    else
+                    {
+                        usersArray[i].transform.GetChild(4).gameObject.SetActive(false);
+                    }
+                }
+            }
+            else
+            {
+                GameObject[] usersArray = GameObjectHelper.GetChildrenForRoomSize(usersParent, room.options.max_seats);
+                for (int i = 0; i < room.seats.Length; i++)
+                {
+                    if (room.seats[i] != null)
+                    {
                         usersArray[i].transform.GetChild(4).gameObject.SetActive(true);
-                        usersArray[i].transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.GetComponent<TMP_Text>().text = rotatedGamerActionStatus[i];
+                        string profit = room.gamers[room.seats[i]].profit.ToString();
+                        usersArray[i].transform.GetChild(4).gameObject.transform.GetChild(0).gameObject.GetComponent<TMP_Text>().text = profit;
                     }
                     else
                     {
@@ -1992,43 +2052,7 @@ public class GameBehavior : MonoBehaviour
         }
     }
 
-    void SetWinners()
-    {
-        if (room.activeSeat == -1)
-        {
-            string winners = "";
-            for (int i = 0; i < room.seats.Length; i++)
-            {
-
-                if (room.seats[i] != null)
-                {
-                    if (room.gamers[room.seats[i]].is_winner)
-                    {
-                        if (winners != "")
-                        {
-                            winners += ", ";
-                        }
-                        winners += room.gamers[room.seats[i]].name;
-                    }
-                }
-
-            }
-            if (winners != "")
-            {
-                winnersInfo.transform.GetChild(1).gameObject.GetComponent<TMP_Text>().text = winners;
-                winnersInfo.SetActive(true);
-            }
-            else
-            {
-                winnersInfo.SetActive(false);
-            }
-        }
-        else
-        {
-            winnersInfo.SetActive(false);
-        }
-    }
-
+    
     protected void SetHandStrength()
     {
         if (room.gameStatus == 2 && room.GetUserSeat() != -1 && !waiting)
@@ -2061,6 +2085,25 @@ public class GameBehavior : MonoBehaviour
                 }
             }
 
+        }
+    }
+
+    protected void SetPot()
+    {
+        if (room.gameStatus == 2)
+        {
+            int potValue = 0;
+            List<int> chipIndexs = new List<int>(room.chips.Keys);
+            for (int i = 0; i < chipIndexs.Count; i++)
+            {
+                potValue += room.chips[chipIndexs[i]];
+            }
+            pot.transform.GetChild(1).gameObject.GetComponent<TMP_Text>().text = potValue.ToString();
+            pot.SetActive(true);
+        }
+        else
+        {
+            pot.SetActive(false);
         }
     }
 
