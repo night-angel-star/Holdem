@@ -22720,7 +22720,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &632771301
 RectTransform:
   m_ObjectHideFlags: 0
@@ -28112,7 +28112,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &784546599
 RectTransform:
   m_ObjectHideFlags: 0
@@ -33450,9 +33450,9 @@ MonoBehaviour:
   m_fontSize: 14
   m_fontSizeBase: 14
   m_fontWeight: 400
-  m_enableAutoSizing: 0
-  m_fontSizeMin: 18
-  m_fontSizeMax: 72
+  m_enableAutoSizing: 1
+  m_fontSizeMin: 1
+  m_fontSizeMax: 14
   m_fontStyle: 0
   m_HorizontalAlignment: 1
   m_VerticalAlignment: 512
@@ -42144,7 +42144,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!4 &1238088065
 Transform:
   m_ObjectHideFlags: 0
@@ -44355,7 +44355,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!224 &1303319303
 RectTransform:
   m_ObjectHideFlags: 0
@@ -58834,6 +58834,9 @@ MonoBehaviour:
   tournamentDetailStatus: {fileID: 2063561605}
   tournamentDetailDelay: {fileID: 950164452}
   tournamentDetailBuyIn: {fileID: 1545844175}
+  tournamentDetailPrize: {fileID: 1303319302}
+  tournamentDetailEntry: {fileID: 2122269680}
+  tournamentDetailStartTime: {fileID: 2077772326}
   tournamentDetailInfoTable: {fileID: 1157449485}
   registerButton: {fileID: 898416}
   watchButton: {fileID: 0}

@@ -32,4 +32,7 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/RoomTournament.unity
     guid: be069e19011955b4cbe7746b71260c37
+  - enabled: 1
+    path: Assets/Scenes/TournamentResult.unity
+    guid: 443694e56ce8317409b5b1b4b124c3aa
   m_configObjects: {}

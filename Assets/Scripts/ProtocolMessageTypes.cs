@@ -354,3 +354,14 @@ public class TournamentWinnerNotifyEvent
 
     public new TournamentWinnerNotifyEventArgs args;
 }
+
+public class TournamentKickNotifyEvent
+{
+    public class TournamentKickNotifyEventArgs
+    {
+        public string uid;
+        public int ranking;
+    }
+
+    public new TournamentKickNotifyEventArgs args;
+}

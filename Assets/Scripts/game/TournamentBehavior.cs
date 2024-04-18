@@ -42,6 +42,40 @@ public class TournamentBehavior : GameBehavior
                 //SetRoomsToggler();
                 //SetRoomsView();
                 SetTournamentInfo();
+                try
+                {
+                    SetChatHistory();
+                }
+                catch (Exception ex)
+                {
+                    Debug.Log(ex);
+                }
+                try
+                {
+                    SetWaitTimeInfo();
+                }
+                catch (Exception ex)
+                {
+                    Debug.Log(ex);
+                }
+
+                try
+                {
+                    SetHandStrength();
+                }
+                catch (Exception ex)
+                {
+                    Debug.Log(ex);
+                }
+
+                try
+                {
+                    SetPot();
+                }
+                catch (Exception ex)
+                {
+                    Debug.Log(ex);
+                }
             }
         }
         catch (Exception ex)

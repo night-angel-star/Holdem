@@ -653,11 +653,11 @@ public class GameEngine
                     Globals.gameRooms[json.roomid.ToString()].chips[g.seat] = g.chips;
                     Globals.gameRooms[json.roomid.ToString()].gamers[g.uid].is_winner = g.is_winner;
                     Globals.gameRooms[json.roomid.ToString()].gamers[g.uid].profit = g.profit;
-                    if (Globals.gameRooms[json.roomid.ToString()].gamers[g.uid].coins == 0)
-                    {
-                        SleepForGameover();
-                        Globals.gameRooms[json.roomid.ToString()].seats[index] = null;
-                    }
+                    //if (Globals.gameRooms[json.roomid.ToString()].gamers[g.uid].coins == 0)
+                    //{
+                    //    SleepForGameover();
+                    //    Globals.gameRooms[json.roomid.ToString()].seats[index] = null;
+                    //}
                 }
                 Globals.gameRooms[json.roomid.ToString()].countdown = 20;
             } while (false);
@@ -862,10 +862,14 @@ public class GameEngine
 
     private void ProcessRelogin()
     {
-        UnityMainThreadDispatcher.Instance().Enqueue(() =>
+        if (!Globals.tournamentInfo.started)
         {
-            SceneManager.LoadScene("Room");
-        });
+            UnityMainThreadDispatcher.Instance().Enqueue(() =>
+            {
+                SceneManager.LoadScene("Room");
+            });
+        }
+        
     }
 
     private void ProcessSeeCard(string uid, string roomid, int seat, int[] cards)
