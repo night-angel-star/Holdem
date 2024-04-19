@@ -660,6 +660,18 @@ public class GameEngine
                     //}
                 }
                 Globals.gameRooms[json.roomid.ToString()].countdown = 20;
+
+                string uid = Globals.gameToken.uid;
+                int pin = Globals.gameToken.pin;
+
+                var data = new
+                {
+                    uid = uid,
+                    pin = pin,
+                    f = "activestatus",
+                    args = 0,
+                };
+                Globals.socketIoConnection.SendRpc(data, ResetAutoActionResponse);
             } while (false);
             if (errorString != "")
             {
@@ -672,6 +684,11 @@ public class GameEngine
             LogHelper.AppLog(ex.ToString());
         }
 
+    }
+
+    private void ResetAutoActionResponse(JToken jsonResponse)
+    {
+        Globals.gameRooms[Globals.currentRoom].gamers[Globals.gameToken.uid].activeStatus = 0;
     }
 
     IEnumerator SleepForGameover()

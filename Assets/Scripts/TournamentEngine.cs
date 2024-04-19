@@ -172,9 +172,18 @@ public class TournamentEngine : MonoBehaviour
             Globals.tournamentInfo.ranking = args.ranking;
             UnityMainThreadDispatcher.Instance().Enqueue(() =>
             {
-                SceneManager.LoadScene("TournamentResult");
+                StartCoroutine(LoadTournamentResult());
             });
             
         }
+    }
+
+    private IEnumerator LoadTournamentResult()
+    {
+        yield return new WaitForSeconds(10);
+        UnityMainThreadDispatcher.Instance().Enqueue(() =>
+        {
+            SceneManager.LoadScene("TournamentResult");
+        });
     }
 }
