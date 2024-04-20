@@ -1192,6 +1192,7 @@ public class GameBehavior : MonoBehaviour
         };
         Globals.socketIoConnection.SendRpc(data, OnRaiseResponse);
         raiseAmount = 0;
+        raiseBarSlider.GetComponent<Slider>().value = 0;
         raiseModal.SetActive(false);
         raiseButton.SetActive(true);
         raiseConfirmButton.SetActive(false);

@@ -8,6 +8,7 @@ using UnityEngine.SceneManagement;
 using System;
 using static TournamentWinnerNotifyEvent;
 using static TournamentKickNotifyEvent;
+using JetBrains.Annotations;
 
 public class RankingComparer : IComparer<TournamentWinners>
 {
@@ -170,20 +171,8 @@ public class TournamentEngine : MonoBehaviour
         {
             Globals.tournamentInfo.finished = true;
             Globals.tournamentInfo.ranking = args.ranking;
-            UnityMainThreadDispatcher.Instance().Enqueue(() =>
-            {
-                StartCoroutine(LoadTournamentResult());
-            });
             
         }
     }
 
-    private IEnumerator LoadTournamentResult()
-    {
-        yield return new WaitForSeconds(10);
-        UnityMainThreadDispatcher.Instance().Enqueue(() =>
-        {
-            SceneManager.LoadScene("TournamentResult");
-        });
-    }
 }

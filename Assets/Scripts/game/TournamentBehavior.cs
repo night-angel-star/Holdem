@@ -3,80 +3,95 @@ using System.Collections;
 using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using GameRoomsT = System.Collections.Generic.Dictionary<string, Room>;
 
 public class TournamentBehavior : GameBehavior
 {
     public GameObject blindsInfo;
     public GameObject newBlindsInfo;
     public GameObject blindsUpTimeInfo;
+    bool kickStarted = false;
     void RepeatCall()
     {
         try
         {
-            //read from global
-            receiveFromGlobalResult = UpdateRoomFromGlobal();
-            if (receiveFromGlobalResult)
+            if (!kickStarted)
             {
-                //set data from room data
-                DisableUnneccessarySeats();
-                SetActionButtonArea();
-                //draw ui
-                if (room.gameStatus == 2)
+                //read from global
+                receiveFromGlobalResult = UpdateRoomFromGlobal();
+                if (receiveFromGlobalResult)
                 {
-                    GetMyCard();
-                    GetActionButtonsInteractable();
-                }
-                //AutoAction();
-                SetUserInfo();
-                SetRoomName();
-                //InitializeAddChipsModal();
-                SetPublicCards();
-                SetTimer();
-                SetActionButtonAreaIndexByGlobal();
-                SetRaiseAmounts();
-                SetRaiseBar();
-                SetAutoButtons();
-                CheckRaiseAmount();
-                SetGamersActionStatus();
-                //SetRoomsToggler();
-                //SetRoomsView();
-                SetTournamentInfo();
-                try
-                {
-                    SetChatHistory();
-                }
-                catch (Exception ex)
-                {
-                    Debug.Log(ex);
-                }
-                try
-                {
-                    SetWaitTimeInfo();
-                }
-                catch (Exception ex)
-                {
-                    Debug.Log(ex);
-                }
+                    //set data from room data
+                    DisableUnneccessarySeats();
+                    SetActionButtonArea();
+                    //draw ui
+                    if (room.gameStatus == 2)
+                    {
+                        GetMyCard();
+                        GetActionButtonsInteractable();
+                    }
+                    //AutoAction();
+                    SetUserInfo();
+                    SetRoomName();
+                    //InitializeAddChipsModal();
+                    SetPublicCards();
+                    SetTimer();
+                    SetActionButtonAreaIndexByGlobal();
+                    SetRaiseAmounts();
+                    SetRaiseBar();
+                    SetAutoButtons();
+                    CheckRaiseAmount();
+                    SetGamersActionStatus();
+                    //SetRoomsToggler();
+                    //SetRoomsView();
+                    SetTournamentInfo();
+                    try
+                    {
+                        SetChatHistory();
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.Log(ex);
+                    }
+                    try
+                    {
+                        SetWaitTimeInfo();
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.Log(ex);
+                    }
 
-                try
-                {
-                    SetHandStrength();
-                }
-                catch (Exception ex)
-                {
-                    Debug.Log(ex);
-                }
+                    try
+                    {
+                        SetHandStrength();
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.Log(ex);
+                    }
 
-                try
-                {
-                    SetPot();
-                }
-                catch (Exception ex)
-                {
-                    Debug.Log(ex);
+                    try
+                    {
+                        SetPot();
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.Log(ex);
+                    }
+                    try
+                    {
+                        MonitorKick();
+                    }
+                    catch (Exception ex)
+                    {
+                        Debug.Log(ex);
+                    }
                 }
             }
+            
         }
         catch (Exception ex)
         {
@@ -125,5 +140,27 @@ public class TournamentBehavior : GameBehavior
         newBlindsInfo.GetComponent<TMP_Text>().text = nextSmallBlindStr + "/" + nextBigBlindStr;
         blindsUpTimeInfo.GetComponent<TMP_Text>().text = blindUpTimeStr;
 
+    }
+
+    void MonitorKick()
+    {
+        if (!kickStarted)
+        {
+            if (Globals.tournamentInfo.finished)
+            {
+                kickStarted = true;
+            Globals.notification = new TournamentEngine();
+            Globals.gameRooms = new GameRoomsT();
+            Globals.currentRoom = null;
+            Globals.chatHistory = new Dictionary<string, string>();
+            Invoke("LoadTournamentResult", 10);
+            }
+            
+        }
+    }
+
+    public void LoadTournamentResult()
+    {
+        SceneManager.LoadScene("TournamentResult");
     }
 }
