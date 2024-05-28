@@ -1479,7 +1479,7 @@ public class GameBehavior : MonoBehaviour
                 {
                     GameObject[] raiseBarGrades = GameObjectHelper.GetChildren(raiseBarGradeParent);
                     //raiseToValue.GetComponent<TMP_Text>().text = MoneyHelper.FormatNumberAbbreviated((long)raiseAmount, 1);
-                    raiseToValue.GetComponent<TMP_Text>().text = raiseAmount.ToString();
+                    raiseToValue.GetComponent<TMP_InputField>().text = raiseAmount.ToString();
                     int raiseBarStep = (maxRaiseAmount - minRaiseAmount) / raiseBarGrades.Length;
                     for (int i = 0; i < raiseBarGrades.Length; i++)
                     {
@@ -2235,6 +2235,19 @@ public class GameBehavior : MonoBehaviour
         else
         {
             gameOver.SetActive(false);
+        }
+    }
+
+    public void OnRaiseInputChange(string value)
+    {
+        try
+        {
+            raiseAmount = int.Parse(value);
+            raiseBarSlider.GetComponent<Slider>().value = raiseAmount;
+        }
+        catch (Exception)
+        {
+            
         }
     }
 
