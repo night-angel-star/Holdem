@@ -561,6 +561,8 @@ public class GameBehavior : MonoBehaviour
                     }
                     else
                     {
+                        usersArray[i].transform.GetChild(2).gameObject.transform.GetChild(0).gameObject.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Images/cards/back");
+                        usersArray[i].transform.GetChild(2).gameObject.transform.GetChild(1).gameObject.GetComponent<SpriteRenderer>().sprite = Resources.Load<Sprite>("Images/cards/back");
                         usersArray[i].transform.GetChild(1).gameObject.SetActive(true);
                         if (room.gameStatus == 2 && room.GetUserSeat() != -1 && !waiting)
                         {
